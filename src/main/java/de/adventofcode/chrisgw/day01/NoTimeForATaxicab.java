@@ -144,6 +144,7 @@ public class NoTimeForATaxicab {
     public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println("No path in args[]");
+            return;
         }
         String instructions = args[0];
         System.out.println(instructions);
