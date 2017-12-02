@@ -23,9 +23,36 @@ import java.util.List;
  * - The second row's largest and smallest values are 7 and 3, and their difference is 4.
  * - The third row's difference is 6.
  * In this example, the spreadsheet's checksum would be 8 + 4 + 6 = 18.
+ *
+ * --- Part Two ---
+ *
+ * It sounds like the goal is to find the only two numbers in each row where
+ * one evenly divides the other - that is, where the result of the division
+ * operation is a whole number. They would like you to find those numbers on
+ * each line, divide them, and add up each line's result.
+ *
+ * For example, given the following spreadsheet:
+ *
+ * 5 9 2 8
+ * 9 4 7 3
+ * 3 8 6 5
+ *
+ * - In the first row, the only two numbers that evenly divide are 8 and 2;
+ *   the result of this division is 4.
+ * - In the second row, the two numbers are 9 and 3; the result is 3.
+ * - In the third row, the result is 2.
+ *
+ * In this example, the sum of the results would be 4 + 3 + 2 = 9.
  * </pre>
  */
 public class CorruptionChecksum {
+
+    public interface RowChecksumCalculator {
+
+        int calculateRowChecksum(List<Integer> row);
+
+    }
+
 
     private List<List<Integer>> spreadsheet;
 
@@ -53,30 +80,14 @@ public class CorruptionChecksum {
     }
 
 
-    public int calculateChecksum() {
+    public int calculateChecksum(RowChecksumCalculator rowChecksumCalculator) {
         int checksum = 0;
         for (int rowIndex = 0; rowIndex < spreadsheet.size(); rowIndex++) {
             List<Integer> row = spreadsheet.get(rowIndex);
-            int rowChecksum = calculateRowChecksum(row);
+            int rowChecksum = rowChecksumCalculator.calculateRowChecksum(row);
             checksum += rowChecksum;
         }
         return checksum;
-    }
-
-    private int calculateRowChecksum(List<Integer> row) {
-        int minValue = Integer.MAX_VALUE;
-        int maxValue = Integer.MIN_VALUE;
-        for (int columnIndex = 0; columnIndex < row.size(); columnIndex++) {
-            int fieldValue = row.get(columnIndex);
-            if (fieldValue < minValue) {
-                minValue = fieldValue;
-            }
-            if (fieldValue > maxValue) {
-                maxValue = fieldValue;
-            }
-        }
-        int rowChecksum = maxValue - minValue;
-        return rowChecksum;
     }
 
 
@@ -95,6 +106,42 @@ public class CorruptionChecksum {
     }
 
 
+    public static RowChecksumCalculator differenceBetweenMinAndMaxValueChecksum() {
+        return row -> {
+            int minValue = Integer.MAX_VALUE;
+            int maxValue = Integer.MIN_VALUE;
+
+            for (int columnIndex = 0; columnIndex < row.size(); columnIndex++) {
+                int fieldValue = row.get(columnIndex);
+                if (fieldValue < minValue) {
+                    minValue = fieldValue;
+                }
+                if (fieldValue > maxValue) {
+                    maxValue = fieldValue;
+                }
+            }
+            int rowChecksum = maxValue - minValue;
+            return rowChecksum;
+        };
+    }
+
+    public static RowChecksumCalculator evenDivisionChecksum() {
+        return row -> {
+            for (int columnIndex = 0; columnIndex < row.size(); columnIndex++) {
+                int fieldValue = row.get(columnIndex);
+                for (int i = 0; i < row.size(); i++) {
+                    int otherFieldValue = row.get(i);
+                    boolean dividesEvenly = fieldValue % otherFieldValue == 0;
+                    if (dividesEvenly && i != columnIndex) {
+                        return fieldValue / otherFieldValue;
+                    }
+                }
+            }
+            return 0;
+        };
+    }
+
+
     public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println("Empty args[] without any spreadsheet's to check");
@@ -104,9 +151,13 @@ public class CorruptionChecksum {
         for (String spreadsheet : args) {
             try {
                 CorruptionChecksum corruptionChecksum = CorruptionChecksum.parseSpreadsheet(spreadsheet);
-                int calculateChecksum = corruptionChecksum.calculateChecksum();
                 System.out.println(spreadsheet);
-                System.out.println("checksum: " + calculateChecksum);
+
+                int checksumPart1 = corruptionChecksum.calculateChecksum(differenceBetweenMinAndMaxValueChecksum());
+                System.out.println("checksum part 1: " + checksumPart1);
+
+                int checksumPart2 = corruptionChecksum.calculateChecksum(evenDivisionChecksum());
+                System.out.println("checksum part 2: " + checksumPart2);
             } catch (Exception e) {
                 e.printStackTrace();
             }
