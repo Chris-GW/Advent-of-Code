@@ -1,11 +1,9 @@
 package de.adventofcode.chrisgw.day04;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class SecurityThroughObscurity {
@@ -28,7 +26,7 @@ public class SecurityThroughObscurity {
 
     public static class EncyptedRoom {
 
-        public static Pattern ENCRYPTED_ROOM_PATTERN = Pattern.compile("([a-z\\-]+)-(\\d+)\\[([a-z]+)]");
+        public static Pattern ENCRYPTED_ROOM_PATTERN = Pattern.compile("([a-z\\-]+)-(\\d+)(\\[([a-z]+)])?");
 
         public String roomName;
         public int sectorId;
@@ -52,7 +50,7 @@ public class SecurityThroughObscurity {
 
             String roomName = encryptedRoomMatcher.group(1);
             int sectorId = Integer.parseInt(encryptedRoomMatcher.group(2));
-            String checksum = encryptedRoomMatcher.group(3);
+            String checksum = encryptedRoomMatcher.group(4);
             return new EncyptedRoom(roomName, sectorId, checksum);
         }
 
@@ -71,16 +69,35 @@ public class SecurityThroughObscurity {
 
             List<LetterOccurence> letterRank = letterOccurrence.values()
                     .stream()
-                    .sorted(LetterOccurence.compareByOccurence())
+                    .sorted(LetterOccurence.compareByOccurrence())
                     .collect(Collectors.toList());
             for (int i = 0; i < checksum.length(); i++) {
-                char checksumLetter = checksum.charAt(i);
                 char letter = letterRank.get(i).letter;
+                char checksumLetter = checksum.charAt(i);
                 if (checksumLetter != letter) {
                     return false;
                 }
             }
             return true;
+        }
+
+        public String decryptRoomName() {
+            StringBuilder decryptedRoomName = new StringBuilder(roomName);
+            int cipherShift = sectorId % 26;
+
+            for (int i = 0; i < decryptedRoomName.length(); i++) {
+                char letter = decryptedRoomName.charAt(i);
+                if (letter == '-') {
+                    decryptedRoomName.setCharAt(i, ' ');
+                    continue;
+                }
+                letter += cipherShift;
+                if (letter > 'z') {
+                    letter -= 26;
+                }
+                decryptedRoomName.setCharAt(i, letter);
+            }
+            return decryptedRoomName.toString();
         }
 
 
@@ -133,7 +150,7 @@ public class SecurityThroughObscurity {
             return Character.compare(letter, o.letter);
         }
 
-        public static Comparator<LetterOccurence> compareByOccurence() {
+        public static Comparator<LetterOccurence> compareByOccurrence() {
             return Comparator.comparingInt((LetterOccurence o) -> o.occurence)
                     .reversed()
                     .thenComparingInt(o -> o.letter);
