@@ -1,4 +1,4 @@
-package de.adventofcode.chrisgw.day02;
+package main.java.de.adventofcode.chrisgw.day02;
 
 import java.util.ArrayList;
 import java.util.Arrays;

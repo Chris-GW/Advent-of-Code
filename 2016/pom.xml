@@ -6,7 +6,7 @@
 
     <groupId>de.adventofcode.chrisgw</groupId>
     <artifactId>Advent-of-Code</artifactId>
-    <version>2016.1.0-SNAPSHOT</version>
+    <version>2016.2.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

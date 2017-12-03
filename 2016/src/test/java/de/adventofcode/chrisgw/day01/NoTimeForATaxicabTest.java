@@ -1,4 +1,4 @@
-package de.adventofcode.chrisgw.day01;
+package test.java.de.adventofcode.chrisgw.day01;
 
 import de.adventofcode.chrisgw.day01.NoTimeForATaxicab.Position;
 import org.junit.Assert;
