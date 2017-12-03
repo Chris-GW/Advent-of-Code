@@ -5,31 +5,35 @@ import java.util.*;
 
 public class SpiralMemory {
 
+
     private SortedMap<Integer, SpiralMemoryData> spiralMemory = new TreeMap<>();
+    private SpiralMemoryDataValueCalculater valueCalculater;
 
 
-    public SpiralMemory() {
+    public SpiralMemory(SpiralMemoryDataValueCalculater valueCalculater) {
+        this.valueCalculater = Objects.requireNonNull(valueCalculater);
         SpiralMemoryData firstMemoryData = new SpiralMemoryData(0, 0, 1);
         this.spiralMemory.put(firstMemoryData.value, firstMemoryData);
     }
 
 
-    public int calculateAccessStepsForMemoryDataValue(int value) {
-        int lastMemoryData = spiralMemory.lastKey();
-        if (lastMemoryData >= value) {
-            return spiralMemory.get(value).getDistanceToPort();
+    public SpiralMemoryData getSpiralMemoryData(int value) {
+        SpiralMemoryData spiralMemoryData = spiralMemory.get(value);
+        if (spiralMemoryData != null) {
+            return spiralMemoryData;
         }
-        for (int i = lastMemoryData; i < value; i++) {
-            addSpiralMemoryData();
+
+        spiralMemoryData = spiralMemory.get(spiralMemory.lastKey());
+        while (spiralMemoryData.value < value) {
+            spiralMemoryData = addSpiralMemoryData();
         }
-        return spiralMemory.get(value).getDistanceToPort();
+        return spiralMemoryData;
     }
 
     private SpiralMemoryData addSpiralMemoryData() {
-        int lastData = spiralMemory.lastKey();
-        SpiralMemoryData lastMemoryData = spiralMemory.get(lastData);
-        int newData = lastData + 1;
+        SpiralMemoryData lastMemoryData = spiralMemory.get(spiralMemory.lastKey());
         SpiralMemoryData newMemoryData = lastMemoryData.getNextMemoryData();
+        newMemoryData.value = valueCalculater.calculateMemoryValue(newMemoryData);
         spiralMemory.put(newMemoryData.value, newMemoryData);
         return newMemoryData;
     }
@@ -55,11 +59,10 @@ public class SpiralMemory {
 
 
         public SpiralMemoryData getNextMemoryData() {
-            int newData = value + 1;
             SpiralMemoryData newMemoryData;
 
             if (leftMemoryData != null && topMemoryData == null) {
-                newMemoryData = new SpiralMemoryData(x, y + 1, newData);
+                newMemoryData = new SpiralMemoryData(x, y + 1, value);
                 topMemoryData = newMemoryData;
                 newMemoryData.bottomMemoryData = this;
                 if (leftMemoryData != null) {
@@ -67,7 +70,7 @@ public class SpiralMemory {
                 }
 
             } else if (bottomMemoryData != null && leftMemoryData == null) {
-                newMemoryData = new SpiralMemoryData(x - 1, y, newData);
+                newMemoryData = new SpiralMemoryData(x - 1, y, value);
                 leftMemoryData = newMemoryData;
                 newMemoryData.rightMemoryData = this;
                 if (bottomMemoryData != null) {
@@ -75,7 +78,7 @@ public class SpiralMemory {
                 }
 
             } else if (rightMemoryData != null && bottomMemoryData == null) {
-                newMemoryData = new SpiralMemoryData(x, y - 1, newData);
+                newMemoryData = new SpiralMemoryData(x, y - 1, value);
                 bottomMemoryData = newMemoryData;
                 newMemoryData.topMemoryData = this;
                 if (rightMemoryData != null) {
@@ -83,7 +86,7 @@ public class SpiralMemory {
                 }
 
             } else if (topMemoryData != null && rightMemoryData == null) {
-                newMemoryData = new SpiralMemoryData(x + 1, y, newData);
+                newMemoryData = new SpiralMemoryData(x + 1, y, value);
                 rightMemoryData = newMemoryData;
                 newMemoryData.leftMemoryData = this;
                 if (topMemoryData != null) {
@@ -91,7 +94,7 @@ public class SpiralMemory {
                 }
 
             } else { // first memoryCell
-                newMemoryData = new SpiralMemoryData(x + 1, y, newData);
+                newMemoryData = new SpiralMemoryData(x + 1, y, value);
                 rightMemoryData = newMemoryData;
                 newMemoryData.leftMemoryData = this;
             }
@@ -112,12 +115,19 @@ public class SpiralMemory {
 
             SpiralMemoryData that = (SpiralMemoryData) o;
 
+            if (x != that.x)
+                return false;
+            if (y != that.y)
+                return false;
             return value == that.value;
         }
 
         @Override
         public int hashCode() {
-            return value;
+            int result = x;
+            result = 31 * result + y;
+            result = 31 * result + value;
+            return result;
         }
 
         @Override
@@ -125,6 +135,45 @@ public class SpiralMemory {
             return "(" + x + ";" + y + ")=" + value;
         }
 
+    }
+
+
+    public interface SpiralMemoryDataValueCalculater {
+
+        int calculateMemoryValue(SpiralMemoryData memoryData);
+
+    }
+
+
+    public static SpiralMemoryDataValueCalculater increaseValueByOneCalculater() {
+        return memoryData -> memoryData.value + 1;
+    }
+
+    public static SpiralMemoryDataValueCalculater sumAdjustedDataValuesCalculater() {
+        return (SpiralMemoryData memoryData) -> {
+            Set<SpiralMemoryData> memoryDataToSum = new HashSet<>();
+            if (memoryData.rightMemoryData != null) {
+                memoryDataToSum.add(memoryData.rightMemoryData);
+                memoryDataToSum.add(memoryData.rightMemoryData.topMemoryData);
+                memoryDataToSum.add(memoryData.rightMemoryData.bottomMemoryData);
+            }
+            if (memoryData.topMemoryData != null) {
+                memoryDataToSum.add(memoryData.topMemoryData);
+                memoryDataToSum.add(memoryData.topMemoryData.leftMemoryData);
+                memoryDataToSum.add(memoryData.topMemoryData.rightMemoryData);
+            }
+            if (memoryData.leftMemoryData != null) {
+                memoryDataToSum.add(memoryData.leftMemoryData);
+                memoryDataToSum.add(memoryData.leftMemoryData.topMemoryData);
+                memoryDataToSum.add(memoryData.leftMemoryData.bottomMemoryData);
+            }
+            if (memoryData.bottomMemoryData != null) {
+                memoryDataToSum.add(memoryData.bottomMemoryData);
+                memoryDataToSum.add(memoryData.bottomMemoryData.leftMemoryData);
+                memoryDataToSum.add(memoryData.bottomMemoryData.rightMemoryData);
+            }
+            return memoryDataToSum.stream().filter(Objects::nonNull).mapToInt((data) -> data.value).sum();
+        };
     }
 
 }
