@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/2016/2016.iml" filepath="$PROJECT_DIR$/2016/2016.iml" />
-      <module fileurl="file://$PROJECT_DIR$/2017/2017.iml" filepath="$PROJECT_DIR$/2017/2017.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Advent-of-Code.iml" filepath="$PROJECT_DIR$/Advent-of-Code.iml" />
+      <module fileurl="file://$PROJECT_DIR$/2016/Advent-of-Code-2016.iml" filepath="$PROJECT_DIR$/2016/Advent-of-Code-2016.iml" />
+      <module fileurl="file://$PROJECT_DIR$/2017/Advent-of-Code-2017.iml" filepath="$PROJECT_DIR$/2017/Advent-of-Code-2017.iml" />
     </modules>
   </component>
 </project>
