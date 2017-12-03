@@ -11,9 +11,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="2016" target="1.8" />
-      <module name="2017" target="1.8" />
-      <module name="Advent-of-Code" target="1.8" />
       <module name="Advent-of-Code-2016" target="1.8" />
       <module name="Advent-of-Code-2017" target="1.8" />
     </bytecodeTargetLevel>
