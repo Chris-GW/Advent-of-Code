@@ -1,4 +1,4 @@
-package de.adventofcode.chrisgw.day02;
+package test.java.de.adventofcode.chrisgw.day02;
 
 import de.adventofcode.chrisgw.day02.BathroomSecurity.FancyBathroomKeypad;
 import de.adventofcode.chrisgw.day02.BathroomSecurity.NumberKeypad;

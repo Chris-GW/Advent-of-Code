@@ -1,4 +1,4 @@
-package de.adventofcode.chrisgw.day01;
+package main.java.de.adventofcode.chrisgw.day01;
 
 import java.util.*;
 
