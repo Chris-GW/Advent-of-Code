@@ -1,9 +1,8 @@
 package de.adventofcode.chrisgw.day04;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 /**
@@ -42,6 +41,24 @@ public class HighEntropyPassphrases {
     }
 
 
+    public static boolean isAnagram(String word, String otherWord) {
+        if (word.length() != otherWord.length()) {
+            return false;
+        }
+        if (word.equals(otherWord)) {
+            return true;
+        }
+
+        Map<Character, Long> letterOccurence = word.chars()
+                .mapToObj(value -> (char) value)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        Map<Character, Long> otherLetterOccurence = otherWord.chars()
+                .mapToObj(value -> (char) value)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        return letterOccurence.equals(otherLetterOccurence);
+    }
+
+
     public static class Passphrase {
 
         public String passphrase;
@@ -52,7 +69,16 @@ public class HighEntropyPassphrases {
         }
 
 
+        public String[] getWords() {
+            return passphrase.split("\\s+");
+        }
+
+
         public boolean isValid() {
+            return isValid(false);
+        }
+
+        public boolean isValid(boolean isAnagramPassphraseInvalid) {
             String[] splittedWords = getWords();
             Set<String> words = new HashSet<>(splittedWords.length);
             for (String word : splittedWords) {
@@ -60,12 +86,15 @@ public class HighEntropyPassphrases {
                 if (!isNewWord) {
                     return false;
                 }
+
+                boolean foundExistingAnagram = isAnagramPassphraseInvalid && words.stream()
+                        .filter(otherWord -> !otherWord.equals(word))
+                        .anyMatch(otherWord -> isAnagram(word, otherWord));
+                if (foundExistingAnagram) {
+                    return false;
+                }
             }
             return true;
-        }
-
-        public String[] getWords() {
-            return passphrase.split("\\s+");
         }
 
 
@@ -92,6 +121,5 @@ public class HighEntropyPassphrases {
         }
 
     }
-
 
 }
