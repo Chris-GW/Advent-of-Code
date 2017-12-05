@@ -1,6 +1,8 @@
 package de.adventofcode.chrisgw.day05;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -43,6 +45,16 @@ import java.util.List;
  * In this example, the exit is reached in 5 steps.
  *
  * How many steps does it take to reach the exit?
+ *
+ * --- Part Two ---
+ *
+ * Now, the jumps are even stranger: after each jump, if the offset was three
+ * or more, instead decrease it by 1. Otherwise, increase it by 1 as before.
+ *
+ * Using this rule with the above example, the process now takes 10 steps, and
+ * the offset values after finding the exit are left as 2 3 2 3 -1.
+ *
+ * How many steps does it now take to reach the exit?
  * </pre>
  */
 public class MazeOfTwistyTrampolines {
@@ -50,10 +62,31 @@ public class MazeOfTwistyTrampolines {
     private List<Integer> jumpInstructions;
     private int pointer = 0;
     private long stepCount = 0;
+    private Function<Integer, Integer> jumpInsturctionModifier;
 
 
     public MazeOfTwistyTrampolines(List<Integer> jumpInstructions) {
+        this(jumpInstructions, incrementJumpInsturction());
+    }
+
+    public MazeOfTwistyTrampolines(List<Integer> jumpInstructions, Function<Integer, Integer> jumpInsturctionModifier) {
         this.jumpInstructions = jumpInstructions;
+        this.jumpInsturctionModifier = jumpInsturctionModifier;
+    }
+
+
+    public static Function<Integer, Integer> incrementJumpInsturction() {
+        return jumpInstruction -> jumpInstruction + 1;
+    }
+
+    public static Function<Integer, Integer> incrementWhenSmallerThanLimitOtherwiseDecrement(int upperLimit) {
+        return jumpInstruction -> {
+            if (jumpInstruction < upperLimit) {
+                return jumpInstruction + 1;
+            } else {
+                return jumpInstruction - 1;
+            }
+        };
     }
 
 
@@ -70,7 +103,7 @@ public class MazeOfTwistyTrampolines {
     public void followNextJumpInstruction() {
         if (isPointerInsideOfJumpInstructions()) {
             int currentJumpInstruction = jumpInstructions.get(pointer);
-            jumpInstructions.set(pointer, currentJumpInstruction + 1);
+            jumpInstructions.set(pointer, jumpInsturctionModifier.apply(currentJumpInstruction));
             pointer += currentJumpInstruction;
             stepCount++;
         }
@@ -83,6 +116,10 @@ public class MazeOfTwistyTrampolines {
 
     public long getStepCount() {
         return stepCount;
+    }
+
+    public List<Integer> getJumpInstructions() {
+        return Collections.unmodifiableList(jumpInstructions);
     }
 
 
