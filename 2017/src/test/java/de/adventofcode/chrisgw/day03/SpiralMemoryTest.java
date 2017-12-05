@@ -83,7 +83,6 @@ public class SpiralMemoryTest {
         int value = 312051;
         int expectedDataValue = 312453;
 
-
         SpiralMemory spiralMemory = new SpiralMemory(SpiralMemory.sumAdjustedDataValuesCalculater());
         SpiralMemoryData spiralMemoryData = spiralMemory.getSpiralMemoryData(value);
         int dataValue = spiralMemoryData.value;
