@@ -68,11 +68,10 @@ public class MemoryReallocation {
     }
 
 
-    public int relocateMemoryBlocksTillInfiniteLoopDetected() {
+    public void relocateMemoryBlocksTillInfiniteLoopDetected() {
         while (!isInfiniteRelocateLoopDetected) {
             relocateHighestOccupiedMemoryBank();
         }
-        return seenMemoryMementos.size();
     }
 
     public void relocateHighestOccupiedMemoryBank() {
@@ -107,6 +106,24 @@ public class MemoryReallocation {
 
     public int getNeededRelocationStepsTillInfinteLoop() {
         return seenMemoryMementos.size();
+    }
+
+
+    public int getSizeOfInfinteRelocateLoop() {
+        if (isInfiniteRelocateLoopDetected) {
+            MemoryMemento currentMemoryMemento = saveMemoryMemento();
+            int index = 0;
+            for (MemoryMemento seenMemoryMemento : seenMemoryMementos) {
+                if (seenMemoryMemento.equals(currentMemoryMemento)) {
+                    break;
+                }
+                index++;
+            }
+            return seenMemoryMementos.size() - index;
+        } else {
+            relocateMemoryBlocksTillInfiniteLoopDetected();
+            return getSizeOfInfinteRelocateLoop();
+        }
     }
 
 
