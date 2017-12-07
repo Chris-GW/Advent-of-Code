@@ -1,7 +1,10 @@
 package de.adventofcode.chrisgw.day06;
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -46,12 +49,41 @@ import java.util.stream.Stream;
  *
  * Given the recording in your puzzle input, what is the error-corrected
  * version of the message being sent?
+ *
+ * --- Part Two ---
+ *
+ * Of course, that would be the message - if you hadn't agreed to use a
+ * modified repetition code instead.
+ *
+ * In this modified code, the sender instead transmits what looks like random
+ * data, but for each character, the character they actually want to send is
+ * slightly less likely than the others. Even after signal-jamming noise, you
+ * can look at the letter distributions in each column and choose the least
+ * common letter to reconstruct the original message.
+ *
+ * In the above example, the least common character in the first column is a;
+ * in the second, d, and so on. Repeating this process for the remaining
+ * characters produces the original message, advent.
+ *
+ * Given the recording in your puzzle input and this new decoding methodology,
+ * what is the original message that Santa is trying to send?
  * </pre>
  */
 public class SignalsAndNoise {
 
 
-    public static String getErrorCorrectedMessage(List<String> messages) {
+    public static String getErrorCorrectedMessageByMostOccurenceColumnLetter(List<String> messages) {
+        List<Map<Character, Integer>> letterAppearancePerColumn = getMessageLetterOccurencePerColumn(messages);
+        return correctMessageWithMostAppearanceColumnLetter(letterAppearancePerColumn);
+    }
+
+    public static String getErrorCorrectedMessageByLeastOccurenceColumnLetter(List<String> messages) {
+        List<Map<Character, Integer>> letterAppearancePerColumn = getMessageLetterOccurencePerColumn(messages);
+        return correctMessagesWithLeastAppearanceColumnLetter(letterAppearancePerColumn);
+    }
+
+
+    private static List<Map<Character, Integer>> getMessageLetterOccurencePerColumn(List<String> messages) {
         List<Map<Character, Integer>> letterAppearancesPerColumn = Stream.generate(
                 (Supplier<Map<Character, Integer>>) HashMap::new)
                 .limit(messages.size())
@@ -65,16 +97,30 @@ public class SignalsAndNoise {
                 letterAppearences.compute(letter, (l, occurence) -> occurence == null ? 0 : occurence + 1);
             }
         }
-        return correctMessagesWithMostAppearanceLetter(letterAppearancesPerColumn);
+        return letterAppearancesPerColumn;
     }
 
-    private static String correctMessagesWithMostAppearanceLetter(
+
+    private static String correctMessageWithMostAppearanceColumnLetter(
             List<Map<Character, Integer>> letterAppearancesPerColumn) {
         StringBuilder errorCorrectedMessage = new StringBuilder(letterAppearancesPerColumn.size());
         for (Map<Character, Integer> letterAppearance : letterAppearancesPerColumn) {
             letterAppearance.entrySet()
                     .stream()
                     .max(Entry.comparingByValue())
+                    .map(Entry::getKey)
+                    .ifPresent(errorCorrectedMessage::append);
+        }
+        return errorCorrectedMessage.toString();
+    }
+
+    private static String correctMessagesWithLeastAppearanceColumnLetter(
+            List<Map<Character, Integer>> letterAppearancePerColumn) {
+        StringBuilder errorCorrectedMessage = new StringBuilder(letterAppearancePerColumn.size());
+        for (Map<Character, Integer> letterAppearance : letterAppearancePerColumn) {
+            letterAppearance.entrySet()
+                    .stream()
+                    .min(Entry.comparingByValue())
                     .map(Entry::getKey)
                     .ifPresent(errorCorrectedMessage::append);
         }

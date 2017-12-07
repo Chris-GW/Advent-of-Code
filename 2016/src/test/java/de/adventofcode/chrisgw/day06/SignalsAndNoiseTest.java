@@ -11,7 +11,7 @@ import java.util.List;
 public class SignalsAndNoiseTest {
 
     @Test
-    public void getErrorCorrectedMessage_easter() {
+    public void getErrorCorrectedMessageByMostOccurenceColumnLetter_easter() {
         // @formatter:off
         List<String> messages = Arrays.asList(
                 "eedadn",
@@ -33,19 +33,63 @@ public class SignalsAndNoiseTest {
         // @formatter:on
         String expectedErrorCorrectedMessage = "easter";
 
-        String errorCorrectedMessage = SignalsAndNoise.getErrorCorrectedMessage(messages);
+        String errorCorrectedMessage = SignalsAndNoise.getErrorCorrectedMessageByMostOccurenceColumnLetter(messages);
         System.out.println(errorCorrectedMessage);
 
         Assert.assertEquals("Expect errorCorrectedMessage", expectedErrorCorrectedMessage, errorCorrectedMessage);
     }
 
     @Test
-    public void getErrorCorrectedMessage_myTask() {
+    public void getErrorCorrectedMessageByMostOccurenceColumnLetter_myTask() {
         // @formatter:off
         List<String> messages = TestUtils.readAllLinesOfClassPathResource("/day06/SignalsAndNoise.txt");
         String expectedErrorCorrectedMessage = "kqsdmzft";
 
-        String errorCorrectedMessage = SignalsAndNoise.getErrorCorrectedMessage(messages);
+        String errorCorrectedMessage = SignalsAndNoise.getErrorCorrectedMessageByMostOccurenceColumnLetter(messages);
+        System.out.println(errorCorrectedMessage);
+
+        Assert.assertEquals("Expect errorCorrectedMessage", expectedErrorCorrectedMessage, errorCorrectedMessage);
+    }
+
+
+    // --- part 2
+
+    @Test
+    public void getErrorCorrectedMessageByLeastOccurenceColumnLetter_easter() {
+        // @formatter:off
+        List<String> messages = Arrays.asList(
+                "eedadn",
+                "drvtee",
+                "eandsr",
+                "raavrd",
+                "atevrs",
+                "tsrnev",
+                "sdttsa",
+                "rasrtv",
+                "nssdts",
+                "ntnada",
+                "svetve",
+                "tesnvt",
+                "vntsnd",
+                "vrdear",
+                "dvrsen",
+                "enarar");
+        // @formatter:on
+        String expectedErrorCorrectedMessage = "advent";
+
+        String errorCorrectedMessage = SignalsAndNoise.getErrorCorrectedMessageByLeastOccurenceColumnLetter(messages);
+        System.out.println(errorCorrectedMessage);
+
+        Assert.assertEquals("Expect errorCorrectedMessage", expectedErrorCorrectedMessage, errorCorrectedMessage);
+    }
+
+    @Test
+    public void getErrorCorrectedMessageByLeastOccurenceColumnLetter_myTask() {
+        // @formatter:off
+        List<String> messages = TestUtils.readAllLinesOfClassPathResource("/day06/SignalsAndNoise.txt");
+        String expectedErrorCorrectedMessage = "tpooccyo";
+
+        String errorCorrectedMessage = SignalsAndNoise.getErrorCorrectedMessageByLeastOccurenceColumnLetter(messages);
         System.out.println(errorCorrectedMessage);
 
         Assert.assertEquals("Expect errorCorrectedMessage", expectedErrorCorrectedMessage, errorCorrectedMessage);
