@@ -21,7 +21,6 @@ public class Cpu {
 
     private Map<String, CpuRegister> cpuRegisters = new HashMap<>();
 
-
     public List<CpuRegisterInstruction> parseCpuRegisterInstructions(List<String> cpuRegisterInsturctionLines) {
         return cpuRegisterInsturctionLines.stream().map(this::parseCpuRegisterInstruction).collect(Collectors.toList());
     }
@@ -84,6 +83,10 @@ public class Cpu {
 
     public int findLargestCpuRegisterValue() {
         return cpuRegisters.values().stream().mapToInt(CpuRegister::getValue).max().orElse(0);
+    }
+
+    public int findLargestCpuRegisterValueHeld() {
+        return cpuRegisters.values().stream().mapToInt(CpuRegister::getHighestValue).max().orElse(Integer.MIN_VALUE);
     }
 
 

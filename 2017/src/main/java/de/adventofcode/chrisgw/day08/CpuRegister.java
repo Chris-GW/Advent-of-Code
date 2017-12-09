@@ -4,6 +4,7 @@ public class CpuRegister {
 
     private String name;
     private int value = 0;
+    private int highestValue = Integer.MIN_VALUE;
 
 
     public CpuRegister(String name) {
@@ -13,10 +14,18 @@ public class CpuRegister {
 
     public void incrementValue(int incrementValue) {
         this.value += incrementValue;
+        checkHighestValue();
     }
 
     public void decrementValue(int decrementValue) {
         this.value -= decrementValue;
+        checkHighestValue();
+    }
+
+    private void checkHighestValue() {
+        if (value > highestValue) {
+            highestValue = value;
+        }
     }
 
 
@@ -28,6 +37,10 @@ public class CpuRegister {
         return value;
     }
 
+    public int getHighestValue() {
+        return highestValue;
+    }
+    
 
     @Override
     public boolean equals(Object o) {
