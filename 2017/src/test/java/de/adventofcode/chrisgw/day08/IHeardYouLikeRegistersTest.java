@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 public class IHeardYouLikeRegistersTest {
 
     @Test
-    public void findLargestCpuRegister_example() {
+    public void findLargestCpuRegisterValue_example() {
         // @formatter:off
         List<String> cpuRegisterInstructionLines = Arrays.asList(
                 "b inc 5 if a > 1",
@@ -47,7 +47,7 @@ public class IHeardYouLikeRegistersTest {
 
 
     @Test
-    public void findLargestCpuRegister_myTask() {
+    public void findLargestCpuRegisterValue_myTask() {
         String classpathResource = "/day08/IHeardYouLikeRegisters_chrisgw.txt";
         List<String> cpuRegisterInstructionLines = TestUtils.readAllLinesOfClassPathResource(classpathResource);
         int expectedLargestCpuRegisterValue = 3089;
@@ -60,5 +60,47 @@ public class IHeardYouLikeRegistersTest {
         int largestCpuRegisterValue = iHeardYouLikeRegisters.findLargestCpuRegisterValue();
         Assert.assertEquals("Expect largestCpuRegisterValue", expectedLargestCpuRegisterValue, largestCpuRegisterValue);
     }
+
+
+    // --- part 2
+
+    @Test
+    public void findLargestCpuRegisterValueHeld_example() {
+        // @formatter:off
+        List<String> cpuRegisterInstructionLines = Arrays.asList(
+                "b inc 5 if a > 1",
+                "a inc 1 if b < 5",
+                "c dec -10 if a >= 1",
+                "c inc -20 if c == 10");
+        // @formatter:on
+        int expectedLargestCpuRegisterValueHeld = 10;
+
+        IHeardYouLikeRegisters iHeardYouLikeRegisters = new IHeardYouLikeRegisters();
+        List<CpuRegisterInstruction> cpuRegisterInstructions = iHeardYouLikeRegisters.parseCpuRegisterInstructions(
+                cpuRegisterInstructionLines);
+        cpuRegisterInstructions.forEach(CpuRegisterInstruction::executeCpuRegisterInstruction);
+
+        int largestCpuRegisterValueHeld = iHeardYouLikeRegisters.findLargestCpuRegisterValueHeld();
+        Assert.assertEquals("Expect largestCpuRegisterValueHeld", expectedLargestCpuRegisterValueHeld,
+                largestCpuRegisterValueHeld);
+    }
+
+
+    @Test
+    public void findLargestCpuRegisterValueHeld_myTask() {
+        String classpathResource = "/day08/IHeardYouLikeRegisters_chrisgw.txt";
+        List<String> cpuRegisterInstructionLines = TestUtils.readAllLinesOfClassPathResource(classpathResource);
+        int expectedLargestCpuRegisterValueHeld = 5391;
+
+        IHeardYouLikeRegisters iHeardYouLikeRegisters = new IHeardYouLikeRegisters();
+        List<CpuRegisterInstruction> cpuRegisterInstructions = iHeardYouLikeRegisters.parseCpuRegisterInstructions(
+                cpuRegisterInstructionLines);
+        cpuRegisterInstructions.forEach(CpuRegisterInstruction::executeCpuRegisterInstruction);
+
+        int largestCpuRegisterValueHeld = iHeardYouLikeRegisters.findLargestCpuRegisterValueHeld();
+        Assert.assertEquals("Expect largestCpuRegisterValueHeld", expectedLargestCpuRegisterValueHeld,
+                largestCpuRegisterValueHeld);
+    }
+
 
 }
