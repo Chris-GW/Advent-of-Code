@@ -1,10 +1,9 @@
 package de.adventofcode.chrisgw.day07;
 
-import sun.plugin.com.DispatchClient;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.IntSummaryStatistics;
+import java.util.Set;
+import java.util.stream.Stream;
 
 
 public class DiscTower {
@@ -13,7 +12,7 @@ public class DiscTower {
     private int weight;
 
     private DiscTower parent;
-    private List<DiscTower> childs = new ArrayList<>();
+    private Set<DiscTower> childs = new HashSet<>();
 
 
     public DiscTower(String name, int weight) {
@@ -41,7 +40,7 @@ public class DiscTower {
     }
 
 
-    public List<DiscTower> getChilds() {
+    public Set<DiscTower> getChilds() {
         return childs;
     }
 
@@ -51,9 +50,54 @@ public class DiscTower {
     }
 
 
+    public int getTotalWeight() {
+        return weight + getChildWeightSum();
+    }
+
+    public int getChildWeightSum() {
+        return getChilds().stream().mapToInt(DiscTower::getTotalWeight).sum();
+    }
+
+    public boolean isBalenced() {
+        if (childs.isEmpty()) {
+            return true;
+        }
+        IntSummaryStatistics intSummaryStatistics = getChilds().stream()
+                .mapToInt(DiscTower::getTotalWeight)
+                .summaryStatistics();
+        return intSummaryStatistics.getMin() == intSummaryStatistics.getMax();
+    }
+
+
+    public Stream<DiscTower> getAllDiscTowerStream() {
+        return Stream.concat(childs.stream().flatMap(DiscTower::getAllDiscTowerStream), Stream.of(this));
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        DiscTower discTower = (DiscTower) o;
+
+        if (getWeight() != discTower.getWeight())
+            return false;
+        return getName() != null ? getName().equals(discTower.getName()) : discTower.getName() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getName() != null ? getName().hashCode() : 0;
+        result = 31 * result + getWeight();
+        return result;
+    }
+
     @Override
     public String toString() {
-        return name + " (" + weight + ")";
+        return name + " (" + getTotalWeight() + ")";
     }
 
 }
