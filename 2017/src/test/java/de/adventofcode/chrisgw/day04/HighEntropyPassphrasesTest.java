@@ -46,7 +46,8 @@ public class HighEntropyPassphrasesTest {
     @Test
     public void passphrase_myTask_countValidPassphrases() {
         long expectedValidPassphraseCount = 386;
-        List<String> passphrasesLines = TestUtils.readAllLinesOfClassPathResource("/day04/Passphrases.txt");
+        String classpathResource = "/day04/HighEntropyPassphrases_chrisgw.txt";
+        List<String> passphrasesLines = TestUtils.readAllLinesOfClassPathResource(classpathResource);
 
         List<Passphrase> passphraseList = HighEntropyPassphrases.parsePassphrases(passphrasesLines);
 
