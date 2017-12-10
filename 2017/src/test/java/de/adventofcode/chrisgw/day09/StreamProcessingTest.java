@@ -3,10 +3,12 @@ package de.adventofcode.chrisgw.day09;
 import de.adventofcode.chrisgw.TestUtils;
 import de.adventofcode.chrisgw.day09.CharacterGarbageLexer.Token;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.adventofcode.chrisgw.day09.CharacterGarbageLexer.TokenType.*;
 
@@ -133,24 +135,24 @@ public class StreamProcessingTest {
 
     @Test
     public void tokenizeCharacterGarbageStream_group_with_seperated_garbage() {
-        String charaterGarbageStream = "{<a>,<a>,<a>,<a>}";
+        String charaterGarbageStream = "{<aa>,<aa>,<aa>,<aa>}";
         // @formatter:off
         List<Token> expectedTokens = Arrays.asList(
                 new Token(GROUP_START, "{"),
                 new Token(GARBAGE_START, "<"),
-                new Token(GARBAGE, "a"),
+                new Token(GARBAGE, "aa"),
                 new Token(GARBAGE_END, ">"),
                 new Token(SEPERATOR, ","),
                 new Token(GARBAGE_START, "<"),
-                new Token(GARBAGE, "a"),
+                new Token(GARBAGE, "aa"),
                 new Token(GARBAGE_END, ">"),
                 new Token(SEPERATOR, ","),
                 new Token(GARBAGE_START, "<"),
-                new Token(GARBAGE, "a"),
+                new Token(GARBAGE, "aa"),
                 new Token(GARBAGE_END, ">"),
                 new Token(SEPERATOR, ","),
                 new Token(GARBAGE_START, "<"),
-                new Token(GARBAGE, "a"),
+                new Token(GARBAGE, "aa"),
                 new Token(GARBAGE_END, ">"),
                 new Token(GROUP_END, "}"));
         // @formatter:on
@@ -257,6 +259,9 @@ public class StreamProcessingTest {
         List<Token> tokens = StreamProcessing.tokenizeCharacterGarbageStream(charaterGarbageStream);
         printTokens(tokens);
         int groupScore = StreamProcessing.countGroupScoreForTokens(tokens);
+
+
+       tokens.stream().filter(token -> token.type.equals(GARBAGE)).forEachOrdered(System.out::println);
 
         Assert.assertEquals("Expected group score", expectedGroupScore, groupScore);
     }
