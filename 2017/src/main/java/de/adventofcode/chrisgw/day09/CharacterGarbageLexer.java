@@ -1,11 +1,7 @@
 package de.adventofcode.chrisgw.day09;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class CharacterGarbageLexer {
@@ -13,34 +9,64 @@ public class CharacterGarbageLexer {
 
     public static List<Token> tokenizeCharacterGarbageStream(String charaterGarbageStream) {
         List<Token> tokens = new LinkedList<>();
-        for (int i = 0; i < charaterGarbageStream.length(); ) {
-            for (TokenType tokenType : TokenType.values()) {
-                Matcher tokenMatcher = tokenType.pattern.matcher(charaterGarbageStream);
-                if (tokenMatcher.find(i)) {
-                    String value = tokenMatcher.group();
-                    tokens.add(new Token(tokenType, value));
-                    i = tokenMatcher.end();
-                    break;
+
+        for (int i = 0; i < charaterGarbageStream.length(); i++) {
+            char currentChar = charaterGarbageStream.charAt(i);
+            TokenType tokenType = TokenType.parseTokenType(currentChar);
+            Token token = new Token(tokenType, charaterGarbageStream.substring(i, i + 1));
+            tokens.add(token);
+
+            if (TokenType.GARBAGE_START.equals(tokenType)) {
+                int garbageStartIndex = i + 1;
+                int garbageEndIndex = garbageStartIndex;
+                boolean isEscaped = false;
+
+                for (int k = garbageStartIndex; k < charaterGarbageStream.length(); k++) {
+                    currentChar = charaterGarbageStream.charAt(k);
+                    if (isEscaped) {
+                        isEscaped = currentChar == '!';
+                        continue;
+                    }
+                    isEscaped = currentChar == '!';
+
+                    if (currentChar == TokenType.GARBAGE_END.token) {
+                        garbageEndIndex = k;
+                        i = garbageEndIndex - 1;
+                        break;
+                    }
+                }
+                if (garbageStartIndex < garbageEndIndex) {
+                    String garbage = charaterGarbageStream.substring(garbageStartIndex, garbageEndIndex);
+                    tokens.add(new Token(TokenType.GARBAGE, garbage));
                 }
             }
         }
+
         return tokens;
     }
 
 
-
-
     public enum TokenType {
 
-        GARBAGE_START("\\G(?<!!)<"), GARBAGE_END("\\G(?<!!)>"), //
-        GARBAGE("\\G(?<=(?<!!)<).+?(?=(?<!!)>)"), //
-        GROUP_START("\\G(?<!!)\\{"), GROUP_END("\\G(?<!!)\\}"), //
-        SEPERATOR("\\G(?<!!),"), //
-        ;
-        public final Pattern pattern;
+        GROUP_START('{'), GROUP_END('}'), //
+        GARBAGE_START('<'), GARBAGE_END('>'), //
+        SEPERATOR(','), //
+        GARBAGE(' ');
 
-        TokenType(String patternStr) {
-            this.pattern = Pattern.compile(patternStr);
+        public final char token;
+
+        TokenType(char token) {
+            this.token = token;
+        }
+
+
+        public static TokenType parseTokenType(char token) {
+            for (TokenType tokenType : TokenType.values()) {
+                if (tokenType.token == token) {
+                    return tokenType;
+                }
+            }
+            return TokenType.GARBAGE;
         }
 
     }
