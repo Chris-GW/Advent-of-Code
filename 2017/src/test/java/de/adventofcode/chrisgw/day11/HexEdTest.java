@@ -16,7 +16,7 @@ public class HexEdTest {
 
         HexCell destinationHexCell = HexEd.followDirectionInstructions(hexInstructionsStr);
         System.out.println(destinationHexCell);
-        int stepDistance = destinationHexCell.getStepDistanceToHexCell(new HexCell());
+        int stepDistance = destinationHexCell.getStepDistanceToHexCell();
 
         Assert.assertEquals("Expect destination hexCell", expectedDestinationHexCell, destinationHexCell);
         Assert.assertEquals("Expect stepDistance", expectedStepDistance, stepDistance);
@@ -31,7 +31,7 @@ public class HexEdTest {
 
         HexCell destinationHexCell = HexEd.followDirectionInstructions(hexInstructionsStr);
         System.out.println(destinationHexCell);
-        int stepDistance = destinationHexCell.getStepDistanceToHexCell(new HexCell());
+        int stepDistance = destinationHexCell.getStepDistanceToHexCell();
 
         Assert.assertEquals("Expect destination hexCell", expectedDestinationHexCell, destinationHexCell);
         Assert.assertEquals("Expect stepDistance", expectedStepDistance, stepDistance);
@@ -46,7 +46,7 @@ public class HexEdTest {
 
         HexCell destinationHexCell = HexEd.followDirectionInstructions(hexInstructionsStr);
         System.out.println(destinationHexCell);
-        int stepDistance = destinationHexCell.getStepDistanceToHexCell(new HexCell());
+        int stepDistance = destinationHexCell.getStepDistanceToHexCell();
 
         Assert.assertEquals("Expect destination hexCell", expectedDestinationHexCell, destinationHexCell);
         Assert.assertEquals("Expect stepDistance", expectedStepDistance, stepDistance);
@@ -61,7 +61,7 @@ public class HexEdTest {
 
         HexCell destinationHexCell = HexEd.followDirectionInstructions(hexInstructionsStr);
         System.out.println(destinationHexCell);
-        int stepDistance = destinationHexCell.getStepDistanceToHexCell(new HexCell());
+        int stepDistance = destinationHexCell.getStepDistanceToHexCell();
 
         Assert.assertEquals("Expect destination hexCell", expectedDestinationHexCell, destinationHexCell);
         Assert.assertEquals("Expect stepDistance", expectedStepDistance, stepDistance);
@@ -74,7 +74,22 @@ public class HexEdTest {
 
         HexCell destinationHexCell = HexEd.followDirectionInstructions(hexInstructionsStr);
         System.out.println(destinationHexCell);
-        int stepDistance = destinationHexCell.getStepDistanceToHexCell(new HexCell());
+        int stepDistance = destinationHexCell.getStepDistanceToHexCell();
+
+        Assert.assertEquals("Expect stepDistance", expectedStepDistance, stepDistance);
+    }
+    
+    
+    // --- part 2
+
+    @Test
+    public void follow_myTask_expect_furthestHexCell() {
+        String hexInstructionsStr = TestUtils.readAllLinesOfClassPathResource("/day11/HexEd_chrisgw.txt").get(0);
+        int expectedStepDistance = 1524;
+
+        HexCell furthestHexCell = HexEd.followDirectionInstructionsAndFindFurthestHexCell(hexInstructionsStr);
+        System.out.println(furthestHexCell);
+        int stepDistance = furthestHexCell.getStepDistanceToHexCell();
 
         Assert.assertEquals("Expect stepDistance", expectedStepDistance, stepDistance);
     }

@@ -1,6 +1,6 @@
 package de.adventofcode.chrisgw.day11;
 
-public class HexCell {
+public class HexCell implements Comparable<HexCell> {
 
     private int x;
     private int y;
@@ -50,6 +50,10 @@ public class HexCell {
     }
 
 
+    public int getStepDistanceToHexCell() {
+        return getStepDistanceToHexCell(new HexCell());
+    }
+
     public int getStepDistanceToHexCell(HexCell destinationHexCell) {
         int distance = 0;
 
@@ -78,6 +82,12 @@ public class HexCell {
             distance++;
         }
         return distance;
+    }
+
+
+    @Override
+    public int compareTo(HexCell furthestHexCell) {
+        return Integer.compare(this.getStepDistanceToHexCell(), furthestHexCell.getStepDistanceToHexCell());
     }
 
 
