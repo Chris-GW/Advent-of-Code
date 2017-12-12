@@ -37,6 +37,10 @@ import java.util.List;
  * - ne,ne,sw,sw is 0 steps away (back where you started).
  * - ne,ne,s,s is 2 steps away (se,se).
  * - se,sw,se,sw,sw is 3 steps away (s,s,sw).
+ *
+ * --- Part Two ---
+ *
+ * How many steps away is the furthest he ever got from his starting position?
  * </pre>
  */
 public class HexEd {
@@ -58,6 +62,28 @@ public class HexEd {
             currentHexCell = currentHexCell.moveToAdjacentHexCell(direction);
         }
         return currentHexCell;
+    }
+
+
+    public static HexCell followDirectionInstructionsAndFindFurthestHexCell(String directionStr) {
+        String[] splittedDirections = directionStr.split(",");
+        List<HexDirection> hexDirections = new ArrayList<>(splittedDirections.length);
+        for (String splittedDirection : splittedDirections) {
+            hexDirections.add(HexDirection.fromShortName(splittedDirection));
+        }
+        return followDirectionInstructionsAndFindFurthestHexCell(hexDirections);
+    }
+
+    public static HexCell followDirectionInstructionsAndFindFurthestHexCell(List<HexDirection> hexDirections) {
+        HexCell currentHexCell = new HexCell();
+        HexCell furthestHexCell = currentHexCell;
+        for (HexDirection direction : hexDirections) {
+            currentHexCell = currentHexCell.moveToAdjacentHexCell(direction);
+            if (currentHexCell.compareTo(furthestHexCell) > 0) {
+                furthestHexCell = currentHexCell;
+            }
+        }
+        return furthestHexCell;
     }
 
 }
