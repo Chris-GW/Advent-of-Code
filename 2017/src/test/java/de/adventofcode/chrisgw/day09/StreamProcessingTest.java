@@ -278,6 +278,20 @@ public class StreamProcessingTest {
 
 
 
+    @Test
+    public void simple_myTask_part2() {
+        String classpathResource = "/day09/StreamProcessing_chrisgw.txt";
+        String charaterGarbageStream = TestUtils.readAllLinesOfClassPathResource(classpathResource).get(0);
+        int expectedGarbageCount = 21037;
+
+        System.out.println(charaterGarbageStream);
+        int garbageCount = StreamProcessing.countGarbageCharectersScoreForTokens(charaterGarbageStream);
+
+        Assert.assertEquals("Expected group score", expectedGarbageCount, garbageCount);
+    }
+
+
+
     private void printTokens(List<Token> tokens) {
         StringBuilder firstLine = new StringBuilder();
         StringBuilder secondLine = new StringBuilder();
