@@ -19,7 +19,8 @@ public class PacketScanners {
     private static final Pattern FIREWALL_SCAN_LAYER_LINE_PATTERN = Pattern.compile("(\\d+)\\s*:\\s*(\\d+)");
 
     private NavigableMap<Integer, FirewallScanner> layerToFirewallScannerMap;
-    private int currentLayerPosition = 0;
+    private int packetDelay = 0;
+    private int picoseconds = 0;
     private int severitySum = 0;
 
 
@@ -42,6 +43,32 @@ public class PacketScanners {
     }
 
 
+    public int findNeededPacketDelayWhichPassesAllFirewallScanners() {
+        for (int delay = 0; true; delay++) {
+            reset();
+            setPacketDelay(delay);
+
+            boolean wasPackedScanned = false;
+            while (hasMoreUpcomingFirewallScanner()) {
+                nextPicoSecond();
+                if (isPacketScanned()) {
+                    wasPackedScanned = true;
+                    break;
+                }
+            }
+            if (!wasPackedScanned) {
+                return delay;
+            }
+        }
+    }
+
+    public void reset() {
+        layerToFirewallScannerMap.values().forEach(FirewallScanner::reset);
+        picoseconds = 0;
+        severitySum = 0;
+    }
+
+
     public int calculatePacketSeverity() {
         while (hasMoreUpcomingFirewallScanner()) {
             nextPicoSecond();
@@ -51,20 +78,22 @@ public class PacketScanners {
 
     public boolean hasMoreUpcomingFirewallScanner() {
         FirewallScanner lastFirewallScanner = layerToFirewallScannerMap.lastEntry().getValue();
-        return currentLayerPosition <= lastFirewallScanner.getLayer();
+        return getCurrentLayerPosition() <= lastFirewallScanner.getLayer();
     }
 
 
     public void nextPicoSecond() {
-        FirewallScanner firewallScanner = layerToFirewallScannerMap.get(currentLayerPosition);
-        if (isPacketScanned(firewallScanner)) {
+        FirewallScanner firewallScanner = layerToFirewallScannerMap.get(getCurrentLayerPosition());
+        if (isPacketScanned()) {
             severitySum += firewallScanner.getSeverity();
         }
-        currentLayerPosition++;
+        picoseconds++;
         layerToFirewallScannerMap.values().forEach(FirewallScanner::nextScanStep);
     }
 
-    private boolean isPacketScanned(FirewallScanner firewallScanner) {
+
+    private boolean isPacketScanned() {
+        FirewallScanner firewallScanner = layerToFirewallScannerMap.get(getCurrentLayerPosition());
         return firewallScanner != null && firewallScanner.getPosition() == 0;
     }
 
@@ -74,14 +103,27 @@ public class PacketScanners {
     }
 
     public int getCurrentLayerPosition() {
-        return currentLayerPosition;
+        return picoseconds - packetDelay;
+    }
+
+
+    public void setPacketDelay(int packetDelay) {
+        this.packetDelay = packetDelay;
+    }
+
+    public int getPacketDelay() {
+        return packetDelay;
+    }
+
+    public int getPicoseconds() {
+        return picoseconds;
     }
 
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("Picosecond ").append(currentLayerPosition).append(":\n");
+        sb.append("Picosecond ").append(picoseconds).append(":\n");
         int lastLayerWithFirewallScanner = layerToFirewallScannerMap.lastKey();
         for (int layer = 0; layer <= lastLayerWithFirewallScanner; layer++) {
             sb.append(" ").append(layer).append("  ");
@@ -93,7 +135,7 @@ public class PacketScanners {
             for (int layer = 0; layer <= lastLayerWithFirewallScanner; layer++) {
                 FirewallScanner firewallScanner = layerToFirewallScannerMap.get(layer);
                 if (firewallScanner != null) {
-                    boolean isCurrentLayerAtRange0 = layer == currentLayerPosition && range == 0;
+                    boolean isCurrentLayerAtRange0 = layer == getCurrentLayerPosition() && range == 0;
                     if (isCurrentLayerAtRange0 && firewallScanner.getPosition() == 0) {
                         sb.append("(S) ");
                     } else if (isCurrentLayerAtRange0) {
@@ -105,7 +147,7 @@ public class PacketScanners {
                     } else {
                         sb.append("    ");
                     }
-                } else if (range == 0 && layer == currentLayerPosition) {
+                } else if (range == 0 && layer == getCurrentLayerPosition()) {
                     sb.append("(.) ");
                 } else if (range == 0) {
                     sb.append("... ");

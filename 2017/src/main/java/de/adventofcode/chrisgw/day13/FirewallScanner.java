@@ -41,6 +41,12 @@ public class FirewallScanner {
     }
 
 
+    public void reset() {
+        position = 0;
+        scanDirection = ScanDirection.DOWN;
+    }
+
+
     public int getSeverity() {
         return layer * range;
     }
