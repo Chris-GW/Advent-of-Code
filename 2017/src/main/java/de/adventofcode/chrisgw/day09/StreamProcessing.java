@@ -109,6 +109,37 @@ public class StreamProcessing {
     }
 
 
+    public static int countGarbageCharectersScoreForTokens(String charaterGarbageStream) {
+        int characterGarbage = 0;
+        boolean isEscaped = false;
+        boolean isGarbage = false;
+
+        for (int i = 0; i < charaterGarbageStream.length(); i++) {
+            char currentLetter = charaterGarbageStream.charAt(i);
+            if (isEscaped) {
+                isEscaped = false;
+                continue;
+            }
+            isEscaped = currentLetter == '!';
+
+            if (isGarbage) {
+                isGarbage = currentLetter != '>';
+                if (!isEscaped && isGarbage) {
+                    characterGarbage++;
+                }
+
+            } else if (currentLetter == '<') {
+                isGarbage = true;
+
+            } else {
+                // ignore garbage letter
+            }
+        }
+
+        return characterGarbage;
+    }
+
+
     public static List<Token> tokenizeCharacterGarbageStream(String charaterGarbageStream) {
         return CharacterGarbageLexer.tokenizeCharacterGarbageStream(charaterGarbageStream);
     }
