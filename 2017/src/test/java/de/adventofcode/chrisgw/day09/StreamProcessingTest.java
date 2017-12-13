@@ -3,12 +3,10 @@ package de.adventofcode.chrisgw.day09;
 import de.adventofcode.chrisgw.TestUtils;
 import de.adventofcode.chrisgw.day09.CharacterGarbageLexer.Token;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static de.adventofcode.chrisgw.day09.CharacterGarbageLexer.TokenType.*;
 
@@ -265,6 +263,19 @@ public class StreamProcessingTest {
 
         Assert.assertEquals("Expected group score", expectedGroupScore, groupScore);
     }
+
+    @Test
+    public void simple_myTask() {
+        String classpathResource = "/day09/StreamProcessing_chrisgw.txt";
+        String charaterGarbageStream = TestUtils.readAllLinesOfClassPathResource(classpathResource).get(0);
+        int expectedGroupScore = 21037;
+
+        System.out.println(charaterGarbageStream);
+        int groupScore = StreamProcessing.countGroupScoreForTokens(charaterGarbageStream);
+
+        Assert.assertEquals("Expected group score", expectedGroupScore, groupScore);
+    }
+
 
 
     private void printTokens(List<Token> tokens) {

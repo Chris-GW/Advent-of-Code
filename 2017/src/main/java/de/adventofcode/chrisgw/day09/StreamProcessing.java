@@ -83,7 +83,7 @@ public class StreamProcessing {
         for (int i = 0; i < charaterGarbageStream.length(); i++) {
             char currentLetter = charaterGarbageStream.charAt(i);
             if (isEscaped) {
-                isEscaped = currentLetter == '!';
+                isEscaped = false;
                 continue;
             }
             isEscaped = currentLetter == '!';
@@ -125,7 +125,6 @@ public class StreamProcessing {
                 groupDeth--;
             }
         }
-
         return groupScoreSum;
     }
 
