@@ -46,4 +46,52 @@ public class KnotHashTest {
                 firstTwoElementProduct);
     }
 
+
+    // --- part 2
+
+    @Test
+    public void knotHash_part2_emptyString() {
+        String input = "";
+        String expectedKnotHash = "a2582a3a0e66e6e86e3812dcb672a272";
+
+        String knotHash = KnotHash.calculateKnotHash(input, 64);
+        Assert.assertEquals("Expect knotHash for input: " + input, expectedKnotHash, knotHash);
+    }
+
+    @Test
+    public void knotHash_part2_AoC_2017() {
+        String input = "AoC 2017";
+        String expectedKnotHash = "33efeb34ea91902bb2f59c9920caa6cd";
+
+        String knotHash = KnotHash.calculateKnotHash(input, 64);
+        Assert.assertEquals("Expect knotHash for input: " + input, expectedKnotHash, knotHash);
+    }
+
+    @Test
+    public void knotHash_part2_1_2_3() {
+        String input = "1,2,3";
+        String expectedKnotHash = "3efbe78a8d82f29979031a4aa0b16a9d";
+
+        String knotHash = KnotHash.calculateKnotHash(input, 64);
+        Assert.assertEquals("Expect knotHash for input: " + input, expectedKnotHash, knotHash);
+    }
+
+    @Test
+    public void knotHash_part2_1_2_4() {
+        String input = "1,2,4";
+        String expectedKnotHash = "63960835bcdc130f0b66d7ff4f6a5a8e";
+
+        String knotHash = KnotHash.calculateKnotHash(input, 64);
+        Assert.assertEquals("Expect knotHash for input: " + input, expectedKnotHash, knotHash);
+    }
+
+    @Test
+    public void knotHash_part2_myTask() {
+        String input = "199,0,255,136,174,254,227,16,51,85,1,2,22,17,7,192";
+        String expectedKnotHash = "a9d0e68649d0174c8756a59ba21d4dc6";
+
+        String knotHash = KnotHash.calculateKnotHash(input, 64);
+        Assert.assertEquals("Expect knotHash for input: " + input, expectedKnotHash, knotHash);
+    }
+
 }

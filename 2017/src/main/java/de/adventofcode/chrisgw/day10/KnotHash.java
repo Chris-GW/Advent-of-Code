@@ -1,9 +1,6 @@
 package de.adventofcode.chrisgw.day10;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 
 /**
@@ -77,6 +74,70 @@ import java.util.ListIterator;
  * 0 to 255) and the sequence of lengths in your puzzle input. Once this
  * process is complete, what is the result of multiplying the first two
  * numbers in the list?
+ * --- Part Two ---
+ * The logic you've constructed forms a single round of the Knot Hash
+ * algorithm; running the full thing requires many of these rounds. Some input
+ * and output processing is also required.
+ *
+ * First, from now on, your input should be taken not as a list of numbers,
+ * but as a string of bytes instead. Unless otherwise specified, convert
+ * characters to bytes using their ASCII codes. This will allow you to handle
+ * arbitrary ASCII strings, and it also ensures that your input lengths are
+ * never larger than 255. For example, if you are given 1,2,3, you should
+ * convert it to the ASCII codes for each character: 49,44,50,44,51.
+ *
+ * Once you have determined the sequence of lengths to use, add the following
+ * lengths to the end of the sequence: 17, 31, 73, 47, 23. For example, if you
+ * are given 1,2,3, your final sequence of lengths should be
+ * 49,44,50,44,51,17,31,73,47,23 (the ASCII codes from the input string
+ * combined with the standard length suffix values).
+ *
+ * Second, instead of merely running one round like you did above, run a total
+ * of 64 rounds, using the same length sequence in each round. The current
+ * position and skip size should be preserved between rounds. For example, if
+ * the previous example was your first round, you would start your second
+ * round with the same length sequence (3, 4, 1, 5, 17, 31, 73, 47, 23, now
+ * assuming they came from ASCII codes and include the suffix), but start with
+ * the previous round's current position (4) and skip size (4).
+ *
+ * Once the rounds are complete, you will be left with the numbers from 0 to
+ * 255 in some order, called the sparse hash. Your next task is to reduce
+ * these to a list of only 16 numbers called the dense hash. To do this, use
+ * numeric bitwise XOR to combine each consecutive block of 16 numbers in the
+ * sparse hash (there are 16 such blocks in a list of 256 numbers). So, the
+ * first element in the dense hash is the first sixteen elements of the sparse
+ * hash XOR'd together, the second element in the dense hash is the second
+ * sixteen elements of the sparse hash XOR'd together, etc.
+ *
+ * For example, if the first sixteen elements of your sparse hash are as shown
+ * below, and the XOR operator is ^, you would calculate the first output
+ * number like this:
+ *
+ * 65 ^ 27 ^ 9 ^ 1 ^ 4 ^ 3 ^ 40 ^ 50 ^ 91 ^ 7 ^ 6 ^ 0 ^ 2 ^ 5 ^ 68 ^ 22 = 64
+ *
+ * Perform this operation on each of the sixteen blocks of sixteen numbers in
+ * your sparse hash to determine the sixteen numbers in your dense hash.
+ *
+ * Finally, the standard way to represent a Knot Hash is as a single
+ * hexadecimal string; the final output is the dense hash in hexadecimal
+ * notation. Because each number in your dense hash will be between 0 and 255
+ * (inclusive), always represent each number as two hexadecimal digits
+ * (including a leading zero as necessary). So, if your first three numbers
+ * are 64, 7, 255, they correspond to the hexadecimal numbers 40, 07, ff, and
+ * so the first six characters of the hash would be 4007ff. Because every Knot
+ * Hash is sixteen such numbers, the hexadecimal representation is always 32
+ * hexadecimal digits (0-f) long.
+ *
+ * Here are some example hashes:
+ *
+ * - The empty string becomes a2582a3a0e66e6e86e3812dcb672a272.
+ * - AoC 2017 becomes 33efeb34ea91902bb2f59c9920caa6cd.
+ * - 1,2,3 becomes 3efbe78a8d82f29979031a4aa0b16a9d.
+ * - 1,2,4 becomes 63960835bcdc130f0b66d7ff4f6a5a8e.
+ *
+ * Treating your puzzle input as a string of ASCII characters, what is the
+ * Knot Hash of your puzzle input? Ignore any leading or trailing whitespace
+ * you might encounter.
  * </pre>
  */
 public class KnotHash {
@@ -94,14 +155,75 @@ public class KnotHash {
     }
 
 
+    public static String calculateKnotHash(String input, int rounds) {
+        System.out.println("calculateKnotHash for input: " + input);
+        List<Integer> lengthsFromAscii = getLengthsOfInput(input);
+        System.out.println("using lengths: " + lengthsFromAscii);
+        List<Integer> sparseHash = calculateSparseHash(lengthsFromAscii, rounds);
+        System.out.println("calculated sparse Hash: " + sparseHash);
+        List<Integer> denseHash = calculateDenseHash(sparseHash);
+        System.out.println("calculated dense Hash: " + denseHash);
+        String denseHashAsHexadecimal = toHexadicimal(denseHash);
+        System.out.println("dense Hash as hexadecimal: " + denseHashAsHexadecimal);
+        return denseHashAsHexadecimal;
+    }
+
+    private static List<Integer> LENGTHS_SUFFIX = Arrays.asList(17, 31, 73, 47, 23);
+
+    private static List<Integer> getLengthsOfInput(String input) {
+        List<Integer> lengthsFromAscii = new ArrayList<>();
+        for (int i = 0; i < input.length(); i++) {
+            int length = input.charAt(i);
+            lengthsFromAscii.add(length);
+        }
+        lengthsFromAscii.addAll(LENGTHS_SUFFIX);
+        return lengthsFromAscii;
+    }
+
+    private static List<Integer> calculateSparseHash(List<Integer> lengths, int rounds) {
+        KnotHash knotHash = new KnotHash(255);
+        for (int i = 1; i <= rounds; i++) {
+            knotHash.step(lengths);
+        }
+        return knotHash.getValues();
+    }
+
+    private static List<Integer> calculateDenseHash(List<Integer> sparseHash) {
+        List<Integer> denseHash = new ArrayList<>(16);
+        //        sparseHash = Arrays.asList(65, 27, 9, 1, 4, 3, 40, 50, 91, 7, 6, 0, 2, 5, 68, 22);
+        for (int i = 0; i < sparseHash.size(); i++) {
+            int numericXorValue = sparseHash.get(i);
+            for (int k = 1; k < 16 && i + k < sparseHash.size(); k++) {
+                numericXorValue ^= sparseHash.get(i + k);
+            }
+            i += 15;
+            denseHash.add(numericXorValue);
+        }
+        return denseHash;
+    }
+
+    private static String toHexadicimal(List<Integer> denseHash) {
+        //        denseHash = Arrays.asList(64, 7, 255);
+        StringBuilder hexadecimal = new StringBuilder();
+        for (int hash : denseHash) {
+            String hexString = Integer.toHexString(hash);
+            if (hash < 16) {
+                hexadecimal.append(0);
+            }
+            hexadecimal.append(hexString);
+        }
+        return hexadecimal.toString();
+    }
+
+
     public int multiplyFirstTwoElements() {
         return values.get(0) * values.get(1);
     }
 
     public void step(int length) {
-        System.out.println(" before stept: " + this);
+        //        System.out.println(" before stept: " + this);
         SubList subList = new SubList(currentPosition, length);
-        System.out.println("using subList: " + subList);
+        //        System.out.println("using subList: " + subList);
         List<Integer> reverseSubList = subList.getReverseSubList();
         int cursor = currentPosition;
         for (int i = 0; i < reverseSubList.size(); i++) {
@@ -110,10 +232,10 @@ public class KnotHash {
             }
             values.set(cursor++, reverseSubList.get(i));
         }
-        System.out.println("after reverse: " + subList);
+        //        System.out.println("after reverse: " + subList);
         updateCurrentPosition(length);
-        System.out.println("   after step: " + this);
-        System.out.println();
+        //        System.out.println("   after step: " + this);
+        //        System.out.println();
     }
 
     private void updateCurrentPosition(int length) {
@@ -213,67 +335,6 @@ public class KnotHash {
             }
             sb.deleteCharAt(sb.length() - 1);
             return sb.toString();
-        }
-
-    }
-
-
-    private static class LoopingListIterator<T> implements ListIterator<T> {
-
-        private List<T> list;
-        private int currentPosition;
-
-
-        public LoopingListIterator(List<T> list) {
-            this.list = list;
-        }
-
-
-        @Override
-        public boolean hasNext() {
-            return true;
-        }
-
-        @Override
-        public T next() {
-            currentPosition = previousIndex();
-            return list.get(currentPosition);
-        }
-
-        @Override
-        public boolean hasPrevious() {
-            return true;
-        }
-
-        @Override
-        public T previous() {
-            currentPosition = nextIndex();
-            return list.get(currentPosition);
-        }
-
-        @Override
-        public int nextIndex() {
-            return 0;
-        }
-
-        @Override
-        public int previousIndex() {
-            return 0;
-        }
-
-        @Override
-        public void remove() {
-            list.remove(currentPosition);
-        }
-
-        @Override
-        public void set(T t) {
-            list.set(currentPosition, t);
-        }
-
-        @Override
-        public void add(T t) {
-            list.add(currentPosition, t);
         }
 
     }
