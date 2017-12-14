@@ -155,16 +155,20 @@ public class KnotHash {
     }
 
 
+    public static String calculateKnotHash(String input) {
+        return calculateKnotHash(input, 64);
+    }
+
     public static String calculateKnotHash(String input, int rounds) {
-        System.out.println("calculateKnotHash for input: " + input);
+        //        System.out.println("calculateKnotHash for input: " + input);
         List<Integer> lengthsFromAscii = getLengthsOfInput(input);
-        System.out.println("using lengths: " + lengthsFromAscii);
+        //        System.out.println("using lengths: " + lengthsFromAscii);
         List<Integer> sparseHash = calculateSparseHash(lengthsFromAscii, rounds);
-        System.out.println("calculated sparse Hash: " + sparseHash);
+        //        System.out.println("calculated sparse Hash: " + sparseHash);
         List<Integer> denseHash = calculateDenseHash(sparseHash);
-        System.out.println("calculated dense Hash: " + denseHash);
+        //        System.out.println("calculated dense Hash: " + denseHash);
         String denseHashAsHexadecimal = toHexadicimal(denseHash);
-        System.out.println("dense Hash as hexadecimal: " + denseHashAsHexadecimal);
+        //        System.out.println("dense Hash as hexadecimal: " + denseHashAsHexadecimal);
         return denseHashAsHexadecimal;
     }
 
