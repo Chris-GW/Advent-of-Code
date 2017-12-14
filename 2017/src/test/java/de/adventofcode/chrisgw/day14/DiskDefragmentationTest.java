@@ -43,7 +43,6 @@ public class DiskDefragmentationTest {
         Assert.assertEquals("Expect used space", expectedUsedSpaceCount, usedSpaceCount);
     }
 
-
     @Test
     public void diskDefragmentation_myTask() {
         String diskKey = "wenycdww";
@@ -57,6 +56,33 @@ public class DiskDefragmentationTest {
     }
 
 
+    // --- part 2
+
+    @Test
+    public void diskDefragmentation_part2_example() {
+        String diskKey = "flqrgnkx";
+        int expectedDiskRegionCount = 1242;
+
+        DiskDefragmentation diskDefragmentation = new DiskDefragmentation(diskKey);
+        int diskSpaceRegionCount = diskDefragmentation.countDiskSpaceRegions();
+        System.out.println(diskDefragmentation);
+
+        Assert.assertEquals("Expect disk space region count", expectedDiskRegionCount, diskSpaceRegionCount);
+    }
+
+    @Test
+    public void diskDefragmentation_part2_myTask() {
+        String diskKey = "wenycdww";
+        int expectedDiskSpaceRegionCount = 1128;
+
+        DiskDefragmentation diskDefragmentation = new DiskDefragmentation(diskKey);
+        int diskSpaceRegionCount = diskDefragmentation.countDiskSpaceRegions();
+        System.out.println(diskDefragmentation);
+
+        Assert.assertEquals("Expect disk space region count", expectedDiskSpaceRegionCount, diskSpaceRegionCount);
+    }
+
+
     private boolean[] diskUsageStringToBooleans(String diskUsageStr) {
         boolean[] usage = new boolean[diskUsageStr.length()];
         for (int i = 0; i < diskUsageStr.length(); i++) {
@@ -64,5 +90,6 @@ public class DiskDefragmentationTest {
         }
         return usage;
     }
+
 
 }

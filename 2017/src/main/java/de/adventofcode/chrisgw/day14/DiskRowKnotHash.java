@@ -66,7 +66,6 @@ public class DiskRowKnotHash {
         return usedSpaceCount;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -94,7 +93,7 @@ public class DiskRowKnotHash {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%-12s = ", diskRowKnotHash, row));
+        sb.append(String.format("%-12s = ", diskRowKnotHash));
         for (boolean used : diskRowUsage) {
             if (used) {
                 sb.append('#');
