@@ -18,5 +18,13 @@ public class TestUtils {
         }
     }
 
+    public static String readFirstLineOfClassPathResource(String classpathResource) {
+        List<String> allLines = readAllLinesOfClassPathResource(classpathResource);
+        if (allLines.size() < 1) {
+            throw new IllegalStateException("Expect classpath resource with a first line");
+        }
+        return allLines.get(0);
+    }
+
 
 }
