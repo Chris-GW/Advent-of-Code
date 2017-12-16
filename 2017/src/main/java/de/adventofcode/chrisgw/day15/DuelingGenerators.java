@@ -60,4 +60,42 @@ package de.adventofcode.chrisgw.day15;
  */
 public class DuelingGenerators {
 
+    private DuelingGenerator duelingGeneratorA;
+    private DuelingGenerator duelingGeneratorB;
+
+    private long matchCount = 0;
+
+
+    public DuelingGenerators(DuelingGenerator duelingGeneratorA, DuelingGenerator duelingGeneratorB) {
+        this.duelingGeneratorA = duelingGeneratorA;
+        this.duelingGeneratorB = duelingGeneratorB;
+    }
+
+    public static DuelingGenerators createDuelingGenerators(long startValueA, long startValueB) {
+        DuelingGenerator duelingGeneratorA = DuelingGenerator.newDuelingGeneratorA(startValueA);
+        DuelingGenerator duelingGeneratorB = DuelingGenerator.newDuelingGeneratorB(startValueB);
+        return new DuelingGenerators(duelingGeneratorA, duelingGeneratorB);
+    }
+
+
+    public boolean nextRound() {
+        int nextValueA = duelingGeneratorA.generateNextValue();
+        int nextValueB = duelingGeneratorB.generateNextValue();
+        if (isMatch(nextValueA, nextValueB)) {
+            matchCount++;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isMatch(int nextValueA, int nextValueB) {
+        int a_xor_b_and_16_lowest_bit = (nextValueA ^ nextValueB) & 0b0000_0000_0000_0000_1111_1111_1111_1111;
+        return a_xor_b_and_16_lowest_bit == 0b0000_0000_0000_0000_0000_0000_0000_0000;
+    }
+
+
+    public long getMatchCount() {
+        return matchCount;
+    }
+
 }
