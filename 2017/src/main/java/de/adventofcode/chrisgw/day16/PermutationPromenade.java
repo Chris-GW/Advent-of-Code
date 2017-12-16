@@ -1,8 +1,6 @@
 package de.adventofcode.chrisgw.day16;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,6 +44,10 @@ public class PermutationPromenade {
 
 
     public PermutationPromenade(int memberCound) {
+        reset(memberCound);
+    }
+
+    private void reset(int memberCound) {
         nameToDancingProgramMap = new HashMap<>(memberCound);
         dancingProgramLine = new DancingProgram[memberCound];
 
@@ -58,11 +60,37 @@ public class PermutationPromenade {
     }
 
 
-    public void executeDanceMove(String danceMoveDescription) {
-        parseDanceMove(danceMoveDescription).executeDanceMove();
+    public void danceWithRepetions(List<DanceMove> danceMoves, long repetions) {
+        Set<String> alreadyDancedPosition = new LinkedHashSet<>();
+        alreadyDancedPosition.add(this.getDancingProgramLineAsString());
+        boolean hasCycle = false;
+        for (long repetion = 0; repetion < repetions; repetion++) {
+            danceMoves.forEach(this::executeDanceMove);
+            String dancingProgramLineAsString = getDancingProgramLineAsString();
+            boolean newDancePosition = alreadyDancedPosition.add(dancingProgramLineAsString);
+            if (!newDancePosition) {
+                hasCycle = true;
+                break;
+            }
+        }
+
+        if (hasCycle) {
+            long neededDances = repetions % alreadyDancedPosition.size();
+            for (int i = 0; i < neededDances; i++) {
+                danceMoves.forEach(this::executeDanceMove);
+            }
+        }
     }
 
-    private DanceMove parseDanceMove(String danceMoveDescription) {
+    public void executeDanceMove(String danceMoveDescription) {
+        executeDanceMove(parseDanceMove(danceMoveDescription));
+    }
+
+    public void executeDanceMove(DanceMove danceMove) {
+        danceMove.executeDanceMove();
+    }
+
+    public DanceMove parseDanceMove(String danceMoveDescription) {
         Matcher spinMoveMatcher = SPIN_MOVE_PATTERN.matcher(danceMoveDescription);
         if (spinMoveMatcher.matches()) {
             int targetSpinCount = Integer.parseInt(spinMoveMatcher.group(1));
@@ -77,18 +105,20 @@ public class PermutationPromenade {
         Matcher exchangeMoveMatcher = EXCHANGE_MOVE_PATTERN.matcher(danceMoveDescription);
         if (exchangeMoveMatcher.matches()) {
             int dancingProgramPosition = Integer.parseInt(exchangeMoveMatcher.group(1));
-            DancingProgram dancingProgram = dancingProgramLine[dancingProgramPosition];
             int withDancingPosition = Integer.parseInt(exchangeMoveMatcher.group(2));
-            return () -> dancingProgram.exchange(withDancingPosition);
+            return () -> {
+                DancingProgram dancingProgram = dancingProgramLine[dancingProgramPosition];
+                dancingProgram.exchange(withDancingPosition);
+            };
         }
 
         Matcher partnerMoveMatcher = PARTNER_MOVE_PATTERN.matcher(danceMoveDescription);
         if (partnerMoveMatcher.matches()) {
             String programName = partnerMoveMatcher.group(1);
             String withOtherProgramName = partnerMoveMatcher.group(2);
+            DancingProgram dancingProgram = nameToDancingProgramMap.get(programName);
+            DancingProgram withDancingProgram = nameToDancingProgramMap.get(withOtherProgramName);
             return () -> {
-                DancingProgram dancingProgram = nameToDancingProgramMap.get(programName);
-                DancingProgram withDancingProgram = nameToDancingProgramMap.get(withOtherProgramName);
                 dancingProgram.partner(withDancingProgram);
             };
         }
