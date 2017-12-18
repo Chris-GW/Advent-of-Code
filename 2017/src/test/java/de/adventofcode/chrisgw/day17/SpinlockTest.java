@@ -21,7 +21,7 @@ public class SpinlockTest {
         spinlock.followSpin(step, spins);
         System.out.println(spinlock);
 
-        Assert.assertEquals("expect spin values",expectedSpinValues, spinlock.getValues());
+        Assert.assertEquals("expect spin values", expectedSpinValues, spinlock.getValues());
     }
 
     @Test
@@ -31,10 +31,11 @@ public class SpinlockTest {
         int expectedValue = 638;
 
         Spinlock spinlock = new Spinlock();
-        int valueAfterCurrent = spinlock.followSpin(step, spins);
+        spinlock.followSpin(step, spins);
+        int valueAfterCurrentPosition = spinlock.getValueAfterCurrentPosition();
         System.out.println(spinlock);
 
-        Assert.assertEquals("expect spin values",expectedValue, valueAfterCurrent);
+        Assert.assertEquals("expect spin values", expectedValue, valueAfterCurrentPosition);
     }
 
     @Test
@@ -44,10 +45,36 @@ public class SpinlockTest {
         int expectedValue = 725;
 
         Spinlock spinlock = new Spinlock();
-        int valueAfterCurrent = spinlock.followSpin(step, spins);
+        spinlock.followSpin(step, spins);
         System.out.println(spinlock);
+        int valueAfterCurrentPosition = spinlock.getValueAfterCurrentPosition();
 
-        Assert.assertEquals("expect spin values",expectedValue, valueAfterCurrent);
+        Assert.assertEquals("expect spin values", expectedValue, valueAfterCurrentPosition);
+    }
+
+
+    // --- part 2
+
+    @Test
+    public void spinlock_part2_example_step_3() {
+        int step = 3;
+        List<Integer> expectedValues = Arrays.asList(1, 2, 2, 2, 5, 5, 5, 5, 9);
+
+        for (int i = 1; i <= expectedValues.size(); i++) {
+            int value = Spinlock.calculateValueAfter0(step, i);
+            int expectedValue = expectedValues.get(i - 1);
+            Assert.assertEquals("expect value after 0", expectedValue, value);
+        }
+    }
+
+    @Test
+    public void spinlock_part2_myTask_step_329() {
+        int step = 329;
+        int spins = 50_000_000;
+        int expectedValue = 27361412;
+
+        int valueAfter0 = Spinlock.calculateValueAfter0(step, spins);
+        Assert.assertEquals("expect spin values", expectedValue, valueAfter0);
     }
 
 
