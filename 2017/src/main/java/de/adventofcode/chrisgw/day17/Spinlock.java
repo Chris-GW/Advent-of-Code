@@ -93,16 +93,31 @@ public class Spinlock {
     }
 
 
-    public int followSpin(int stepSize, int spins) {
+    public static int calculateValueAfter0(int stepSize, int spins) {
+        int valueAfter0 = 0;
+        int currentPosition = 0;
+
+        for (int spin = 1; spin <= spins; spin++) {
+            int neededSteps = stepSize % spin;
+            currentPosition += neededSteps;
+            if (currentPosition >= spin) {
+                currentPosition -= spin;
+            }
+            currentPosition++;
+
+            if (currentPosition == 1) {
+                valueAfter0 = spin;
+            }
+        }
+        return valueAfter0;
+    }
+
+
+    public void followSpin(int stepSize, int spins) {
         for (int i = 0; i < spins; i++) {
             nextSpin(stepSize);
             //            System.out.println(this);
         }
-        int valueAfterCurrentIndex = currentPosition + 1;
-        if (valueAfterCurrentIndex >= values.size()) {
-            valueAfterCurrentIndex = 0;
-        }
-        return values.get(valueAfterCurrentIndex);
     }
 
     private void nextSpin(int stepSize) {
@@ -114,6 +129,27 @@ public class Spinlock {
             currentPosition -= values.size();
         }
         values.add(++currentPosition, nextValue);
+    }
+
+
+    public int getValueAfterCurrentPosition() {
+        int valueAfterCurrentIndex = currentPosition + 1;
+        if (valueAfterCurrentIndex >= values.size()) {
+            valueAfterCurrentIndex = 0;
+        }
+        return values.get(valueAfterCurrentIndex);
+    }
+
+    public int getValueAfter(int value) {
+        boolean foundValue = false;
+        for (int val : values) {
+            if (val == value) {
+                foundValue = true;
+            } else if (foundValue) {
+                return val;
+            }
+        }
+        return values.get(0);
     }
 
 
