@@ -46,4 +46,46 @@ public class SeriesOfTubesTest {
         Assert.assertEquals("expect letters", expectedLetters, letters);
     }
 
+
+    // --- part 2
+
+    @Test
+    public void seriesOfTubes_part2_example() {
+        // @formatter:off
+        String network = ""
+                + "     |          \n"
+                + "     |  +--+    \n"
+                + "     A  |  C    \n"
+                + " F---|----E|--+ \n"
+                + "     |  |  |  D \n"
+                + "     +B-+  +--+ \n";
+        // @formatter:on
+        int expectedStepCount = 38;
+
+        SeriesOfTubes seriesOfTubes = new SeriesOfTubes(network);
+        for (int i = 0; !seriesOfTubes.isAtNetworkEnd(); i++) {
+            seriesOfTubes.followNextConnectionTillEnd();
+            System.out.println(seriesOfTubes);
+        }
+        int stepCount = seriesOfTubes.getStepCount();
+
+        Assert.assertEquals("expect step count", expectedStepCount, stepCount);
+    }
+
+
+    @Test
+    public void seriesOfTubes_part2_myTask() {
+        String classpathResource = "/day19/SeriesOfTubes_chrisgw.txt";
+        String network = String.join("\n", TestUtils.readAllLinesOfClassPathResource(classpathResource));
+        int expectedStepCount = 1;
+
+        SeriesOfTubes seriesOfTubes = new SeriesOfTubes(network);
+        for (int i = 0; !seriesOfTubes.isAtNetworkEnd(); i++) {
+            seriesOfTubes.followNextConnectionTillEnd();
+        }
+        int stepCount = seriesOfTubes.getStepCount();
+
+        Assert.assertEquals("expect step count", expectedStepCount, stepCount);
+    }
+
 }
