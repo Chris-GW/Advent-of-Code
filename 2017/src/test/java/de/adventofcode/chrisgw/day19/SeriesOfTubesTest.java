@@ -77,7 +77,7 @@ public class SeriesOfTubesTest {
     public void seriesOfTubes_part2_myTask() {
         String classpathResource = "/day19/SeriesOfTubes_chrisgw.txt";
         String network = String.join("\n", TestUtils.readAllLinesOfClassPathResource(classpathResource));
-        int expectedStepCount = 1;
+        int expectedStepCount = 16100;
 
         SeriesOfTubes seriesOfTubes = new SeriesOfTubes(network);
         for (int i = 0; !seriesOfTubes.isAtNetworkEnd(); i++) {

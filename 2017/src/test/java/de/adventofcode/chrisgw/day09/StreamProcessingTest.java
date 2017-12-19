@@ -246,26 +246,8 @@ public class StreamProcessingTest {
         Assert.assertEquals("Expected group score", expectedGroupScore, groupScore);
     }
 
-
     @Test
     public void tokenizeCharacterGarbageStream_myTask() {
-        String classpathResource = "/day09/StreamProcessing_chrisgw.txt";
-        String charaterGarbageStream = TestUtils.readAllLinesOfClassPathResource(classpathResource).get(0);
-        int expectedGroupScore = 0;
-
-        System.out.println(charaterGarbageStream);
-        List<Token> tokens = StreamProcessing.tokenizeCharacterGarbageStream(charaterGarbageStream);
-        printTokens(tokens);
-        int groupScore = StreamProcessing.countGroupScoreForTokens(tokens);
-
-
-       tokens.stream().filter(token -> token.type.equals(GARBAGE)).forEachOrdered(System.out::println);
-
-        Assert.assertEquals("Expected group score", expectedGroupScore, groupScore);
-    }
-
-    @Test
-    public void simple_myTask() {
         String classpathResource = "/day09/StreamProcessing_chrisgw.txt";
         String charaterGarbageStream = TestUtils.readAllLinesOfClassPathResource(classpathResource).get(0);
         int expectedGroupScore = 21037;
@@ -277,12 +259,13 @@ public class StreamProcessingTest {
     }
 
 
+    // --- part 2
 
     @Test
-    public void simple_myTask_part2() {
+    public void tokenizeCharacterGarbageStream_myTask_part2() {
         String classpathResource = "/day09/StreamProcessing_chrisgw.txt";
         String charaterGarbageStream = TestUtils.readAllLinesOfClassPathResource(classpathResource).get(0);
-        int expectedGarbageCount = 21037;
+        int expectedGarbageCount = 9495;
 
         System.out.println(charaterGarbageStream);
         int garbageCount = StreamProcessing.countGarbageCharectersScoreForTokens(charaterGarbageStream);

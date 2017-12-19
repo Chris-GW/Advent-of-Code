@@ -34,7 +34,7 @@ public class DuetTest {
         Duet duet = new Duet(duetCommands);
         for (int i = 0; duet.hasNextDuetCommand(); i++) {
             DuetCommand duetCommand = duet.nextDuetCommand();
-            System.out.println(duetCommand);
+            System.out.println(duetCommand.toString(duet));
             long registerValueA = duet.getRegisterValue('a');
             if (i == 0) {
                 Assert.assertEquals("expect register value in step " + i, (1), registerValueA);
@@ -66,13 +66,11 @@ public class DuetTest {
         List<DuetCommand> duetCommands = Arrays.stream(splittedCommands)
                 .map(Duet::parseDuetCommand)
                 .collect(Collectors.toList());
-        long expectedRecoverFrequency = 862;
+        long expectedRecoverFrequency = 8600;
 
         Duet duet = new Duet(duetCommands);
         for (int i = 0; duet.hasNextDuetCommand(); i++) {
-            DuetCommand duetCommand = duet.nextDuetCommand();
-            System.out.println(duet);
-            System.out.println();
+            duet.nextDuetCommand();
         }
         Assert.assertFalse("no more commands", duet.hasNextDuetCommand());
 
