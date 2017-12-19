@@ -78,9 +78,9 @@ import java.util.regex.Pattern;
  */
 public class Duet {
 
-    private Map<Character, Integer> registerMap;
+    private Map<Character, Long> registerMap;
 
-    private List<Integer> playedSounds;
+    private List<Long> playedSounds;
 
     private List<DuetCommand> duetCommands;
     private int duetCommandPointer;
@@ -151,11 +151,11 @@ public class Duet {
         return Pattern.compile(command + "\\s+(-?\\d+|[a-z])\\s+(-?\\d+|[a-z])", Pattern.CASE_INSENSITIVE);
     }
 
-    public int getRegisterValue(char register) {
-        return registerMap.computeIfAbsent(register, (r) -> 0);
+    public long getRegisterValue(char register) {
+        return registerMap.computeIfAbsent(register, (r) -> 0L);
     }
 
-    public void setRegisterValue(char targetRegister, int registerValue) {
+    public void setRegisterValue(char targetRegister, long registerValue) {
         registerMap.put(targetRegister, registerValue);
     }
 
@@ -166,7 +166,7 @@ public class Duet {
     }
 
 
-    public void playSound(int frequenz) {
+    public void playSound(long frequenz) {
         playedSounds.add(frequenz);
     }
 
@@ -176,7 +176,7 @@ public class Duet {
         }
     }
 
-    public void jumpInstruction(int jump) {
+    public void jumpInstruction(long jump) {
         duetCommandPointer += jump - 1;
     }
 
@@ -191,12 +191,39 @@ public class Duet {
         return !executedRecoverOperation && duetCommandPointer < duetCommands.size();
     }
 
-    public int getRecoveredFrequency() {
+    public long getRecoveredFrequency() {
         return playedSounds.get(playedSounds.size() - 1);
     }
 
-    public List<Integer> getPlayedSounds() {
+    public List<Long> getPlayedSounds() {
         return playedSounds;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        DuetCommand currentDuetCommand = duetCommands.get(duetCommandPointer);
+        if (currentDuetCommand instanceof JumpRegisterDuetCommand) {
+            int from = Math.max(0, duetCommandPointer - 5);
+            int to = duetCommandPointer + 5;
+
+            for (int i = from; i < duetCommands.size() && i < to; i++) {
+                DuetCommand duetCommand = duetCommands.get(i);
+                sb.append(i).append(": ");
+                if (i == duetCommandPointer) {
+                    sb.append("[").append(duetCommand).append(" = ").append(duetCommand.toString(this)).append("]");
+                } else {
+                    sb.append(duetCommand);
+                }
+                sb.append("\n");
+            }
+        } else {
+            sb.append(duetCommandPointer).append(": ");
+            sb.append(currentDuetCommand).append(" = ").append(currentDuetCommand.toString(this));
+        }
+
+        return sb.toString();
     }
 
 }

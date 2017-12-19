@@ -20,9 +20,14 @@ public class ModuloRegisterDuetCommand implements DuetCommand {
 
     @Override
     public void executeDuetCommand(Duet duet) {
-        int oldRegisterValue = targetRegister.getValue(duet);
-        int newRegisterValue = oldRegisterValue % quotientRegister.getValue(duet);
+        long oldRegisterValue = targetRegister.getValue(duet);
+        long newRegisterValue = oldRegisterValue % quotientRegister.getValue(duet);
         duet.setRegisterValue(targetRegister.getRegisterName(), newRegisterValue);
+    }
+
+    @Override
+    public String toString(Duet duet) {
+        return targetRegister.getValue(duet) + " % " + quotientRegister.getValue(duet);
     }
 
     @Override

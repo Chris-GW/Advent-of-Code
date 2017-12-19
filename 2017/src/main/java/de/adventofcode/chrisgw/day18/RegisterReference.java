@@ -12,9 +12,9 @@ public class RegisterReference {
     }
 
 
-    public int getValue(Duet duet) {
+    public long getValue(Duet duet) {
         if (isStaticValue()) {
-            return Integer.parseInt(registerReference);
+            return Long.parseLong(registerReference);
         } else {
             return duet.getRegisterValue(getRegisterName());
         }
