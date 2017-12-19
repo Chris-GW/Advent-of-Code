@@ -45,6 +45,32 @@ import static de.adventofcode.chrisgw.day19.SeriesOfTubes.MoveDirection.*;
  * What letters will it see (in the order it would see them) if it follows the
  * path? (The routing diagram is very wide; make sure you view it without line
  * wrapping.)
+ * --- Part Two ---
+ * The packet is curious how many steps it needs to go.
+ *
+ * For example, using the same routing diagram from the example above...
+ *
+ *     |
+ *     |  +--+
+ *     A  |  C
+ * F---|--|-E---+
+ *     |  |  |  D
+ *     +B-+  +--+
+ *
+ * ...the packet would go:
+ *
+ * - 6 steps down (including the first line at the top of the diagram).
+ * - 3 steps right.
+ * - 4 steps up.
+ * - 3 steps right.
+ * - 4 steps down.
+ * - 3 steps right.
+ * - 2 steps up.
+ * - 13 steps left (including the F it stops on).
+ *
+ * This would result in a total of 38 steps.
+ *
+ * How many steps does the packet need to go?
  * </pre>
  */
 public class SeriesOfTubes {
@@ -56,6 +82,7 @@ public class SeriesOfTubes {
     private MoveDirection moveDirection;
 
     private List<String> letters;
+    private int stepCount;
 
 
     public SeriesOfTubes(String networkStr) {
@@ -67,7 +94,9 @@ public class SeriesOfTubes {
         this.y = 0;
         this.x = findStartingPosition();
         this.moveDirection = DOWN;
+
         this.letters = new LinkedList<>();
+        this.stepCount = 1;
     }
 
     private int findStartingPosition() {
@@ -112,14 +141,16 @@ public class SeriesOfTubes {
 
     private void moveUpTillCorner() {
         do {
-            this.y--;
+            y--;
+            stepCount++;
             checkIfPassedLetter();
         } while (canContinueInMoveDirection());
     }
 
     private void moveDownTillCorner() {
         do {
-            this.y++;
+            y++;
+            stepCount++;
             checkIfPassedLetter();
         } while (canContinueInMoveDirection());
     }
@@ -127,14 +158,16 @@ public class SeriesOfTubes {
 
     private void moveRightTillCorner() {
         do {
-            this.x++;
+            x++;
+            stepCount++;
             checkIfPassedLetter();
         } while (canContinueInMoveDirection());
     }
 
     private void moveLeftTillCorner() {
         do {
-            this.x--;
+            x--;
+            stepCount++;
             checkIfPassedLetter();
         } while (canContinueInMoveDirection());
     }
@@ -237,6 +270,11 @@ public class SeriesOfTubes {
 
     public String getLettersAsString() {
         return String.join("", letters).toUpperCase();
+    }
+
+
+    public int getStepCount() {
+        return stepCount;
     }
 
 
