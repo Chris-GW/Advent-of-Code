@@ -17,8 +17,13 @@ public class PlaySoundDuetCommand implements DuetCommand {
 
     @Override
     public void executeDuetCommand(Duet duet) {
-        int registerValue = targetRegister.getValue(duet);
+        long registerValue = targetRegister.getValue(duet);
         duet.playSound(registerValue);
+    }
+
+    @Override
+    public String toString(Duet duet) {
+        return targetRegister.getValue(duet)+"";
     }
 
     @Override

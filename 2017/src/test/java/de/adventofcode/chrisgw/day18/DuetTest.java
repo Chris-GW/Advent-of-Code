@@ -29,13 +29,13 @@ public class DuetTest {
                 .map(Duet::parseDuetCommand)
                 .collect(Collectors.toList());
         // @formatter:on
-        int expectedRecoverFrequency = 4;
+        long expectedRecoverFrequency = 4;
 
         Duet duet = new Duet(duetCommands);
         for (int i = 0; duet.hasNextDuetCommand(); i++) {
             DuetCommand duetCommand = duet.nextDuetCommand();
             System.out.println(duetCommand);
-            int registerValueA = duet.getRegisterValue('a');
+            long registerValueA = duet.getRegisterValue('a');
             if (i == 0) {
                 Assert.assertEquals("expect register value in step " + i, (1), registerValueA);
             } else if (i == 1) {
@@ -50,7 +50,7 @@ public class DuetTest {
         }
         Assert.assertFalse("no more commands", duet.hasNextDuetCommand());
 
-        int recoverdFrequency = duet.getRecoveredFrequency();
+        long recoverdFrequency = duet.getRecoveredFrequency();
         Assert.assertEquals("last recovered frequency", expectedRecoverFrequency, recoverdFrequency);
     }
 
@@ -66,16 +66,17 @@ public class DuetTest {
         List<DuetCommand> duetCommands = Arrays.stream(splittedCommands)
                 .map(Duet::parseDuetCommand)
                 .collect(Collectors.toList());
-        int expectedRecoverFrequency = 862;
+        long expectedRecoverFrequency = 862;
 
         Duet duet = new Duet(duetCommands);
         for (int i = 0; duet.hasNextDuetCommand(); i++) {
             DuetCommand duetCommand = duet.nextDuetCommand();
-            System.out.println(duetCommand);
+            System.out.println(duet);
+            System.out.println();
         }
         Assert.assertFalse("no more commands", duet.hasNextDuetCommand());
 
-        int recoverdFrequency = duet.getRecoveredFrequency();
+        long recoverdFrequency = duet.getRecoveredFrequency();
         Assert.assertEquals("last recovered frequency", expectedRecoverFrequency, recoverdFrequency);
     }
 

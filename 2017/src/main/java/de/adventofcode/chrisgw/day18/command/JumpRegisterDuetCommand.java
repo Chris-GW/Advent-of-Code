@@ -19,11 +19,16 @@ public class JumpRegisterDuetCommand implements DuetCommand {
 
     @Override
     public void executeDuetCommand(Duet duet) {
-        int registerValue = targetRegister.getValue(duet);
+        long registerValue = targetRegister.getValue(duet);
         if (registerValue > 0) {
-            int jump = jumpRegister.getValue(duet);
+            long jump = jumpRegister.getValue(duet);
             duet.jumpInstruction(jump);
         }
+    }
+
+    @Override
+    public String toString(Duet duet) {
+        return targetRegister.getValue(duet) + " -> " + jumpRegister.getValue(duet);
     }
 
     @Override

@@ -17,10 +17,15 @@ public class RecoverRegisterDuetCommand implements DuetCommand {
 
     @Override
     public void executeDuetCommand(Duet duet) {
-        int registerValue = targetRegister.getValue(duet);
+        long registerValue = targetRegister.getValue(duet);
         if (registerValue != 0) {
             duet.addRecoveredFrequency();
         }
+    }
+
+    @Override
+    public String toString(Duet duet) {
+        return targetRegister.getValue(duet) + " != 0";
     }
 
     @Override

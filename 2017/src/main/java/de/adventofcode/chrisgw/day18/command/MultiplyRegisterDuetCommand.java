@@ -19,10 +19,15 @@ public class MultiplyRegisterDuetCommand implements DuetCommand {
 
     @Override
     public void executeDuetCommand(Duet duet) {
-        int oldRegisterValue = targetRegister.getValue(duet);
-        int factor = factorRegister.getValue(duet);
-        int newRegisterValue = oldRegisterValue * factor;
+        long oldRegisterValue = targetRegister.getValue(duet);
+        long factor = factorRegister.getValue(duet);
+        long newRegisterValue = oldRegisterValue * factor;
         duet.setRegisterValue(targetRegister.getRegisterName(), newRegisterValue);
+    }
+
+    @Override
+    public String toString(Duet duet) {
+        return targetRegister.getValue(duet) + " * " + factorRegister.getValue(duet);
     }
 
     @Override

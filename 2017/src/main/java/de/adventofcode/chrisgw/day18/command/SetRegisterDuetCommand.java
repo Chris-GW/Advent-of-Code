@@ -19,8 +19,13 @@ public class SetRegisterDuetCommand implements DuetCommand {
 
     @Override
     public void executeDuetCommand(Duet duet) {
-        int valueToSet = registerValueToSet.getValue(duet);
+        long valueToSet = registerValueToSet.getValue(duet);
         duet.setRegisterValue(targetRegister.getRegisterName(), valueToSet);
+    }
+
+    @Override
+    public String toString(Duet duet) {
+        return targetRegister.getValue(duet) + " = " + registerValueToSet.getValue(duet);
     }
 
     @Override
