@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 
 /**
- * <h1><a href="https://adventofcode.com/2016/day/10>Day 7: Internet Protocol Version 7</a></h1>
+ * <h1><a href="https://adventofcode.com/2016/day/7>Day 7: Internet Protocol Version 7</a></h1>
  * <pre>
  * While snooping around the local network of EBHQ, you compile a list of
  * IP addresses (they're IPv7, of course; IPv6 is much too limited). You'd
