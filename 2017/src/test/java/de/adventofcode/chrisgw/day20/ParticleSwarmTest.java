@@ -56,7 +56,7 @@ public class ParticleSwarmTest {
 
         ParticleSwarm particleSwarm = ParticleSwarm.parseParticleSwarm(particleLines);
         System.out.println(particleSwarm);
-        int particleIndex = particleSwarm.findParticleWithStaysNearOrigin();
+        int particleIndex = particleSwarm.findParticleWithStaysNearOrigin(false);
 
         Assert.assertEquals("expect particle index", expectedParticleIndex, particleIndex);
     }
@@ -68,8 +68,46 @@ public class ParticleSwarmTest {
 
         ParticleSwarm particleSwarm = ParticleSwarm.parseParticleSwarm(particleLines);
         System.out.println(particleSwarm);
-        int particleIndex = particleSwarm.findParticleWithStaysNearOrigin();
+        int particleIndex = particleSwarm.findParticleWithStaysNearOrigin(false);
 
+        Assert.assertEquals("expect particle index", expectedParticleIndex, particleIndex);
+    }
+
+
+    // --- part 2
+
+    @Test
+    public void particleSwarm_part2_example() {
+        List<String> particleLines = Arrays.asList( //
+                "p=<-6,0,0>, v=<3,0,0>, a=<0,0,0>", //
+                "p=<-4,0,0>, v=<2,0,0>, a=<0,0,0>", //
+                "p=<-2,0,0>, v=<1,0,0>, a=<0,0,0>", //
+                "p=<3,0,0>, v=<-1,0,0>, a=<0,0,0>");
+
+        int expectedParticleCount = 1;
+        int expectedParticleIndex = 3;
+
+        ParticleSwarm particleSwarm = ParticleSwarm.parseParticleSwarm(particleLines);
+        System.out.println(particleSwarm);
+        int particleIndex = particleSwarm.findParticleWithStaysNearOrigin(true);
+        int particleCount = particleSwarm.getParticleCount();
+
+        Assert.assertEquals("expect particle count", expectedParticleCount, particleCount);
+        Assert.assertEquals("expect particle index", expectedParticleIndex, particleIndex);
+    }
+
+    @Test
+    public void particleSwarm_part2_myTask() {
+        List<String> particleLines = TestUtils.readAllLinesOfClassPathResource("/day20/ParticleSwarm_chrisgw.txt");
+        int expectedParticleCount = 648;
+        int expectedParticleIndex = 551;
+
+        ParticleSwarm particleSwarm = ParticleSwarm.parseParticleSwarm(particleLines);
+        System.out.println(particleSwarm);
+        int particleIndex = particleSwarm.findParticleWithStaysNearOrigin(true);
+        int particleCount = particleSwarm.getParticleCount();
+
+        Assert.assertEquals("expect particle count", expectedParticleCount, particleCount);
         Assert.assertEquals("expect particle index", expectedParticleIndex, particleIndex);
     }
 
