@@ -1,6 +1,7 @@
 package de.adventofcode.chrisgw.day18;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public class DuetTest {
         Duet duet = new Duet(duetCommands);
         for (int i = 0; duet.hasNextDuetCommand(); i++) {
             DuetCommand duetCommand = duet.nextDuetCommand();
-            System.out.println(duetCommand.toString(duet));
+            System.out.println(duet);
             long registerValueA = duet.getRegisterValue('a');
             if (i == 0) {
                 Assert.assertEquals("expect register value in step " + i, (1), registerValueA);
@@ -49,8 +50,9 @@ public class DuetTest {
             }
         }
         Assert.assertFalse("no more commands", duet.hasNextDuetCommand());
+        Assert.assertTrue("no more commands", duet.getFirstRecoverdFrequenz().isPresent());
 
-        long recoverdFrequency = duet.getRecoveredFrequency();
+        long recoverdFrequency = duet.getFirstRecoverdFrequenz().getAsLong();
         Assert.assertEquals("last recovered frequency", expectedRecoverFrequency, recoverdFrequency);
     }
 
@@ -73,9 +75,82 @@ public class DuetTest {
             duet.nextDuetCommand();
         }
         Assert.assertFalse("no more commands", duet.hasNextDuetCommand());
+        Assert.assertTrue("no more commands", duet.getFirstRecoverdFrequenz().isPresent());
 
-        long recoverdFrequency = duet.getRecoveredFrequency();
+        long recoverdFrequency = duet.getFirstRecoverdFrequenz().getAsLong();
         Assert.assertEquals("last recovered frequency", expectedRecoverFrequency, recoverdFrequency);
+    }
+
+
+    // --- part 2
+
+    @Test
+    public void duetInstructions_part2_example() {
+        // @formatter:off
+        List<DuetCommand> duetCommands = Stream.of(
+                "snd 1",
+                "snd 2",
+                "snd p",
+                "rcv a",
+                "rcv b",
+                "rcv c",
+                "rcv d")
+                .map(Duet::parseDuetCommand)
+                .collect(Collectors.toList());
+        // @formatter:on
+        long expectedSencCount = 3;
+
+        Duet duet = new Duet(duetCommands);
+        Duet otherDuet = duet.withNewPartnerDuet();
+
+        boolean isDeadlock = false;
+        for (long i = 0; true; i++) {
+            DuetCommand duetCommand = duet.nextDuetCommand();
+            DuetCommand otherDuetCommand = otherDuet.nextDuetCommand();
+
+            if (isDeadlock && duet.isLocked() && otherDuet.isLocked()) {
+                break;
+            } else if (duet.isLocked() && otherDuet.isLocked()) {
+                isDeadlock = true;
+            }
+        }
+
+        int sendCount = otherDuet.getSendCount();
+        Assert.assertEquals("expect send count", expectedSencCount, sendCount);
+    }
+
+    @Ignore
+    @Test
+    public void duetInstructions_part2_myTask() {
+        String[] splittedCommands = ("set i 31\n" + "set a 1\n" + "mul p 17\n" + "jgz p p\n" + "mul a 2\n"
+                + "add i -1\n" + "jgz i -2\n" + "add a -1\n" + "set i 127\n" + "set p 735\n" + "mul p 8505\n"
+                + "mod p a\n" + "mul p 129749\n" + "add p 12345\n" + "mod p a\n" + "set b p\n" + "mod b 10000\n"
+                + "snd b\n" + "add i -1\n" + "jgz i -9\n" + "jgz a 3\n" + "rcv b\n" + "jgz b -1\n" + "set f 0\n"
+                + "set i 126\n" + "rcv a\n" + "rcv b\n" + "set p a\n" + "mul p -1\n" + "add p b\n" + "jgz p 4\n"
+                + "snd a\n" + "set a b\n" + "jgz 1 3\n" + "snd b\n" + "set f 1\n" + "add i -1\n" + "jgz i -11\n"
+                + "snd a\n" + "jgz f -16\n" + "jgz a -19").split("\n");
+        List<DuetCommand> duetCommands = Arrays.stream(splittedCommands)
+                .map(Duet::parseDuetCommand)
+                .collect(Collectors.toList());
+        long expectedSencCount = 3;
+
+        Duet duet = new Duet(duetCommands);
+        Duet otherDuet = duet.withNewPartnerDuet();
+
+        boolean isDeadlock = false;
+        for (long i = 0; true; i++) {
+            DuetCommand duetCommand = duet.nextDuetCommand();
+            DuetCommand otherDuetCommand = otherDuet.nextDuetCommand();
+
+            if (isDeadlock && duet.isLocked() && otherDuet.isLocked()) {
+                break;
+            } else if (duet.isLocked() && otherDuet.isLocked()) {
+                isDeadlock = true;
+            }
+        }
+
+        int sendCount = otherDuet.getSendCount();
+        Assert.assertEquals("expect send count", expectedSencCount, sendCount);
     }
 
 }

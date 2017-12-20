@@ -17,9 +17,19 @@ public class RecoverRegisterDuetCommand implements DuetCommand {
 
     @Override
     public void executeDuetCommand(Duet duet) {
-        long registerValue = targetRegister.getValue(duet);
-        if (registerValue != 0) {
-            duet.addRecoveredFrequency();
+        if (duet.getPartnerDuet() != null && duet.canRecoverFrequency()) {
+            long registerValue = duet.recoverFrequency();
+            duet.setRegisterValue(targetRegister.getRegisterName(), registerValue);
+            duet.setLocked(false);
+//            System.out.println("unlock: " + duet);
+        } else if (duet.getPartnerDuet() != null) {
+            duet.jumpInstruction(0); // try to repeat recover command next time
+//            if (!duet.isLocked()) {
+//                System.out.println("locked: " + duet);
+//            }
+            duet.setLocked(true);
+        } else if (targetRegister.getValue(duet) != 0) {
+            duet.recoverFrequency();
         }
     }
 
