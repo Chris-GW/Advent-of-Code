@@ -66,6 +66,11 @@ public class Particle {
     }
 
 
+    public boolean isInSamePosition(Particle otherParticle) {
+        return this.x == otherParticle.x && this.y == otherParticle.y && this.z == otherParticle.z;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
