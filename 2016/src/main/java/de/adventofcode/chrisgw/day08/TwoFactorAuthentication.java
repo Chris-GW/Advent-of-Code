@@ -1,6 +1,14 @@
 package de.adventofcode.chrisgw.day08;
 
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
 /**
  * <h1><a href="https://adventofcode.com/2016/day/8>Day 8: Two-Factor Authentication</a></h1>
  * <pre>
@@ -64,5 +72,117 @@ package de.adventofcode.chrisgw.day08;
  */
 public class TwoFactorAuthentication {
 
+
+    private boolean[][] pixelScreen;
+
+
+    public TwoFactorAuthentication(int columns, int rows) {
+        this.pixelScreen = new boolean[rows][columns];
+    }
+
+
+    public int columns() {
+        return pixelScreen[0].length;
+    }
+
+    public int rows() {
+        return pixelScreen.length;
+    }
+
+
+    public void executePixelOperation(PixelScreenOperation pixelScreenOperation) {
+        pixelScreenOperation.executeOperation(this);
+    }
+
+
+    public boolean getPixel(int x, int y) {
+        return pixelScreen[y][x];
+    }
+
+    public void setPixel(int x, int y, boolean b) {
+        pixelScreen[y][x] = b;
+    }
+
+
+    public Iterator<Boolean> newRowIterator(int x, int from) {
+        return new Iterator<Boolean>() {
+
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < rows();
+            }
+
+            @Override
+            public Boolean next() {
+                int y = ((i++) + from) % rows();
+                return getPixel(x, y);
+            }
+        };
+    }
+
+    public Iterator<Boolean> newColumnIterator(int y, int from) {
+        return new Iterator<Boolean>() {
+
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < columns();
+            }
+
+            @Override
+            public Boolean next() {
+                int x = ((i++) + from) % columns();
+                return getPixel(x, y);
+            }
+        };
+    }
+
+    private interface PixelOperationSupplier {
+
+        PixelScreenOperation createPixelScreenOperation(int a, int b);
+
+    }
+
+    public static PixelScreenOperation parsePixelScreenOperations(String operationLine) {
+        Map<Pattern, PixelOperationSupplier> patternToPixelOperationMap = new HashMap<>();
+        patternToPixelOperationMap.put(RectPixelScreenOperation.OPERATION_PATTERN, RectPixelScreenOperation::new);
+        patternToPixelOperationMap.put(RotateRowPixelScreenOperation.OPERATION_PATTERN,
+                RotateRowPixelScreenOperation::new);
+        patternToPixelOperationMap.put(RotateColumnPixelScreenOperation.OPERATION_PATTERN,
+                RotateColumnPixelScreenOperation::new);
+
+        for (Entry<Pattern, PixelOperationSupplier> patternToPixelOperationSupplierEntry : patternToPixelOperationMap.entrySet()) {
+            Pattern operationPattern = patternToPixelOperationSupplierEntry.getKey();
+            Matcher operationMatcher = operationPattern.matcher(operationLine);
+            if (operationMatcher.matches()) {
+                int a = Integer.parseInt(operationMatcher.group(1));
+                int b = Integer.parseInt(operationMatcher.group(2));
+                PixelOperationSupplier pixelOperationSupplier = patternToPixelOperationSupplierEntry.getValue();
+                return pixelOperationSupplier.createPixelScreenOperation(a, b);
+            }
+        }
+        throw new IllegalArgumentException("unknown operation: " + operationLine);
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int y = 0; y < pixelScreen.length; y++) {
+            boolean[] pixelRow = pixelScreen[y];
+            for (int x = 0; x < pixelRow.length; x++) {
+                if (pixelRow[x]) {
+                    sb.append('#');
+                } else {
+                    sb.append('.');
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
 }
