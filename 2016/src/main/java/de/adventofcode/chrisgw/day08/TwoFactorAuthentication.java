@@ -104,40 +104,50 @@ public class TwoFactorAuthentication {
     }
 
 
-    public Iterator<Boolean> newRowIterator(int x, int from) {
+    public Iterator<Boolean> newRowIterator(int y) {
         return new Iterator<Boolean>() {
 
-            int i = 0;
+            int x = 0;
 
             @Override
             public boolean hasNext() {
-                return i < rows();
+                return x < columns();
             }
 
             @Override
             public Boolean next() {
-                int y = ((i++) + from) % rows();
-                return getPixel(x, y);
+                return getPixel(x++, y);
             }
         };
     }
 
-    public Iterator<Boolean> newColumnIterator(int y, int from) {
+    public Iterator<Boolean> newColumnIterator(int x) {
         return new Iterator<Boolean>() {
 
-            int i = 0;
+            int y = 0;
 
             @Override
             public boolean hasNext() {
-                return i < columns();
+                return y < rows();
             }
 
             @Override
             public Boolean next() {
-                int x = ((i++) + from) % columns();
-                return getPixel(x, y);
+                return getPixel(x, y++);
             }
         };
+    }
+
+    public int getLitPixelCount() {
+        int litPixelCount = 0;
+        for (int y = 0; y < rows(); y++) {
+            for (int x = 0; x < columns(); x++) {
+                if (getPixel(x, y)) {
+                    litPixelCount++;
+                }
+            }
+        }
+        return litPixelCount;
     }
 
     private interface PixelOperationSupplier {

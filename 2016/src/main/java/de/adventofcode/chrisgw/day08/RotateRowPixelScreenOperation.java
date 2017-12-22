@@ -21,15 +21,16 @@ public class RotateRowPixelScreenOperation implements PixelScreenOperation {
     @Override
     public void executeOperation(TwoFactorAuthentication twoFactorAuthentication) {
         boolean[] newRow = new boolean[twoFactorAuthentication.columns()];
-        Iterator<Boolean> columnPixelIterator = twoFactorAuthentication.newColumnIterator(y, shiftedPixel);
-        for (int i = 0; columnPixelIterator.hasNext(); i++) {
-            boolean pixel = columnPixelIterator.next();
-            newRow[i] = pixel;
+        Iterator<Boolean> rowPixelIterator = twoFactorAuthentication.newRowIterator(y);
+        for (int x = shiftedPixel; rowPixelIterator.hasNext(); x++) {
+            if (x >= newRow.length) {
+                x = 0;
+            }
+            newRow[x] = rowPixelIterator.next();
         }
 
         for (int x = 0; x < newRow.length; x++) {
-            boolean pixel = newRow[(x + shiftedPixel) % newRow.length];
-            twoFactorAuthentication.setPixel(x, y, pixel);
+            twoFactorAuthentication.setPixel(x, y, newRow[x]);
         }
     }
 

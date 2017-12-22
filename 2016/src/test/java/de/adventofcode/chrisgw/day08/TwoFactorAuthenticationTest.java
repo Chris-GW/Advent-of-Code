@@ -1,5 +1,6 @@
 package de.adventofcode.chrisgw.day08;
 
+import de.adventofcode.chrisgw.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,8 +37,9 @@ public class TwoFactorAuthenticationTest {
                 parsePixelRowLine(".#.....")
         } };
         // @formatter:on
+        int expectedLitPixelCount = 6;
 
-        TwoFactorAuthentication twoFactorAuthentication = new TwoFactorAuthentication(7,3);
+        TwoFactorAuthentication twoFactorAuthentication = new TwoFactorAuthentication(7, 3);
         List<PixelScreenOperation> pixelScreenOperations = pixelOperationLines.stream()
                 .map(TwoFactorAuthentication::parsePixelScreenOperations)
                 .collect(Collectors.toList());
@@ -57,6 +59,29 @@ public class TwoFactorAuthenticationTest {
                 }
             }
         }
+        int litPixelCount = twoFactorAuthentication.getLitPixelCount();
+        Assert.assertEquals("expect lit pixel count", expectedLitPixelCount, litPixelCount);
+    }
+
+
+    @Test
+    public void TwoFactorAuthenticationTest_part1_myTask() {
+        String classpathResource = "/day08/TowFactorAuthentication_chrisgw.txt";
+        List<String> pixelOperationLines = TestUtils.readAllLinesOfClassPathResource(classpathResource);
+        int expectedLitPixelCount = 119;
+
+        TwoFactorAuthentication twoFactorAuthentication = new TwoFactorAuthentication(50, 6);
+        List<PixelScreenOperation> pixelScreenOperations = pixelOperationLines.stream()
+                .map(TwoFactorAuthentication::parsePixelScreenOperations)
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < pixelScreenOperations.size(); i++) {
+            PixelScreenOperation pixelScreenOperation = pixelScreenOperations.get(i);
+            twoFactorAuthentication.executePixelOperation(pixelScreenOperation);
+        }
+        System.out.println(twoFactorAuthentication);
+        int litPixelCount = twoFactorAuthentication.getLitPixelCount();
+        Assert.assertEquals("expect lit pixel count", expectedLitPixelCount, litPixelCount);
     }
 
 
