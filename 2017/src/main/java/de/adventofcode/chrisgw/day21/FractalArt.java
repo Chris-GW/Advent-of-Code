@@ -1,5 +1,9 @@
 package de.adventofcode.chrisgw.day21;
 
+import java.util.LinkedList;
+import java.util.List;
+
+
 /**
  * <h1><a href="https://adventofcode.com/2017/day/21>Day 21: Fractal Art</a></h1>
  * <pre>
@@ -111,6 +115,27 @@ package de.adventofcode.chrisgw.day21;
  * </pre>
  */
 public class FractalArt {
+
+    private ArtPixelPattern pixelGrid;
+    private List<ArtPixelEnhancmentRule> pixelEnhancmentRules;
+
+
+    public FractalArt(List<ArtPixelEnhancmentRule> pixelEnhancmentRules) {
+        this.pixelEnhancmentRules = pixelEnhancmentRules;
+        this.pixelGrid = ArtPixelPattern.parseArtPixelPattern(".#./..#/###");
+    }
+
+
+    public ArtPixelPattern getPixelPattern(int x, int y, int size) {
+        for (int i = 0; i <; i++) {
+
+        }
+    }
+
+
+    public int size() {
+        return pixelGrid.size();
+    }
 
 
 }
