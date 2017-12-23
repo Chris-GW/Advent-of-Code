@@ -1,7 +1,8 @@
 package de.adventofcode.chrisgw.day21;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -126,16 +127,99 @@ public class FractalArt {
     }
 
 
-    public ArtPixelPattern getPixelPattern(int x, int y, int size) {
-        for (int i = 0; i <; i++) {
-
-        }
-    }
-
-
     public int size() {
         return pixelGrid.size();
     }
 
+
+    public void doEnhancePixelGrid() {
+        int pixelPatternSize = 3;
+        if (size() % 2 == 0) {
+            pixelPatternSize = 2;
+        }
+        List<List<ArtPixelPattern>> dividedPixelGrid = dividePixelGrid(pixelPatternSize);
+        int newPixelPatternSize = pixelPatternSize + 1;
+        int newPixelGridSize = dividedPixelGrid.size() * newPixelPatternSize;
+        pixelGrid = new ArtPixelPattern(new boolean[newPixelGridSize][newPixelGridSize]);
+
+        for (int y = 0; y < dividedPixelGrid.size(); y++) {
+            List<ArtPixelPattern> pixelPatternRow = dividedPixelGrid.get(y);
+
+            for (int x = 0; x < pixelPatternRow.size(); x++) {
+                ArtPixelPattern pixelPatternPart = pixelPatternRow.get(x);
+                ArtPixelPattern enhancePixelPattern = enhancePixelPattern(pixelPatternPart);
+                setPixelPattern(x * newPixelPatternSize, y * newPixelPatternSize, enhancePixelPattern);
+            }
+        }
+    }
+
+
+    private List<List<ArtPixelPattern>> dividePixelGrid(int newSize) {
+        List<List<ArtPixelPattern>> dividedPixelGrid = new ArrayList<>(size() / newSize);
+
+        for (int y = 0; y < size(); y += newSize) {
+            List<ArtPixelPattern> pixelPatternRow = new ArrayList<>(size() / newSize);
+            for (int x = 0; x < size(); x += newSize) {
+                ArtPixelPattern pixelPatternPart = getPixelPattern(x, y, newSize);
+                pixelPatternRow.add(pixelPatternPart);
+            }
+            dividedPixelGrid.add(pixelPatternRow);
+        }
+
+        return dividedPixelGrid;
+    }
+
+    private ArtPixelPattern getPixelPattern(int startX, int startY, int size) {
+        boolean[][] pixelGridPart = new boolean[size][size];
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                pixelGridPart[y][x] = pixelGrid.getPixel(startX + x, startY + y);
+            }
+        }
+        return new ArtPixelPattern(pixelGridPart);
+    }
+
+
+    private ArtPixelPattern enhancePixelPattern(ArtPixelPattern pixelPattern) {
+        Optional<ArtPixelEnhancmentRule> firstMatchingPixelEnhancmentRule = pixelEnhancmentRules.stream()
+                .filter(pixelEnhancmentRule -> pixelEnhancmentRule.matches(pixelPattern))
+                .findFirst();
+        if (firstMatchingPixelEnhancmentRule.isPresent()) {
+            return firstMatchingPixelEnhancmentRule.get().getOutputPixelPatterns();
+        } else {
+            return pixelPattern; // unchanged
+        }
+    }
+
+    private Optional<ArtPixelEnhancmentRule> findFirstMatchingPixelEnhancmentRule(ArtPixelPattern pixelPattern) {
+        return pixelEnhancmentRules.stream()
+                .filter(pixelEnhancmentRule -> pixelEnhancmentRule.matches(pixelPattern))
+                .findFirst();
+    }
+
+    private void setPixelPattern(int startX, int startY, ArtPixelPattern pixelPattern) {
+        for (int y = 0; y < pixelPattern.size(); y++) {
+            for (int x = 0; x < pixelPattern.size(); x++) {
+                boolean pixel = pixelPattern.getPixel(x, y);
+                pixelGrid.setPixel(startX + x, startY + y, pixel);
+            }
+        }
+    }
+
+
+    public int countLitPixels() {
+        return pixelGrid.countLitPixels();
+    }
+
+
+    public ArtPixelPattern getPixelGrid() {
+        return pixelGrid;
+    }
+
+
+    @Override
+    public String toString() {
+        return pixelGrid.toString();
+    }
 
 }

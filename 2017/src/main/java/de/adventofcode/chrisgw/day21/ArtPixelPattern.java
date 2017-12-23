@@ -9,7 +9,7 @@ public class ArtPixelPattern {
     private boolean[][] pixelGrid;
 
 
-    private ArtPixelPattern(boolean[][] pixelGrid) {
+    public ArtPixelPattern(boolean[][] pixelGrid) {
         this.pixelGrid = pixelGrid;
     }
 
@@ -113,6 +113,18 @@ public class ArtPixelPattern {
         }
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
+    }
+
+    public int countLitPixels() {
+        int litPixelCount = 0;
+        for (int y = 0; y < size(); y++) {
+            for (int x = 0; x < size(); x++) {
+                if (getPixel(x, y)) {
+                    litPixelCount++;
+                }
+            }
+        }
+        return litPixelCount;
     }
 
 }
