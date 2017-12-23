@@ -172,7 +172,8 @@ public class SpiralMemory {
                 memoryDataToSum.add(memoryData.bottomMemoryData.leftMemoryData);
                 memoryDataToSum.add(memoryData.bottomMemoryData.rightMemoryData);
             }
-            return memoryDataToSum.stream().filter(Objects::nonNull).mapToInt((data) -> data.value).sum();
+            memoryDataToSum.remove(null);
+            return memoryDataToSum.stream().mapToInt((data) -> data.value).sum();
         };
     }
 
