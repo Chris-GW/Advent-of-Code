@@ -207,7 +207,7 @@ public class FractalArt {
     }
 
 
-    public int countLitPixels() {
+    public long countLitPixels() {
         return pixelGrid.countLitPixels();
     }
 

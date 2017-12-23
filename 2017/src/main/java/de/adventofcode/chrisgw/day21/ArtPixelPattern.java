@@ -115,8 +115,8 @@ public class ArtPixelPattern {
         return sb.toString();
     }
 
-    public int countLitPixels() {
-        int litPixelCount = 0;
+    public long countLitPixels() {
+        long litPixelCount = 0;
         for (int y = 0; y < size(); y++) {
             for (int x = 0; x < size(); x++) {
                 if (getPixel(x, y)) {
