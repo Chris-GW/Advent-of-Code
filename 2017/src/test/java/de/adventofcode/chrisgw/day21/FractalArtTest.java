@@ -90,7 +90,7 @@ public class FractalArtTest {
             Assert.assertEquals("expect pixel grid after enhancment round: " + round, expectedPixelGrid, pixelGrid);
         }
 
-        int litPixelCount = fractalArt.countLitPixels();
+        long litPixelCount = fractalArt.countLitPixels();
         Assert.assertEquals("expect lit pixels in end", expectedLitPixelCount, litPixelCount);
     }
 
@@ -103,7 +103,7 @@ public class FractalArtTest {
                 .map(ArtPixelEnhancmentRule::parsePixelEnhancmentRule)
                 .collect(Collectors.toList());
         int enhancementRounds = 5;
-        int expectedLitPixelCount = 167;
+        long expectedLitPixelCount = 167;
 
         FractalArt fractalArt = new FractalArt(pixelEnhancmentRules);
         System.out.println("-----" + 0 + "-----");
@@ -115,7 +115,29 @@ public class FractalArtTest {
             System.out.println(fractalArt);
         }
 
-        int litPixelCount = fractalArt.countLitPixels();
+        long litPixelCount = fractalArt.countLitPixels();
+        Assert.assertEquals("expect lit pixels in end", expectedLitPixelCount, litPixelCount);
+    }
+
+
+    @Test
+    public void fractalArt_part2_myTask() {
+        String classpathResource = "/day21/FractalArt_chrisgw.txt";
+        List<ArtPixelEnhancmentRule> pixelEnhancmentRules = TestUtils.readAllLinesOfClassPathResource(classpathResource)
+                .stream()
+                .map(ArtPixelEnhancmentRule::parsePixelEnhancmentRule)
+                .collect(Collectors.toList());
+        int enhancementRounds = 18;
+        long expectedLitPixelCount = 2425195;
+
+        FractalArt fractalArt = new FractalArt(pixelEnhancmentRules);
+        for (int round = 1; round <= enhancementRounds; round++) {
+            fractalArt.doEnhancePixelGrid();
+        }
+        System.out.println("fractal art after " + enhancementRounds + " rounds:");
+        System.out.println(fractalArt);
+
+        long litPixelCount = fractalArt.countLitPixels();
         Assert.assertEquals("expect lit pixels in end", expectedLitPixelCount, litPixelCount);
     }
 
