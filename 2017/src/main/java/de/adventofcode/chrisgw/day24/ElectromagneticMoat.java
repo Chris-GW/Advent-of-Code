@@ -1,5 +1,6 @@
 package de.adventofcode.chrisgw.day24;
 
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,12 +28,21 @@ public class ElectromagneticMoat {
         }
     }
 
-    public static ElectromagneticMoat buildBestBridge(List<BridgeComponent> aviableBridgeComponents) {
-        return buildBestBridge(new ElectromagneticMoat(), aviableBridgeComponents);
+
+    public static ElectromagneticMoat buildLongestAndSrongestBridge(List<BridgeComponent> aviableBridgeComponents) {
+        return buildBestBridge(new ElectromagneticMoat(), aviableBridgeComponents,
+                Comparator.comparingInt(ElectromagneticMoat::getLength)
+                        .thenComparingInt(ElectromagneticMoat::getStrength));
     }
 
+    public static ElectromagneticMoat buildStrongestBridge(List<BridgeComponent> aviableBridgeComponents) {
+        return buildBestBridge(new ElectromagneticMoat(), aviableBridgeComponents,
+                Comparator.comparingInt(ElectromagneticMoat::getStrength));
+    }
+
+
     public static ElectromagneticMoat buildBestBridge(ElectromagneticMoat currentBridge,
-            List<BridgeComponent> aviableBridgeComponents) {
+            List<BridgeComponent> aviableBridgeComponents, Comparator<ElectromagneticMoat> bestBrigeComparator) {
         ElectromagneticMoat bestBridge = currentBridge;
         for (int i = 0; i < aviableBridgeComponents.size(); i++) {
             BridgeComponent bridgeComponent = aviableBridgeComponents.get(i);
@@ -44,14 +54,15 @@ public class ElectromagneticMoat {
             newBridge.addComponent(bridgeComponent);
             List<BridgeComponent> newAviableBridgeComponents = new LinkedList<>(aviableBridgeComponents);
             newAviableBridgeComponents.remove(i);
-            newBridge = buildBestBridge(newBridge, newAviableBridgeComponents);
+            newBridge = buildBestBridge(newBridge, newAviableBridgeComponents, bestBrigeComparator);
 
-            if (newBridge.getStrength() > bestBridge.getStrength()) {
+            if (bestBrigeComparator.compare(newBridge, bestBridge) > 0) {
                 bestBridge = newBridge;
             }
         }
         return bestBridge;
     }
+
 
     public boolean canAddComponent(BridgeComponent bridgeComponent) {
         BridgeComponent lastBridgeComponent = bridgeComponents.peekLast();
@@ -59,12 +70,18 @@ public class ElectromagneticMoat {
             return true;
         }
         bridgeComponent.reverse();
-        return lastBridgeComponent.canConnect(bridgeComponent);
+        boolean connectReversed = lastBridgeComponent.canConnect(bridgeComponent);
+        bridgeComponent.reverse();
+        return connectReversed;
     }
 
     public void addComponent(BridgeComponent bridgeComponent) {
         if (!canAddComponent(bridgeComponent)) {
             throw new IllegalArgumentException("can't add bridge component: " + bridgeComponent);
+        }
+        BridgeComponent lastBridgeComponent = bridgeComponents.peekLast();
+        if(!lastBridgeComponent.canConnect(bridgeComponent)) {
+            bridgeComponent.reverse();
         }
         bridgeComponents.addLast(bridgeComponent);
     }
@@ -81,6 +98,11 @@ public class ElectromagneticMoat {
             strength += bridgeComponent.getPortOut();
         }
         return strength;
+    }
+
+
+    public int getLength() {
+        return bridgeComponents.size();
     }
 
 
