@@ -21,11 +21,21 @@ public class CoprocessorConflagration {
     private long multiplyCommandCounter;
 
 
+    private List<Long> valuesOfRegisterH = new ArrayList<>();
+
+
     public CoprocessorConflagration(List<CoprocessorCommand> coprocessorCommands) {
         this.coprocessorCommands = new ArrayList<>(coprocessorCommands);
         this.registerMap = new HashMap<>();
         this.commandPointer = 0;
         this.multiplyCommandCounter = 0;
+    }
+
+
+    public void withDebug(boolean withDebug) {
+        if (!withDebug) {
+            setRegisterValue('a', 1);
+        }
     }
 
 
@@ -75,6 +85,9 @@ public class CoprocessorConflagration {
 
     public void setRegisterValue(char targetRegister, long registerValue) {
         registerMap.put(targetRegister, registerValue);
+        if(targetRegister == 'h') {
+            valuesOfRegisterH.add(registerValue);
+        }
     }
 
 
@@ -86,7 +99,7 @@ public class CoprocessorConflagration {
     public CoprocessorCommand nextCoprocessorCommand() {
         CoprocessorCommand coprocessorCommand = coprocessorCommands.get(commandPointer++);
         coprocessorCommand.executeCoprocessorCommand(this);
-        if(coprocessorCommand instanceof MultiplyRegisterCoprocessorCommand) {
+        if (coprocessorCommand instanceof MultiplyRegisterCoprocessorCommand) {
             multiplyCommandCounter++;
         }
         return coprocessorCommand;
@@ -99,6 +112,11 @@ public class CoprocessorConflagration {
 
     public long getMultiplyCommandCounter() {
         return multiplyCommandCounter;
+    }
+
+
+    public List<Long> getValuesOfRegisterH() {
+        return valuesOfRegisterH;
     }
 
 

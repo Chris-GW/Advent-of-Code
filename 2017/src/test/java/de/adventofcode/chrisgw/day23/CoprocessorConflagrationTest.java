@@ -1,6 +1,7 @@
 package de.adventofcode.chrisgw.day23;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -61,6 +62,26 @@ public class CoprocessorConflagrationTest {
         long multiplyCommandCounter = coprocessorConflagration.getMultiplyCommandCounter();
         Assert.assertEquals("Expected executed multiply commands", expectedExecutedMultiplyCommands,
                 multiplyCommandCounter);
+    }
+
+
+    @Ignore
+    @Test
+    public void coprocessorConflagration_part2_myTask() {
+        List<CoprocessorCommand> coprocessorCommands = Stream.of(myTaskCommands)
+                .map(CoprocessorConflagration::parseCoprocessorCommand)
+                .collect(Collectors.toList());
+        long expectedRegisterValueH = 1;
+
+        CoprocessorConflagration coprocessorConflagration = new CoprocessorConflagration(coprocessorCommands);
+        coprocessorConflagration.withDebug(false);
+        for (int i = 0; coprocessorConflagration.hasNextCoprocessorCommand(); i++) {
+            coprocessorConflagration.nextCoprocessorCommand();
+        }
+        System.out.println(coprocessorConflagration.getValuesOfRegisterH());
+
+        long registerValueH = coprocessorConflagration.getRegisterValue('h');
+        Assert.assertEquals("Expected register value of 'h'", expectedRegisterValueH, registerValueH);
     }
 
 }

@@ -32,7 +32,7 @@ public class SubtractRegisterCoprocessorCommand implements CoprocessorCommand {
 
     @Override
     public String toString() {
-        return "mod " + targetRegister + " " + subtrahendRegister;
+        return "sub " + targetRegister + " " + subtrahendRegister;
     }
 
 }
