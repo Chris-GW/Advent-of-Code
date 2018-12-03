@@ -123,4 +123,25 @@ public class InventoryManagmentSystemTest {
         assertEquals("boxIdChecksum", expectedBoxIdChecksum, boxIdChecksum);
     }
 
+
+    // part 02
+
+    @Test
+    public void findCommonBoxId_example01() {
+        String expectedCommonBoxId = "fgij";
+        List<String> boxIds = Arrays.asList("abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz");
+
+        String commonBoxId = InventoryManagmentSystem.findCommonBoxId(boxIds);
+        assertEquals("commonBoxId", expectedCommonBoxId, commonBoxId);
+    }
+
+    @Test
+    public void findCommonBoxId_myTask() throws Exception {
+        String expectedCommonBoxId = "krdmtuqjgwfoevnaboxglzjph";
+        Path boxIdsFile = TestUtils.getResourcePath("/day02/boxIds.txt");
+
+        String commonBoxId = InventoryManagmentSystem.findCommonBoxId(boxIdsFile);
+        assertEquals("commonBoxId", expectedCommonBoxId, commonBoxId);
+    }
+
 }

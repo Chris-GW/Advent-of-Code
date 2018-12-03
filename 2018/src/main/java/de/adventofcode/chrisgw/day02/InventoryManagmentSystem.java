@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,32 @@ public class InventoryManagmentSystem {
 
     // part 02
 
+    public static String findCommonBoxId(Path boxIdsFile) throws IOException {
+        return findCommonBoxId(Files.readAllLines(boxIdsFile));
+    }
+
+    public static String findCommonBoxId(Collection<String> boxIds) {
+        return boxIds.stream()
+                .flatMap(boxId -> boxIds.stream().map(otherBoxId -> toCommonBoxId(boxId, otherBoxId)))
+                .filter(Objects::nonNull)
+                .findAny()
+                .orElse(null);
+    }
+
+    private static String toCommonBoxId(String boxId, String otherBoxId) {
+        if (boxId.equals(otherBoxId) || boxId.length() != otherBoxId.length()) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder(boxId);
+        for (int i = 0; i < sb.length(); i++) {
+            sb.setCharAt(i, otherBoxId.charAt(i));
+            if (otherBoxId.equals(sb.toString())) {
+                return sb.deleteCharAt(i).toString();
+            }
+            sb.setCharAt(i, boxId.charAt(i));
+        }
+        return null;
+    }
 
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
@@ -54,6 +81,5 @@ public class InventoryManagmentSystem {
         System.out.println("boxChecksum: " + boxChecksum);
 
     }
-
 
 }
