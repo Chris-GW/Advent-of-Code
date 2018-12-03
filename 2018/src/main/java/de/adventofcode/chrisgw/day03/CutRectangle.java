@@ -1,6 +1,6 @@
-package de.adventofcode.chrisgw.day02;
+package de.adventofcode.chrisgw.day03;
 
-import de.adventofcode.chrisgw.day02.CutRectangle.SquarePositon;
+import de.adventofcode.chrisgw.day03.CutRectangle.SquarePositon;
 import lombok.Builder;
 import lombok.Value;
 
