@@ -56,7 +56,7 @@ public class NoMatterHowYouSliceItTest {
     @Test
     public void part_01_countOverlappingSquares_myTask() throws Exception {
         long expectedOverlappingSquareCount = 110389;
-        Path rectangleSpecificationFile = TestUtils.getResourcePath("/day02/cutRectangleSpecifications.txt");
+        Path rectangleSpecificationFile = TestUtils.getResourcePath("/day03/cutRectangleSpecifications.txt");
 
         NoMatterHowYouSliceIt noMatterHowYouSliceIt = NoMatterHowYouSliceIt.fromRectangeSpecificationFile(
                 rectangleSpecificationFile);
@@ -89,7 +89,7 @@ public class NoMatterHowYouSliceItTest {
     @Test
     public void part_02_findNonOverlappingRectangleId_myTask() throws Exception {
         long expectedNonOverlappingRectangleId = 552;
-        Path rectangleSpecificationFile = TestUtils.getResourcePath("/day02/cutRectangleSpecifications.txt");
+        Path rectangleSpecificationFile = TestUtils.getResourcePath("/day03/cutRectangleSpecifications.txt");
 
         NoMatterHowYouSliceIt noMatterHowYouSliceIt = NoMatterHowYouSliceIt.fromRectangeSpecificationFile(
                 rectangleSpecificationFile);
