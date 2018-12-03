@@ -32,6 +32,8 @@ public class NoMatterHowYouSliceItTest {
     }
 
 
+    // part 01
+
     @Test
     public void part_01_countOverlappingSquares_example_01() {
         long expectedOverlappingSquareCount = 4;
@@ -61,6 +63,39 @@ public class NoMatterHowYouSliceItTest {
         long overlappingSquareCount = noMatterHowYouSliceIt.countOverlappingSquares();
 
         assertEquals(expectedOverlappingSquareCount, overlappingSquareCount);
+    }
+
+
+    // part 02
+
+    @Test
+    public void part_02_findNonOverlappingRectangleId_example_01() {
+        long expectedNonOverlappingRectangleId = 3;
+        String[] cutRectangleSpecifications = new String[] { //
+                "#1 @ 1,3: 4x4", //
+                "#2 @ 3,1: 4x4", //
+                "#3 @ 5,5: 2x2" };
+        Collection<CutRectangle> cutRectangles = Arrays.stream(cutRectangleSpecifications)
+                .map(CutRectangle::parse)
+                .collect(Collectors.toList());
+
+        NoMatterHowYouSliceIt noMatterHowYouSliceIt = new NoMatterHowYouSliceIt(cutRectangles);
+        System.out.println(noMatterHowYouSliceIt);
+        long nonOverlappingRectangleId = noMatterHowYouSliceIt.findNonOverlappingRectangleId();
+
+        assertEquals(expectedNonOverlappingRectangleId, nonOverlappingRectangleId);
+    }
+
+    @Test
+    public void part_02_findNonOverlappingRectangleId_myTask() throws Exception {
+        long expectedNonOverlappingRectangleId = 552;
+        Path rectangleSpecificationFile = TestUtils.getResourcePath("/day02/cutRectangleSpecifications.txt");
+
+        NoMatterHowYouSliceIt noMatterHowYouSliceIt = NoMatterHowYouSliceIt.fromRectangeSpecificationFile(
+                rectangleSpecificationFile);
+        long nonOverlappingRectangleId = noMatterHowYouSliceIt.findNonOverlappingRectangleId();
+
+        assertEquals(expectedNonOverlappingRectangleId, nonOverlappingRectangleId);
     }
 
 }

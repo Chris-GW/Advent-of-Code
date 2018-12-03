@@ -57,14 +57,6 @@ public class CutRectangle implements Iterable<SquarePositon> {
     }
 
 
-    public boolean containsPosition(SquarePositon squarePositon) {
-        int x = squarePositon.getX();
-        int y = squarePositon.getY();
-        return distanceLeft <= x && x <= distanceLeft + wide && //
-                distanceTop <= y && y <= distanceTop + tall;
-    }
-
-
     public Stream<SquarePositon> squarePositons() {
         Stream.Builder<SquarePositon> squarePositionStreamBuilder = Stream.builder();
         for (int x = distanceLeft; x < distanceLeft + wide; x++) {

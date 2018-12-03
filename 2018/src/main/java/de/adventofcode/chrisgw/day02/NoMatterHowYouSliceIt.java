@@ -29,14 +29,44 @@ public class NoMatterHowYouSliceIt {
     }
 
 
+    // part 01
+
     public long countOverlappingSquares() {
-        Map<SquarePositon, Long> overlappingRectangeCountPerSquarePosition = cutRectangles.stream()
-                .flatMap(CutRectangle::squarePositons)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        return overlappingRectangeCountPerSquarePosition.values()
+        Map<SquarePositon, Long> squarePositionAssignments = countSquarePositionAssignments();
+        return squarePositionAssignments.values()
                 .stream()
                 .filter(overlappingSquareCount -> overlappingSquareCount > 1)
                 .count();
+    }
+
+
+    // part 02
+
+    public long findNonOverlappingRectangleId() {
+        Map<SquarePositon, Long> squarePositionAssignments = countSquarePositionAssignments();
+
+        Set<CutRectangle> rectanglesWithoutOverlap = new HashSet<>(cutRectangles);
+        while (rectanglesWithoutOverlap.size() > 1) {
+            CutRectangle withOverlapps = rectanglesWithoutOverlap.stream()
+                    .filter(rectangle -> rectangle.squarePositons()
+                            .mapToLong(squarePositionAssignments::get)
+                            .anyMatch(value -> value > 1))
+                    .findAny()
+                    .orElseThrow(IllegalStateException::new);
+            rectanglesWithoutOverlap.remove(withOverlapps);
+        }
+
+        return rectanglesWithoutOverlap.stream()
+                .findAny()
+                .map(CutRectangle::getId)
+                .orElseThrow(IllegalStateException::new);
+    }
+
+
+    private Map<SquarePositon, Long> countSquarePositionAssignments() {
+        return cutRectangles.stream()
+                .flatMap(CutRectangle::squarePositons)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
 
@@ -81,9 +111,12 @@ public class NoMatterHowYouSliceIt {
         Path rectangeSpecificationFile = Paths.get(args[0]);
         NoMatterHowYouSliceIt noMatterHowYouSliceIt = NoMatterHowYouSliceIt.fromRectangeSpecificationFile(
                 rectangeSpecificationFile);
+
         long countOverlappingSquares = noMatterHowYouSliceIt.countOverlappingSquares();
         System.out.println("countOverlappingSquares: " + countOverlappingSquares);
 
+        long nonOverlappingRectangleId = noMatterHowYouSliceIt.findNonOverlappingRectangleId();
+        System.out.println("nonOverlappingRectangleId: " + nonOverlappingRectangleId);
     }
 
 }
