@@ -1,4 +1,4 @@
-package de.adventofcode.chrisgw.day02;
+package de.adventofcode.chrisgw.day03;
 
 import de.adventofcode.chrisgw.TestUtils;
 import org.junit.Test;
