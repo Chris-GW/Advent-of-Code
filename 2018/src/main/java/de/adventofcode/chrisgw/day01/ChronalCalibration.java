@@ -3,6 +3,7 @@ package de.adventofcode.chrisgw.day01;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -45,11 +46,18 @@ public class ChronalCalibration {
         }
     }
 
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws IOException {
         if (args.length == 0) {
             System.out.println("No path in args[]");
             return;
         }
+        Path frequenciesDataPath = Paths.get(args[0]);
+        long frequencySum = ChronalCalibration.calculateFrequency(frequenciesDataPath);
+        System.out.println("frequencySum: " + frequencySum);
+
+        long repeatedFrequency = ChronalCalibration.calculateFirstRepeatedFrequency(frequenciesDataPath);
+        System.out.println("repeatedFrequency: " + repeatedFrequency);
     }
 
 }
