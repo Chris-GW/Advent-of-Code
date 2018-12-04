@@ -71,6 +71,7 @@ public class InventoryManagmentSystem {
         return null;
     }
 
+
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             System.out.println("No path in args[]");
@@ -80,6 +81,8 @@ public class InventoryManagmentSystem {
         long boxChecksum = calculateBoxChecksum(boxIdsFile);
         System.out.println("boxChecksum: " + boxChecksum);
 
+        String commonBoxId = findCommonBoxId(boxIdsFile);
+        System.out.println("commonBoxId: " + commonBoxId);
     }
 
 }
