@@ -39,6 +39,10 @@ public class Guard  {
                 .orElse(null);
     }
 
+    public long mostFrequentlySleepTimeCount() {
+        return countSleepTimeAt(mostFrequentlySleepTime());
+    }
+
     private long countSleepTimeAt(LocalTime time) {
         return guardShifts().filter(guardShift -> guardShift.isSleepingAt(time)).count();
     }

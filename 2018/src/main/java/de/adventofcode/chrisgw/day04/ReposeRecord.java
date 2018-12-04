@@ -11,7 +11,10 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Stream;
 
 
@@ -62,6 +65,10 @@ public class ReposeRecord {
                 throw new IllegalArgumentException("unexpected record line: " + recoardLine);
             }
         }
+
+        if (currentGuard != null && guardShiftBuilder != null) {
+            currentGuard.addGuardShift(guardShiftBuilder.build());
+        }
         return new ReposeRecord(guardsById);
     }
 
@@ -93,6 +100,12 @@ public class ReposeRecord {
 
 
     // part 02
+
+    public long solveUsingStrategie02() {
+        return guards().max(Comparator.comparingLong(Guard::mostFrequentlySleepTimeCount))
+                .map(this::calculateSolutionValue)
+                .orElse(0);
+    }
 
 
     @Override
@@ -157,6 +170,9 @@ public class ReposeRecord {
         ReposeRecord reposeRecord = ReposeRecord.parseGuardShiftRecords(guardShiftRecordFile);
         long solution01 = reposeRecord.solveUsingStrategie01();
         System.out.println("solveUsingStrategie01: " + solution01);
+
+        long solution02 = reposeRecord.solveUsingStrategie02();
+        System.out.println("solveUsingStrategie02: " + solution02);
     }
 
 }
