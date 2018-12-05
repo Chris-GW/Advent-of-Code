@@ -11,15 +11,24 @@ public class PolymerUnit {
     private final char value;
 
 
+    public PolymerUnit(char value) {
+        this.value = value;
+    }
+
+    public PolymerUnit(int value) {
+        this((char) value);
+    }
+
+
     public boolean isReactingTo(PolymerUnit otherPolymerUnit) {
         return isSameType(otherPolymerUnit) && isOppositeTo(otherPolymerUnit);
     }
 
-    private boolean isSameType(PolymerUnit otherPolymerUnit) {
+    public boolean isSameType(PolymerUnit otherPolymerUnit) {
         return toLowerCase(this.value) == toLowerCase(otherPolymerUnit.value);
     }
 
-    private boolean isOppositeTo(PolymerUnit otherPolymerUnit) {
+    public boolean isOppositeTo(PolymerUnit otherPolymerUnit) {
         if (isLowerCase(this.value)) {
             return isUpperCase(otherPolymerUnit.value);
         } else {
