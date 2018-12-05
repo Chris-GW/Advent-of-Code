@@ -1,45 +1,73 @@
 package de.adventofcode.chrisgw.day05;
 
+import lombok.Value;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
+@Value
 public class AlchemicalReduction {
 
-    private LinkedList<PolymerUnit> polymerUnits = new LinkedList<>();
+    private final List<PolymerUnit> polymerUnits;
 
-    public static AlchemicalReduction parsePolymerString(String polymerString) {
-        AlchemicalReduction alchemicalReduction = new AlchemicalReduction();
-        for (int i = 0; i < polymerString.length(); i++) {
-            PolymerUnit polymerUnit = new PolymerUnit(polymerString.charAt(i));
-            alchemicalReduction.polymerUnits.add(polymerUnit);
-        }
-        return alchemicalReduction;
+
+    public AlchemicalReduction(List<PolymerUnit> polymerUnits) {
+        this.polymerUnits = Collections.unmodifiableList(polymerUnits);
     }
 
 
-    public boolean triggerAllReactions() {
-        if (polymerUnits.isEmpty()) {
-            return false;
+    public static AlchemicalReduction parsePolymerString(String polymerString) {
+        List<PolymerUnit> polymerUnits = new ArrayList<>(polymerString.length());
+        for (int i = 0; i < polymerString.length(); i++) {
+            PolymerUnit polymerUnit = new PolymerUnit(polymerString.charAt(i));
+            polymerUnits.add(polymerUnit);
         }
-        boolean hasTriggerdAnyReactions = false;
+        return new AlchemicalReduction(polymerUnits);
+    }
 
+
+    public AlchemicalReduction triggerAllReactions() {
+        if (polymerUnits.isEmpty()) {
+            return this;
+        }
+
+        List<PolymerUnit> polymerUnits = new ArrayList<>(this.polymerUnits);
         for (int i = 1; i < polymerUnits.size(); i++) {
             PolymerUnit previousPolymerUnit = polymerUnits.get(i - 1);
             PolymerUnit currentPolymerUnit = polymerUnits.get(i);
             if (previousPolymerUnit.isReactingTo(currentPolymerUnit)) {
                 polymerUnits.remove(i--);
                 polymerUnits.remove(i--);
-                hasTriggerdAnyReactions = true;
                 if (i < 0) {
                     i = 0;
                 }
             }
         }
-        return hasTriggerdAnyReactions;
+        return new AlchemicalReduction(polymerUnits);
     }
+
+
+    public AlchemicalReduction triggerAllReactionsWithoutBlockingUnit() {
+        return IntStream.rangeClosed('a', 'z')
+                .mapToObj(PolymerUnit::new)
+                .filter(polymerUnit -> polymerUnits.stream().anyMatch(polymerUnit::isSameType))
+                .map(this::withoutUnit)
+                .map(AlchemicalReduction::triggerAllReactions)
+                .min(Comparator.comparingInt(AlchemicalReduction::polymerLength))
+                .orElse(this);
+    }
+
+    private AlchemicalReduction withoutUnit(PolymerUnit blockingUnit) {
+        List<PolymerUnit> polymerUnitsWithoutBlockingUnit = this.polymerUnits.stream()
+                .filter(polymerUnit -> !polymerUnit.isSameType(blockingUnit))
+                .collect(Collectors.toList());
+        return new AlchemicalReduction(polymerUnitsWithoutBlockingUnit);
+    }
+
 
     public int polymerLength() {
         return polymerUnits.size();

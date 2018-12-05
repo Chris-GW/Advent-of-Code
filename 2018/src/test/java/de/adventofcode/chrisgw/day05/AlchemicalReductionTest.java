@@ -19,9 +19,9 @@ public class AlchemicalReductionTest {
 
         AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
         System.out.println(alchemicalReduction);
-        assertTrue("should trigger a reaction", alchemicalReduction.triggerAllReactions());
-        System.out.println(alchemicalReduction);
-        String actualPolymerString = alchemicalReduction.toString();
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactions();
+        System.out.println(afterAlchemicalReduction);
+        String actualPolymerString = afterAlchemicalReduction.toString();
         assertEquals("expectedPolymerString after triggerAllReactions", expectedPolymerString, actualPolymerString);
     }
 
@@ -32,9 +32,9 @@ public class AlchemicalReductionTest {
 
         AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
         System.out.println(alchemicalReduction);
-        assertTrue("should trigger a reaction", alchemicalReduction.triggerAllReactions());
-        System.out.println(alchemicalReduction);
-        String actualPolymerString = alchemicalReduction.toString();
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactions();
+        System.out.println(afterAlchemicalReduction);
+        String actualPolymerString = afterAlchemicalReduction.toString();
         assertEquals("expectedPolymerString after triggerAllReactions", expectedPolymerString, actualPolymerString);
     }
 
@@ -45,9 +45,9 @@ public class AlchemicalReductionTest {
 
         AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
         System.out.println(alchemicalReduction);
-        assertFalse("should trigger no reaction", alchemicalReduction.triggerAllReactions());
-        System.out.println(alchemicalReduction);
-        String actualPolymerString = alchemicalReduction.toString();
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactions();
+        System.out.println(afterAlchemicalReduction);
+        String actualPolymerString = afterAlchemicalReduction.toString();
         assertEquals("expectedPolymerString after triggerAllReactions", expectedPolymerString, actualPolymerString);
     }
 
@@ -58,9 +58,9 @@ public class AlchemicalReductionTest {
 
         AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
         System.out.println(alchemicalReduction);
-        assertFalse("should trigger no reaction", alchemicalReduction.triggerAllReactions());
-        System.out.println(alchemicalReduction);
-        String actualPolymerString = alchemicalReduction.toString();
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactions();
+        System.out.println(afterAlchemicalReduction);
+        String actualPolymerString = afterAlchemicalReduction.toString();
         assertEquals("expectedPolymerString after triggerAllReactions", expectedPolymerString, actualPolymerString);
     }
 
@@ -71,9 +71,9 @@ public class AlchemicalReductionTest {
 
         AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
         System.out.println(alchemicalReduction);
-        assertTrue("should trigger a reaction", alchemicalReduction.triggerAllReactions());
-        System.out.println(alchemicalReduction);
-        String actualPolymerString = alchemicalReduction.toString();
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactions();
+        System.out.println(afterAlchemicalReduction);
+        String actualPolymerString = afterAlchemicalReduction.toString();
         assertEquals("expectedPolymerString after triggerAllReactions", expectedPolymerString, actualPolymerString);
     }
 
@@ -86,10 +86,59 @@ public class AlchemicalReductionTest {
 
         AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
         System.out.println(alchemicalReduction);
-        assertTrue("should trigger a reaction", alchemicalReduction.triggerAllReactions());
-        System.out.println(alchemicalReduction);
-        int polymerLength = alchemicalReduction.polymerLength();
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactions();
+        System.out.println(afterAlchemicalReduction);
+        int polymerLength = afterAlchemicalReduction.polymerLength();
         assertEquals("expectedPolymerLength after triggerAllReactions", expectedPolymerLength, polymerLength);
+    }
+
+
+    // part 02
+
+    @Test
+    public void alchemicalReduction_withoutBlockingUnit_example_05() {
+        String polymerString = "dabAcCaCBAcCcaDA";
+        int expectedPolymerLength = 4;
+
+        AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
+        System.out.println(alchemicalReduction);
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactionsWithoutBlockingUnit();
+        System.out.println(afterAlchemicalReduction);
+        int polymerLength = afterAlchemicalReduction.polymerLength();
+        assertEquals("expectedPolymerLength after triggerAllReactions with removing blockingUnit",
+                expectedPolymerLength, polymerLength);
+    }
+
+    @Test
+    public void alchemicalReduction_withoutBlockingUnit_myPuzzleInput() throws Exception {
+        Path myPuzzleInputFile = TestUtils.getResourcePath("/day05/myPuzzleInput.txt");
+        String polymerString = Files.lines(myPuzzleInputFile).findFirst().orElse("");
+        int expectedPolymerLength = 6394;
+
+        AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
+        System.out.println(alchemicalReduction);
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactionsWithoutBlockingUnit();
+        System.out.println(afterAlchemicalReduction);
+        int polymerLength = afterAlchemicalReduction.polymerLength();
+        System.out.println(polymerLength);
+        assertEquals("expectedPolymerLength after triggerAllReactions with removing blockingUnit",
+                expectedPolymerLength, polymerLength);
+    }
+
+    @Test
+    public void alchemicalReduction_withoutBlockingUnit_myPuzzleInput02() throws Exception {
+        Path myPuzzleInputFile = TestUtils.getResourcePath("/day05/myPuzzleInput02.txt");
+        String polymerString = Files.lines(myPuzzleInputFile).findFirst().orElse("");
+        int expectedPolymerLength = 4552;
+
+        AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(polymerString);
+        System.out.println(alchemicalReduction);
+        AlchemicalReduction afterAlchemicalReduction = alchemicalReduction.triggerAllReactionsWithoutBlockingUnit();
+        System.out.println(afterAlchemicalReduction);
+        int polymerLength = afterAlchemicalReduction.polymerLength();
+        System.out.println(polymerLength);
+        assertEquals("expectedPolymerLength after triggerAllReactions with removing blockingUnit",
+                expectedPolymerLength, polymerLength);
     }
 
 }
