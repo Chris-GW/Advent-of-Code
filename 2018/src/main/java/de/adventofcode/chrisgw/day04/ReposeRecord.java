@@ -115,9 +115,9 @@ public class ReposeRecord {
             sb.append("NO GUARD SHIFTS");
             return sb.toString();
         }
-        sb.append("Date   ID    Minute\n");
-        sb.append("             000000000011111111112222222222333333333344444444445555555555\n");
-        sb.append("             012345678901234567890123456789012345678901234567890123456789\n");
+        sb.append("Date   ID     Minute\n");
+        sb.append("              000000000011111111112222222222333333333344444444445555555555\n");
+        sb.append("              012345678901234567890123456789012345678901234567890123456789\n");
 
 
         guards().flatMap(Guard::guardShifts)
