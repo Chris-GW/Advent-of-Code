@@ -49,6 +49,7 @@ public class ReposeRecordTest {
         Path guardShiftRecordFile = TestUtils.getResourcePath("/day04/guardShiftRecords.txt");
 
         ReposeRecord reposeRecord = ReposeRecord.parseGuardShiftRecords(guardShiftRecordFile);
+        System.out.println(reposeRecord);
         long solution = reposeRecord.solveUsingStrategie01();
         assertEquals(expectedSolution, solution);
     }
@@ -76,5 +77,17 @@ public class ReposeRecordTest {
         long solution = reposeRecord.solveUsingStrategie02();
         assertEquals(expectedSolution, solution);
     }
+
+
+    @Test
+    public void solveUsingStrategie02_myOtherTask() throws Exception {
+        long expectedSolution = 49137;
+        Path guardShiftRecordFile = TestUtils.getResourcePath("/day04/guardShiftRecords02.txt");
+
+        ReposeRecord reposeRecord = ReposeRecord.parseGuardShiftRecords(guardShiftRecordFile);
+        long solution = reposeRecord.solveUsingStrategie02();
+        assertEquals(expectedSolution, solution);
+    }
+
 
 }
