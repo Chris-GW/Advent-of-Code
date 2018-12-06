@@ -39,4 +39,35 @@ public class ChronalCoordinatesTest {
         assertEquals("largestAreaSize", expectedLargestAreaSize, largestAreaSize);
     }
 
+
+    // part 02
+
+    @Test
+    public void closestAreaSize_example_01() {
+        int expectedClosestAreaSize = 16;
+        Stream<String> placeCoordinateLines = Stream.of( //
+                "1, 1",//
+                "1, 6",//
+                "8, 3",//
+                "3, 4",//
+                "5, 5",//
+                "8, 9");
+
+        ChronalCoordinates chronalCoordinates = ChronalCoordinates.parsePlaceCoordinates(placeCoordinateLines);
+        System.out.println(chronalCoordinates.toString());
+
+        int closestAreaSize = chronalCoordinates.closestAreaSize(32);
+        assertEquals("largestAreaSize", expectedClosestAreaSize, closestAreaSize);
+    }
+
+    @Test
+    public void closestAreaSize_myPuzzleInput() throws Exception {
+        int expectedClosestAreaSize = 3660;
+        Path myPuzzleInputFile = TestUtils.getResourcePath("/day06/myPuzzleInput.txt");
+
+        ChronalCoordinates chronalCoordinates = ChronalCoordinates.parsePlaceCoordinates(myPuzzleInputFile);
+        int closestAreaSize = chronalCoordinates.closestAreaSize(10_000);
+        assertEquals("largestAreaSize", expectedClosestAreaSize, closestAreaSize);
+    }
+
 }

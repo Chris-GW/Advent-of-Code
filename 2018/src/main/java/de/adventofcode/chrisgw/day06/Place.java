@@ -7,19 +7,19 @@ import java.util.stream.Stream.Builder;
 
 
 @Value
-public class PlaceCoordinate {
+public class Place {
 
     private final int id;
     private Coordinate coordinate;
 
 
-    public PlaceCoordinate(int id, int x, int y) {
+    public Place(int id, int x, int y) {
         this.id = id;
         this.coordinate = new Coordinate(x, y);
     }
 
-    public boolean isAtCoordinate(PlaceCoordinate otherPlaceCoordinate) {
-        return isAtCoordinate(otherPlaceCoordinate.getCoordinate());
+    public boolean isAtCoordinate(Place otherPlace) {
+        return isAtCoordinate(otherPlace.getCoordinate());
     }
 
     public boolean isAtCoordinate(Coordinate otherCoordinate) {
