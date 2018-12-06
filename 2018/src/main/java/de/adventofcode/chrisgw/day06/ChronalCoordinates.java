@@ -1,6 +1,6 @@
 package de.adventofcode.chrisgw.day06;
 
-import de.adventofcode.chrisgw.day06.PlaceCoordinate.Coordinate;
+import de.adventofcode.chrisgw.day06.Place.Coordinate;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -16,9 +16,9 @@ import java.util.stream.Stream;
 
 public class ChronalCoordinates {
 
-    private Map<Integer, PlaceCoordinate> placeCoordinates;
+    private Map<Integer, Place> placesById;
 
-    private int[][] placeCoordinateArea;
+    private PlaceDistance[][] placeArea;
 
     @Getter
     private int dx;
@@ -27,16 +27,15 @@ public class ChronalCoordinates {
     private int dy;
 
 
-    private ChronalCoordinates(List<PlaceCoordinate> placeCoordinates) {
-        if (placeCoordinates.isEmpty()) {
-            this.placeCoordinates = Collections.emptyMap();
-            this.placeCoordinateArea = new int[0][0];
+    private ChronalCoordinates(List<Place> places) {
+        if (places.isEmpty()) {
+            this.placesById = Collections.emptyMap();
+            this.placeArea = new PlaceDistance[0][0];
         }
-        this.placeCoordinates = placeCoordinates.stream()
-                .collect(Collectors.toMap(PlaceCoordinate::getId, Function.identity()));
-        this.dx = -findMinPlaceCoordinateBy(PlaceCoordinate::getX) + 1;
-        this.dy = -findMinPlaceCoordinateBy(PlaceCoordinate::getY) + 1;
-        this.placeCoordinateArea = createPlaceCoordinateArea();
+        this.placesById = places.stream().collect(Collectors.toMap(Place::getId, Function.identity()));
+        this.dx = -findMinPlaceCoordinateBy(Place::getX) + 1;
+        this.dy = -findMinPlaceCoordinateBy(Place::getY) + 1;
+        this.placeArea = createPlaceCoordinateArea();
         calculatePlaceCoordinateArea();
     }
 
@@ -45,87 +44,81 @@ public class ChronalCoordinates {
     }
 
     public static ChronalCoordinates parsePlaceCoordinates(Stream<String> placeCoordinateLines) {
-        List<PlaceCoordinate> placeCoordinates = new ArrayList<>();
+        List<Place> places = new ArrayList<>();
         Iterator<String> placeCordinateLineIterator = placeCoordinateLines.iterator();
         for (int id = 1; placeCordinateLineIterator.hasNext(); id++) {
             String readLine = placeCordinateLineIterator.next();
-            PlaceCoordinate placeCoordinate = parsePlaceCoordinate(id, readLine);
-            placeCoordinates.add(placeCoordinate);
+            Place place = parsePlaceCoordinate(id, readLine);
+            places.add(place);
         }
-        return new ChronalCoordinates(placeCoordinates);
+        return new ChronalCoordinates(places);
     }
 
-    private static PlaceCoordinate parsePlaceCoordinate(int id, String placeCoordinateStr) {
+    private static Place parsePlaceCoordinate(int id, String placeCoordinateStr) {
         String[] split = placeCoordinateStr.split("\\s*,\\s*");
         int x = Integer.parseInt(split[0]);
         int y = Integer.parseInt(split[1]);
-        return new PlaceCoordinate(id, x, y);
+        return new Place(id, x, y);
     }
 
 
-    private int[][] createPlaceCoordinateArea() {
-        if (placeCoordinates.isEmpty()) {
-            return new int[0][0];
-        }
-        int maxX = findMaxPlaceCoordinateBy(PlaceCoordinate::getX);
-        int maxY = findMaxPlaceCoordinateBy(PlaceCoordinate::getY);
+    private PlaceDistance[][] createPlaceCoordinateArea() {
+        int maxX = findMaxPlaceCoordinateBy(Place::getX);
+        int maxY = findMaxPlaceCoordinateBy(Place::getY);
         Coordinate maxCoordinate = mapToArea(new Coordinate(maxX, maxY));
-        int xLength = maxCoordinate.getX() + 3;
-        int yLength = maxCoordinate.getY() + 3;
-        return new int[yLength][xLength];
+        int xLength = maxCoordinate.getX() + 2;
+        int yLength = maxCoordinate.getY() + 2;
+
+        PlaceDistance[][] placeArea = new PlaceDistance[yLength][xLength];
+        for (int y = 0; y < yLength; y++) {
+            for (int x = 0; x < xLength; x++) {
+                placeArea[y][x] = new PlaceDistance(x, y);
+            }
+        }
+        return placeArea;
     }
 
 
     private void calculatePlaceCoordinateArea() {
-        int areaSize = placeCoordinateArea.length * placeCoordinateArea[0].length;
-        Set<Coordinate> setCoordinates = new HashSet<>(areaSize);
-
-        for (int distance = 0; setCoordinates.size() < areaSize; distance++) {
-            Set<Coordinate> newCoordinates = new HashSet<>();
-            for (PlaceCoordinate placeCoordinate : placeCoordinates.values()) {
-                placeCoordinate.coordinatesWithinDistance(distance)
+        for (int distance = 0; !hasCalculatedAllPlaceDistances(); distance++) {
+            for (Place place : placesById.values()) {
+                final int currentDistance = distance;
+                place.coordinatesWithinDistance(distance)
                         .filter(this::isWithingArea)
-                        .filter(coordinate -> !setCoordinates.contains(coordinate))
-                        .forEach(coordinate -> {
-                            setClosestPlaceCoordinate(placeCoordinate, coordinate);
-                            newCoordinates.add(coordinate);
-                        });
+                        .forEach(coordinate -> putPlaceDistance(coordinate, place, currentDistance));
             }
-            setCoordinates.addAll(newCoordinates);
-            //System.out.println(this);
+            //            System.out.println(this);
         }
     }
 
-
-    private int findMinPlaceCoordinateBy(ToIntFunction<PlaceCoordinate> getPlaceCoordinate) {
-        PlaceCoordinate placeCoordinate = placeCoordinates().min(Comparator.comparingInt(getPlaceCoordinate))
-                .orElseThrow(IllegalStateException::new);
-        return getPlaceCoordinate.applyAsInt(placeCoordinate);
+    private boolean hasCalculatedAllPlaceDistances() {
+        return Arrays.stream(placeArea)
+                .flatMap(Arrays::stream)
+                .allMatch(placeDistance -> places().allMatch(placeDistance::containsDistanceForPlace));
     }
 
 
-    private int findMaxPlaceCoordinateBy(ToIntFunction<PlaceCoordinate> getPlaceCoordinate) {
-        PlaceCoordinate placeCoordinate = placeCoordinates().max(Comparator.comparingInt(getPlaceCoordinate))
-                .orElseThrow(IllegalStateException::new);
-        return getPlaceCoordinate.applyAsInt(placeCoordinate);
+    private int findMinPlaceCoordinateBy(ToIntFunction<Place> getPlaceCoordinate) {
+        Place place = places().min(Comparator.comparingInt(getPlaceCoordinate)).orElseThrow(IllegalStateException::new);
+        return getPlaceCoordinate.applyAsInt(place);
     }
 
 
-    private void setClosestPlaceCoordinate(PlaceCoordinate placeCoordinate, Coordinate coordinate) {
+    private int findMaxPlaceCoordinateBy(ToIntFunction<Place> getPlaceCoordinate) {
+        Place place = places().max(Comparator.comparingInt(getPlaceCoordinate)).orElseThrow(IllegalStateException::new);
+        return getPlaceCoordinate.applyAsInt(place);
+    }
+
+
+    private void putPlaceDistance(Coordinate coordinate, Place place, int distance) {
         coordinate = mapToArea(coordinate);
-        int placeCoordinateId = placeCoordinate.getId();
-        int currentPlaceCoordinateId = placeCoordinateArea[coordinate.getY()][coordinate.getX()];
-        if (currentPlaceCoordinateId > 0) {
-            placeCoordinateArea[coordinate.getY()][coordinate.getX()] = -1;
-        } else if (currentPlaceCoordinateId != -1) {
-            placeCoordinateArea[coordinate.getY()][coordinate.getX()] = placeCoordinateId;
-        }
+        placeArea[coordinate.getY()][coordinate.getX()].putDistanceTo(place, distance);
     }
 
     private boolean isWithingArea(Coordinate coordinate) {
         coordinate = mapToArea(coordinate);
-        return 0 <= coordinate.getX() && coordinate.getX() < placeCoordinateArea[0].length && //
-                0 <= coordinate.getY() && coordinate.getY() < placeCoordinateArea.length;
+        return 0 <= coordinate.getX() && coordinate.getX() < placeArea[0].length && //
+                0 <= coordinate.getY() && coordinate.getY() < placeArea.length;
     }
 
 
@@ -136,32 +129,38 @@ public class ChronalCoordinates {
     }
 
 
-    private Stream<PlaceCoordinate> placeCoordinates() {
-        return placeCoordinates.values().stream();
+    private Stream<Place> places() {
+        return placesById.values().stream();
     }
 
 
     public int largestAreaSize() {
-        return placeCoordinates().filter(placeCoordinate -> !isBoarderPlaceCoordinate(placeCoordinate))
-                .mapToInt(this::placeAreaSize)
-                .max()
-                .orElse(0);
+        return places().filter(place -> !isBoarderPlaceCoordinate(place)).mapToInt(this::placeAreaSize).max().orElse(0);
     }
 
-    private int placeAreaSize(PlaceCoordinate placeCoordinate) {
-        return (int) Arrays.stream(placeCoordinateArea)
-                .flatMapToInt(Arrays::stream)
-                .filter(placeId -> placeId == placeCoordinate.getId())
+    private int placeAreaSize(Place place) {
+        return (int) Arrays.stream(placeArea)
+                .flatMap(Arrays::stream)
+                .filter(placeDistance -> placeDistance.isPlaceWithMinDistance(place))
+                .mapToInt(placeDistance -> placeDistance.getDistanceTo(place))
+                .count();
+    }
+
+    public int closestAreaSize(int maxDistance) {
+        return (int) Arrays.stream(placeArea)
+                .flatMap(Arrays::stream)
+                .filter(placeDistance -> placeDistance.isToatalDistanceSmallerThan(maxDistance))
                 .count();
     }
 
 
-    public boolean isBoarderPlaceCoordinate(PlaceCoordinate placeCoordinate) {
-        for (int y = 0; y < placeCoordinateArea.length; y++) {
-            for (int x = 0; x < placeCoordinateArea[y].length; x++) {
-                if (y == 0 || y == placeCoordinateArea.length - 1 || //
-                        x == 0 || x == placeCoordinateArea[y].length - 1) {
-                    if (placeCoordinate.getId() == placeCoordinateArea[y][x]) {
+    public boolean isBoarderPlaceCoordinate(Place place) {
+        for (int y = 0; y < placeArea.length; y++) {
+            for (int x = 0; x < placeArea[y].length; x++) {
+                if (y == 0 || y == placeArea.length - 1 || //
+                        x == 0 || x == placeArea[y].length - 1) {
+                    PlaceDistance boarderPlaceDistance = placeArea[y][x];
+                    if (boarderPlaceDistance.isPlaceWithMinDistance(place)) {
                         return true;
                     }
                 }
@@ -173,24 +172,24 @@ public class ChronalCoordinates {
 
     @Override
     public String toString() {
-        if (placeCoordinates.isEmpty()) {
+        if (placesById.isEmpty()) {
             return "ChronalCoordinates empty";
         }
 
         StringBuilder sb = new StringBuilder();
-        for (int y = 0; y < placeCoordinateArea.length; y++) {
-            for (int x = 0; x < placeCoordinateArea[y].length; x++) {
-                int coordinateId = placeCoordinateArea[y][x];
-                PlaceCoordinate placeCoordinate = placeCoordinates.get(coordinateId);
+        for (int y = 0; y < placeArea.length; y++) {
+            for (int x = 0; x < placeArea[y].length; x++) {
+                PlaceDistance placeDistance = placeArea[y][x];
+                List<Place> minDistances = placeDistance.placesWithMinDistance().collect(Collectors.toList());
                 char placeCoordinateIdLetter;
-                if (placeCoordinate == null && coordinateId == -1) {
+                if (minDistances.size() > 1) {
                     placeCoordinateIdLetter = '.';
-                } else if (placeCoordinate == null) {
+                } else if (minDistances.isEmpty()) {
                     placeCoordinateIdLetter = ' ';
-                } else if (placeCoordinate.isAtCoordinate(x - dx, y - dy)) {
-                    placeCoordinateIdLetter = (char) ('A' + placeCoordinate.getId() - 1);
+                } else if (minDistances.get(0).isAtCoordinate(x - dx, y - dy)) {
+                    placeCoordinateIdLetter = (char) ('A' + minDistances.get(0).getId() - 1);
                 } else {
-                    placeCoordinateIdLetter = (char) ('a' + placeCoordinate.getId() - 1);
+                    placeCoordinateIdLetter = (char) ('a' + minDistances.get(0).getId() - 1);
                 }
                 sb.append(placeCoordinateIdLetter);
             }
