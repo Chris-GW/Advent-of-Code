@@ -2,6 +2,7 @@ package de.adventofcode.chrisgw.day05;
 
 import lombok.Value;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -86,7 +87,18 @@ public class AlchemicalReduction {
             return;
         }
         Path puzzleInputFile = Paths.get(args[0]);
+        String firstPolymerLine = Files.lines(puzzleInputFile).findFirst().orElse("");
+        AlchemicalReduction alchemicalReduction = AlchemicalReduction.parsePolymerString(firstPolymerLine);
+        System.out.println("read polymer string: " + alchemicalReduction);
+        System.out.println("polymerLength: " + alchemicalReduction.polymerLength());
 
+        AlchemicalReduction afterAllReactions = alchemicalReduction.triggerAllReactions();
+        System.out.println("afterAllReactions:   " + afterAllReactions);
+        System.out.println("polymerLength: " + afterAllReactions.polymerLength());
+
+        AlchemicalReduction withoutBlockingUnit = alchemicalReduction.triggerAllReactionsWithoutBlockingUnit();
+        System.out.println("withoutBlockingUnit: " + withoutBlockingUnit);
+        System.out.println("polymerLength: " + withoutBlockingUnit.polymerLength());
     }
 
 }
