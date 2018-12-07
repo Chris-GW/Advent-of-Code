@@ -10,7 +10,7 @@ import java.util.stream.Stream.Builder;
 public class Place {
 
     private final int id;
-    private Coordinate coordinate;
+    private final Coordinate coordinate;
 
 
     public Place(int id, int x, int y) {
@@ -30,18 +30,11 @@ public class Place {
         return getX() == x && getY() == y;
     }
 
-    public Stream<Coordinate> coordinatesWithinDistance(int distance) {
-        Builder<Coordinate> coordinateStreamBuilder = Stream.builder();
-        for (int dy = -distance; dy <= distance; dy++) {
-            for (int dx = -distance; dx <= distance; dx++) {
-                Coordinate coordinate = new Coordinate(getX() + dx, getY() + dy);
-                if (this.coordinate.distanceTo(coordinate) == distance) {
-                    coordinateStreamBuilder.add(coordinate);
-                }
-            }
-        }
-        return coordinateStreamBuilder.build();
+
+    public int distanceTo(Coordinate coordinate) {
+        return this.coordinate.distanceTo(coordinate);
     }
+
 
 
     public int getX() {
