@@ -6,8 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Advent-of-Code-2016" />
-        <module name="Advent-of-Code-2017" />
         <module name="Advent-of-Code-2018" />
       </profile>
     </annotationProcessing>
