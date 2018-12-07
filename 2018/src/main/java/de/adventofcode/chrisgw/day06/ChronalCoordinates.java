@@ -208,6 +208,9 @@ public class ChronalCoordinates {
         ChronalCoordinates chronalCoordinates = ChronalCoordinates.parsePlaceCoordinates(puzzleInputFile);
         int largestAreaSize = chronalCoordinates.largestAreaSize();
         System.out.println("largestAreaSize: " + largestAreaSize);
+
+        int closestAreaSize = chronalCoordinates.closestAreaSize(10_000);
+        System.out.println(closestAreaSize);
     }
 
 }
