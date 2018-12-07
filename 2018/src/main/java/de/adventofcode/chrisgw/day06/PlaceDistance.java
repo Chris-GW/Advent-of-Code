@@ -1,11 +1,13 @@
 package de.adventofcode.chrisgw.day06;
 
+import de.adventofcode.chrisgw.day06.Place.Coordinate;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 
@@ -13,8 +15,7 @@ import java.util.stream.Stream;
 public class PlaceDistance {
 
 
-    private final int x;
-    private final int y;
+    private final Coordinate coordinate;
 
     @Getter(AccessLevel.PRIVATE)
     private final Map<Place, Integer> distanceToPlaces = new HashMap<>();
@@ -42,12 +43,9 @@ public class PlaceDistance {
         return places().filter(place -> getDistanceTo(place) == minDistance);
     }
 
-    public boolean isPlaceWithMinDistance(Place place){
+    public boolean isPlaceWithMinDistance(Place place) {
         return placesWithMinDistance().allMatch(place::equals);
     }
 
-    public boolean containsDistanceForPlace(Place place) {
-        return distanceToPlaces.containsKey(place);
-    }
 
 }

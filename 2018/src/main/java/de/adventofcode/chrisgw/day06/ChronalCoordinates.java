@@ -36,7 +36,6 @@ public class ChronalCoordinates {
         this.dx = -findMinPlaceCoordinateBy(Place::getX) + 1;
         this.dy = -findMinPlaceCoordinateBy(Place::getY) + 1;
         this.placeArea = createPlaceCoordinateArea();
-        calculatePlaceCoordinateArea();
     }
 
     public static ChronalCoordinates parsePlaceCoordinates(Path placeCoordinateFile) throws IOException {
@@ -72,29 +71,16 @@ public class ChronalCoordinates {
         PlaceDistance[][] placeArea = new PlaceDistance[yLength][xLength];
         for (int y = 0; y < yLength; y++) {
             for (int x = 0; x < xLength; x++) {
-                placeArea[y][x] = new PlaceDistance(x, y);
+                Coordinate currentCoordinate = new Coordinate(x, y);
+                PlaceDistance placeDistance = new PlaceDistance(currentCoordinate);
+                for (Place place : placesById.values()) {
+                    int distance = place.distanceTo(currentCoordinate);
+                    placeDistance.putDistanceTo(place, distance);
+                }
+                placeArea[y][x] = placeDistance;
             }
         }
         return placeArea;
-    }
-
-
-    private void calculatePlaceCoordinateArea() {
-        for (int distance = 0; !hasCalculatedAllPlaceDistances(); distance++) {
-            for (Place place : placesById.values()) {
-                final int currentDistance = distance;
-                place.coordinatesWithinDistance(distance)
-                        .filter(this::isWithingArea)
-                        .forEach(coordinate -> putPlaceDistance(coordinate, place, currentDistance));
-            }
-            //            System.out.println(this);
-        }
-    }
-
-    private boolean hasCalculatedAllPlaceDistances() {
-        return Arrays.stream(placeArea)
-                .flatMap(Arrays::stream)
-                .allMatch(placeDistance -> places().allMatch(placeDistance::containsDistanceForPlace));
     }
 
 
@@ -107,18 +93,6 @@ public class ChronalCoordinates {
     private int findMaxPlaceCoordinateBy(ToIntFunction<Place> getPlaceCoordinate) {
         Place place = places().max(Comparator.comparingInt(getPlaceCoordinate)).orElseThrow(IllegalStateException::new);
         return getPlaceCoordinate.applyAsInt(place);
-    }
-
-
-    private void putPlaceDistance(Coordinate coordinate, Place place, int distance) {
-        coordinate = mapToArea(coordinate);
-        placeArea[coordinate.getY()][coordinate.getX()].putDistanceTo(place, distance);
-    }
-
-    private boolean isWithingArea(Coordinate coordinate) {
-        coordinate = mapToArea(coordinate);
-        return 0 <= coordinate.getX() && coordinate.getX() < placeArea[0].length && //
-                0 <= coordinate.getY() && coordinate.getY() < placeArea.length;
     }
 
 
