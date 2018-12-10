@@ -2,9 +2,13 @@ package de.adventofcode.chrisgw.day09;
 
 import lombok.Getter;
 
+import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -72,19 +76,16 @@ public class MarbleMania {
         if (!marbelsToPlace.hasNext()) {
             throw new IllegalStateException("This MarbleMania is finished");
         }
-        int scoreForMarbelPlaceing;
         Marbel nextMarbel = marbelsToPlace.next();
         if (nextMarbel.isDivisibleBy(23)) {
             Marbel removedMarbel = currentMarbel.removeMarbel(-7);
-            scoreForMarbelPlaceing = nextMarbel.getValue() + removedMarbel.getValue();
+            currentPlayer.addMarbel(removedMarbel);
+            currentPlayer.addMarbel(nextMarbel);
             currentMarbel = removedMarbel.getClockwiseMarbel();
         } else {
             currentMarbel.placeMarbelBetween(nextMarbel, 1, 2);
             currentMarbel = nextMarbel;
-            scoreForMarbelPlaceing = 0;
         }
-
-        currentPlayer.addScore(scoreForMarbelPlaceing);
         currentPlayer = currentPlayer.getNextPlayer();
     }
 
@@ -94,7 +95,21 @@ public class MarbleMania {
     }
 
     public MarbelPlayer bestPlayer() {
-        return marbelPlayers().max(Comparator.comparingInt(MarbelPlayer::getScore)).orElse(null);
+        MarbelPlayer bestMarbelPlayer = bestPlayer(this::calculateScore);
+        bestMarbelPlayer.setScore(calculateScore(bestMarbelPlayer));
+        return bestMarbelPlayer;
+    }
+
+    private BigInteger calculateScore(MarbelPlayer marbelPlayer) {
+        return marbelPlayer.takenMarbels()
+                .mapToInt(Marbel::getValue)
+                .mapToObj(BigInteger::valueOf)
+                .reduce(BigInteger.ZERO, BigInteger::add);
+    }
+
+
+    private MarbelPlayer bestPlayer(Function<MarbelPlayer, BigInteger> marbleScoreFunction) {
+        return marbelPlayers().max(Comparator.comparing(marbleScoreFunction)).orElse(null);
     }
 
 
@@ -106,6 +121,7 @@ public class MarbleMania {
         return Stream.iterate(firstMarbel, Marbel::getClockwiseMarbel)
                 .limit(Math.min(currentMarbelValue() + 1, marbelCount));
     }
+
 
     private int currentMarbelValue() {
         return currentMarbel.getValue();
