@@ -5,6 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
 
 @ToString
 @EqualsAndHashCode
@@ -19,20 +24,30 @@ public class MarbelPlayer {
     @EqualsAndHashCode.Exclude
     private MarbelPlayer nextPlayer;
 
+    private List<Marbel> takenMarbels = new ArrayList<>();
+
     @Getter
-    private int score;
+    @Setter
+    private BigInteger score;
 
 
     public MarbelPlayer(int playerId) {
         this.playerId = playerId;
         this.nextPlayer = this;
-        this.score = 0;
     }
 
 
-    public int addScore(int addedScore) {
-        this.score += addedScore;
-        return this.score;
+    public void addMarbel(Marbel marbel) {
+        takenMarbels.add(marbel);
+    }
+
+
+    public Stream<Marbel> takenMarbels() {
+        return takenMarbels.stream();
+    }
+
+    public Marbel lastTakenMarbel() {
+        return takenMarbels.get(takenMarbels.size() - 1);
     }
 
 }
