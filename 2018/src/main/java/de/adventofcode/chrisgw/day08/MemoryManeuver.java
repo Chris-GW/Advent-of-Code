@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 
@@ -41,18 +42,27 @@ public class MemoryManeuver {
     }
 
 
+    // part 01
+
     public int calculateMetaDataSum() {
         return calculateMetaDataSum(rootNode);
     }
 
     private int calculateMetaDataSum(LicenseNode currentLicenseNode) {
-        int metaDataSum = currentLicenseNode.metaData().sum();
+        int metaDataSum = currentLicenseNode.calculateMetaDataSum();
         Iterator<LicenseNode> childNodeIterator = currentLicenseNode.childNodes().iterator();
         while (childNodeIterator.hasNext()) {
             LicenseNode childNode = childNodeIterator.next();
             metaDataSum += calculateMetaDataSum(childNode);
         }
         return metaDataSum;
+    }
+
+
+    // part 02
+
+    public int calculateLicenseNodeValue() {
+        return getRootNode().calculateLicenseNodeValue();
     }
 
 
@@ -65,8 +75,10 @@ public class MemoryManeuver {
         String licenseNodeFormatStr = Files.lines(puzzleInputFile).findFirst().orElse(null);
         MemoryManeuver memoryManeuver = MemoryManeuver.fromLicenseNodeFormat(licenseNodeFormatStr);
         int metaDataSum = memoryManeuver.calculateMetaDataSum();
-        System.out.println("metaDataSum: " + memoryManeuver);
+        System.out.println("metaDataSum: " + metaDataSum);
 
+        int licenseNodeValue = memoryManeuver.calculateLicenseNodeValue();
+        System.out.println("licenseNodeValue: " + licenseNodeValue);
     }
 
 }

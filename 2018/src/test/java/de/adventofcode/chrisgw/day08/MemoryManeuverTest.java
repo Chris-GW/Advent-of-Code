@@ -47,11 +47,36 @@ public class MemoryManeuverTest {
     public void calculateMetaDataSum_myPuzzleInput() throws Exception {
         Path licenseFile = TestUtils.getResourcePath("/day08/myPuzzleInput.txt");
         String licenseNodeFormatStr = Files.lines(licenseFile).findFirst().orElse(null);
-        int expectedmetaDataSum = 43825;
+        int expectedMetaDataSum = 43825;
 
         MemoryManeuver memoryManeuver = MemoryManeuver.fromLicenseNodeFormat(licenseNodeFormatStr);
         int metaDataSum = memoryManeuver.calculateMetaDataSum();
-        assertEquals("metaDataSum", expectedmetaDataSum, metaDataSum);
+        assertEquals("metaDataSum", expectedMetaDataSum, metaDataSum);
+    }
+
+
+    // part 02
+
+    @Test
+    public void calculateLicenseNodeValue_example01() {
+        String licenseNodeFormatStr = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
+        int expectedLicenseNodeValue = 33 + 33 + 0; // 66
+
+        MemoryManeuver memoryManeuver = MemoryManeuver.fromLicenseNodeFormat(licenseNodeFormatStr);
+        int licenseNodeValue = memoryManeuver.calculateLicenseNodeValue();
+        assertEquals("licenseNodeValue", expectedLicenseNodeValue, licenseNodeValue);
+    }
+
+
+    @Test
+    public void calculateLicenseNodeValue_myPuzzleInput() throws Exception {
+        Path licenseFile = TestUtils.getResourcePath("/day08/myPuzzleInput.txt");
+        String licenseNodeFormatStr = Files.lines(licenseFile).findFirst().orElse(null);
+        int expectedLicenseNodeValue = 19276;
+
+        MemoryManeuver memoryManeuver = MemoryManeuver.fromLicenseNodeFormat(licenseNodeFormatStr);
+        int licenseNodeValue = memoryManeuver.calculateLicenseNodeValue();
+        assertEquals("licenseNodeValue", expectedLicenseNodeValue, licenseNodeValue);
     }
 
 }
