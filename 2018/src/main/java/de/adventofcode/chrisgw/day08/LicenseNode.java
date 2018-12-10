@@ -5,6 +5,8 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -56,6 +58,31 @@ public class LicenseNode {
     public void addChild(LicenseNode childNode) {
         childNode.parentNode = this;
         this.childNodes.add(childNode);
+    }
+
+
+    public int calculateLicenseNodeValue() {
+        if (getChildNodeQuantity() == 0) {
+            return calculateMetaDataSum();
+        } else {
+            return metaData().mapToObj(this::childNodeAt)
+                    .filter(Objects::nonNull)
+                    .mapToInt(LicenseNode::calculateLicenseNodeValue)
+                    .sum();
+        }
+    }
+
+    public int calculateMetaDataSum() {
+        return metaData().sum();
+    }
+
+
+    public LicenseNode childNodeAt(int childNodeIndex) {
+        if (0 < childNodeIndex && childNodeIndex <= childNodes.size()) {
+            return childNodes.get(childNodeIndex - 1);
+        } else {
+            return null;
+        }
     }
 
 
