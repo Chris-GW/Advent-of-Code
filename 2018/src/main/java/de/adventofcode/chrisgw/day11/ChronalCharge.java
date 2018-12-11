@@ -1,8 +1,9 @@
 package de.adventofcode.chrisgw.day11;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import lombok.Value;
+
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -59,16 +60,12 @@ public class ChronalCharge {
         Builder<FuelCellSquare> fuelCellSquares = Stream.builder();
         for (int y = 0; y < fuelCellGridSize() - fuelCellSquareSize; y++) {
             for (int x = 0; x < fuelCellGridSize() - fuelCellSquareSize; x++) {
-                FuelCellSquare fuelCellSquare = createFuelCellSquare(x, y, fuelCellSquareSize);
+                FuelCell topLeftFuelCell = fuelCellAt(x, y);
+                FuelCellSquare fuelCellSquare = new FuelCellSquare(topLeftFuelCell, fuelCellSquareSize);
                 fuelCellSquares.add(fuelCellSquare);
             }
         }
         return fuelCellSquares.build();
-    }
-
-    private FuelCellSquare createFuelCellSquare(int x, int y, int fuelCellSquareSize) {
-        FuelCell topLeftFuelCell = fuelCellAt(x, y);
-        return new FuelCellSquare(fuelCellGrid, topLeftFuelCell, fuelCellSquareSize);
     }
 
 
@@ -82,13 +79,58 @@ public class ChronalCharge {
     }
 
 
+    @Value
+    public class FuelCellSquare {
+
+        private final FuelCell topLeftFuelCell;
+        private final int size;
+        private final int totalPowerLevel;
+
+
+        public FuelCellSquare(FuelCell topLeftFuelCell, int size) {
+            this.topLeftFuelCell = topLeftFuelCell;
+            this.size = size;
+            this.totalPowerLevel = calculateTotalPowerLevel();
+        }
+
+        private int calculateTotalPowerLevel() {
+            return fuelCells().mapToInt(FuelCell::getPowerLevel).sum();
+        }
+
+
+        private Stream<FuelCell> fuelCells() {
+            int x = topLeftFuelCell.getX();
+            int y = topLeftFuelCell.getY();
+            return Arrays.stream(fuelCellGrid, y, y + size).flatMap(fuelCells -> Arrays.stream(fuelCells, x, x + size));
+        }
+
+
+        public FuelCell topLeftFuelCell() {
+            return topLeftFuelCell;
+        }
+
+
+        public int size() {
+            return size;
+        }
+
+    }
+
+
     public static void main(String[] args) throws Exception {
-        if (args.length == 0) {
-            System.out.println("No path in args[]");
+        if (args.length < 2) {
+            System.out.println("Usage <gridSerialNumber> <fuelCellGridSize>");
             return;
         }
-        Path puzzleInputFile = Paths.get(args[0]);
+        int gridSerialNumber = Integer.parseInt(args[0]);
+        int fuelCellGridSize = Integer.parseInt(args[1]);
+        ChronalCharge chronalCharge = new ChronalCharge(fuelCellGridSize, gridSerialNumber);
 
+        FuelCellSquare highest3FuelCellSquare = chronalCharge.findHighestPowerLevelFuelCellSquare(3);
+        System.out.println("with suare size 3: " + highest3FuelCellSquare);
+
+        FuelCellSquare highestAnySizeFuelCellSquare = chronalCharge.findHighestPowerLevelFuelCellSquare();
+        System.out.println("with any suare size: " + highestAnySizeFuelCellSquare);
     }
 
 }
