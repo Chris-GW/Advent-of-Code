@@ -1,7 +1,6 @@
 package de.adventofcode.chrisgw.day10;
 
 import de.adventofcode.chrisgw.TestUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.file.Path;
@@ -215,6 +214,36 @@ public class TheStarsAlignTest {
                 + "#....#..#....#..#........###.#..#....#..#....#..######..######";
         long expectedElapsedSeconds = 10243;
         Path myPuzzleInputFile = TestUtils.getResourcePath("/day10/myPuzzleInput.txt");
+
+        TheStarsAlign theStarsAlign = new TheStarsAlign(myPuzzleInputFile);
+        while (!theStarsAlign.isFormingFloatingPointMessage()) {
+            theStarsAlign.moveFor(Duration.ofSeconds(1));
+        }
+
+        String floatingPointMessage = theStarsAlign.formatFloatingPointMessage();
+        long elapsedSeconds = TheStarsAlign.toSeconds(theStarsAlign.getElapsedDuration());
+        System.out.println("After " + elapsedSeconds + "s:");
+        System.out.println(floatingPointMessage);
+        assertEquals("elapsedSeconds", expectedElapsedSeconds, elapsedSeconds);
+        assertEquals("floatingPointMessage", expectedFloatingPointMessage, floatingPointMessage);
+    }
+
+
+    @Test
+    public void formatFloatingPointMessage_otherPuzzleInput() throws Exception {
+        String expectedFloatingPointMessage = "" //
+                + "#####...#....#..######..######...####...######..######..#....#\n" //
+                + "#....#..#....#..#............#..#....#..#............#..#....#\n" //
+                + "#....#..#....#..#............#..#.......#............#...#..#.\n" //
+                + "#....#..#....#..#...........#...#.......#...........#....#..#.\n" //
+                + "#####...######..#####......#....#.......#####......#......##..\n" //
+                + "#.......#....#..#.........#.....#.......#.........#.......##..\n" //
+                + "#.......#....#..#........#......#.......#........#.......#..#.\n" //
+                + "#.......#....#..#.......#.......#.......#.......#........#..#.\n" //
+                + "#.......#....#..#.......#.......#....#..#.......#.......#....#\n" //
+                + "#.......#....#..#.......######...####...######..######..#....#";
+        long expectedElapsedSeconds = 10634;
+        Path myPuzzleInputFile = TestUtils.getResourcePath("/day10/otherPuzzleInput.txt");
 
         TheStarsAlign theStarsAlign = new TheStarsAlign(myPuzzleInputFile);
         while (!theStarsAlign.isFormingFloatingPointMessage()) {
