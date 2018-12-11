@@ -1,5 +1,6 @@
 package de.adventofcode.chrisgw.day11;
 
+import de.adventofcode.chrisgw.day11.ChronalCharge.FuelCellSquare;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -149,15 +150,12 @@ public class ChronalChargeTest {
         int gridSerialNumber = 3628;
         int expectedX = 236;
         int expectedY = 175;
-        int expectedSuqareSize = 12;
+        int expectedSuqareSize = 11;
         int expectedTotalPower = 88;
 
         ChronalCharge chronalCharge = new ChronalCharge(fuelCellGridSize, gridSerialNumber);
         FuelCellSquare highestFuelCellSquare = chronalCharge.findHighestPowerLevelFuelCellSquare();
-        int totalPowerLevel = highestFuelCellSquare.getTotalPowerLevel();
         FuelCell topLeftFuelCell = highestFuelCellSquare.topLeftFuelCell();
-        int x = topLeftFuelCell.getX();
-        int y = topLeftFuelCell.getY();
 
         System.out.println(highestFuelCellSquare);
         assertEquals("x", expectedX, topLeftFuelCell.getX());
