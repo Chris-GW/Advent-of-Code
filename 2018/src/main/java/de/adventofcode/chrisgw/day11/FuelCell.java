@@ -1,14 +1,23 @@
 package de.adventofcode.chrisgw.day11;
 
-import lombok.Data;
+import lombok.Value;
 
 
-@Data
+@Value
 public class FuelCell {
 
     private final int x;
     private final int y;
     private final int gridSerialNumber;
+    private final int powerLevel;
+
+
+    public FuelCell(int x, int y, int gridSerialNumber) {
+        this.x = x;
+        this.y = y;
+        this.gridSerialNumber = gridSerialNumber;
+        this.powerLevel = calculatePowerLevel();
+    }
 
 
     public int rackId() {
@@ -28,7 +37,7 @@ public class FuelCell {
      *
      * @return calculated powerlevel for this FuelCell
      */
-    public int powerLevel() {
+    private int calculatePowerLevel() {
         int powerLevel = rackId() * y;
         powerLevel += gridSerialNumber;
         powerLevel *= rackId();

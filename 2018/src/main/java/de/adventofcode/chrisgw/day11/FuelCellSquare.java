@@ -1,53 +1,59 @@
 package de.adventofcode.chrisgw.day11;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.Value;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 
 @Value
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class FuelCellSquare {
 
 
-    private final FuelCell[][] fuelCellSquare;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private final FuelCell[][] fuelCellGrid;
+
+    private final FuelCell topLeftFuelCell;
+    private final int size;
+    private final int totalPowerLevel;
 
 
-    public static FuelCellSquare createFuelCellSquare(FuelCell[][] fuelCellGrid, int size, int x, int y) {
-        FuelCell[][] fuelCellSquare = new FuelCell[size][size];
-        for (int dy = 0; dy < size; dy++) {
-            for (int dx = 0; dx < size; dx++) {
-                FuelCell fuelCell = fuelCellGrid[y + dy][x + dx];
-                fuelCellSquare[dy][dx] = fuelCell;
-            }
-        }
-        return new FuelCellSquare(fuelCellSquare);
+    public FuelCellSquare(FuelCell[][] fuelCellGrid, FuelCell topLeftFuelCell, int size) {
+        this.fuelCellGrid = fuelCellGrid;
+        this.topLeftFuelCell = topLeftFuelCell;
+        this.size = size;
+        this.totalPowerLevel = calculateTotalPowerLevel();
     }
 
-
-    public FuelCell topLeftFuelCell() {
-        return fuelCellSquare[0][0];
-    }
-
-    public int totalPowerLevel() {
-        return fuelCells().mapToInt(FuelCell::powerLevel).sum();
+    private int calculateTotalPowerLevel() {
+        return fuelCells().mapToInt(FuelCell::getPowerLevel).sum();
     }
 
 
     public Stream<FuelCell> fuelCells() {
-        return Arrays.stream(fuelCellSquare).flatMap(Arrays::stream);
+        Builder<FuelCell> fuelCells = Stream.builder();
+        for (int dy = 0; dy < size; dy++) {
+            for (int dx = 0; dx < size; dx++) {
+                int x = topLeftFuelCell.getX() + dx;
+                int y = topLeftFuelCell.getY() + dy;
+                fuelCells.add(fuelCellGrid[y][x]);
+            }
+        }
+        return fuelCells.build();
     }
 
 
-    public FuelCell fuelCellAt(int x, int y) {
-        return fuelCellSquare[y][x];
+    public FuelCell topLeftFuelCell() {
+        return topLeftFuelCell;
     }
+
 
     public int size() {
-        return fuelCellSquare.length;
+        return size;
     }
+
 
 }
