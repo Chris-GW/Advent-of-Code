@@ -2,6 +2,7 @@ package de.adventofcode.chrisgw.day12;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -20,8 +22,8 @@ public class SubterraneanSustainability {
 
     private int generation = 0;
 
+    private int plantPotZeroIndex = 0;
     private List<PlantPot> plantPots = new ArrayList<>();
-    private List<PlantPot> negativePlantPots = new ArrayList<>();
 
     private List<PlantGrowNote> plantGrowNotes = new ArrayList<>();
 
@@ -62,26 +64,31 @@ public class SubterraneanSustainability {
         SubterraneanSustainability newPlantPotField = new SubterraneanSustainability();
         newPlantPotField.generation = this.generation + 1;
         newPlantPotField.plantGrowNotes = this.plantGrowNotes;
-        newPlantPotField.plantPots = collectNewGenerationPlantPots(newPlantPotField, this.plantPots, false);
-        newPlantPotField.negativePlantPots = collectNewGenerationPlantPots(newPlantPotField, this.negativePlantPots,
-                true);
+        newPlantPotField.plantPots = collectNewGenerationPlantPots(newPlantPotField);
         return newPlantPotField;
     }
 
-    private List<PlantPot> collectNewGenerationPlantPots(SubterraneanSustainability plantPotField,
-            List<PlantPot> plantPots, boolean negative) {
-        int currentPlantPotsSize = plantPots.size();
-        List<PlantPot> newGenerationPlantPots = new ArrayList<>(currentPlantPotsSize + 5);
+    private List<PlantPot> collectNewGenerationPlantPots(SubterraneanSustainability plantPotField) {
+        List<PlantPot> newGenerationPlantPots = new ArrayList<>(plantPotFieldSize() + 10);
+        int firstPlantPotNumber = plantPots.get(0).getNumber();
+        List<PlantPot> newNegativePlantPots = IntStream.range(firstPlantPotNumber - 5, firstPlantPotNumber)
+                .mapToObj(number -> plantPotField.new PlantPot(number))
+                .collect(Collectors.toList());
+        newGenerationPlantPots.addAll(newNegativePlantPots);
+        plantPotField.plantPotZeroIndex = plantPotZeroIndex + newNegativePlantPots.size();
 
-        plantPots.stream().parallel().map(plantPot -> {
+        List<PlantPot> newPlantPots = plantPots.stream().map(plantPot -> {
             int number = plantPot.number;
             boolean hasPlant = plantPot.willHavePlantInNextGeneration();
             return plantPotField.new PlantPot(number, hasPlant);
-        }).forEachOrdered(newGenerationPlantPots::add);
+        }).collect(Collectors.toList());
+        newGenerationPlantPots.addAll(newPlantPots);
 
-        IntStream.rangeClosed(currentPlantPotsSize, currentPlantPotsSize + 5)
-                .mapToObj(number -> plantPotField.new PlantPot(negative ? -number : number))
-                .forEachOrdered(newGenerationPlantPots::add);
+        int lastPlantPotNumber = plantPots.get(plantPots.size() - 1).getNumber();
+        List<PlantPot> newPositivePlantPot = IntStream.range(lastPlantPotNumber + 1, lastPlantPotNumber + 6)
+                .mapToObj(number -> plantPotField.new PlantPot(number))
+                .collect(Collectors.toList());
+        newGenerationPlantPots.addAll(newPositivePlantPot);
         return newGenerationPlantPots;
     }
 
@@ -92,13 +99,13 @@ public class SubterraneanSustainability {
 
 
     private PlantPot plantPotAt(int potNumber) {
-        List<PlantPot> plantPots = this.plantPots;
-        if (potNumber < 0) {
-            potNumber = Math.abs(potNumber);
-            plantPots = negativePlantPots;
-        }
-        if (potNumber < plantPots.size()) {
-            return plantPots.get(potNumber);
+        int potIndex = potNumber + plantPotZeroIndex;
+        if (0 <= potIndex && potIndex < plantPots.size()) {
+            PlantPot plantPot = plantPots.get(potIndex);
+            if (plantPot.getNumber() != potNumber) {
+                throw new IllegalArgumentException();
+            }
+            return plantPot;
         } else {
             return new PlantPot(potNumber);
         }
@@ -106,11 +113,11 @@ public class SubterraneanSustainability {
 
 
     private Stream<PlantPot> allPlantPots() {
-        return Stream.concat(negativePlantPots.stream(), plantPots.stream());
+        return plantPots.stream();
     }
 
     public int plantPotFieldSize() {
-        return negativePlantPots.size() + plantPots.size();
+        return plantPots.size();
     }
 
 
@@ -148,6 +155,16 @@ public class SubterraneanSustainability {
             Optional<PlantGrowNote> matchingPlantGrowNote = plantGrowNotes.stream()
                     .filter(plantGrowNote -> plantGrowNote.matchesPlantPot(this))
                     .findFirst();
+
+            if (number == -1) {
+                StringBuilder debug = new StringBuilder();
+                debug.append(StringUtils.leftPad("", Math.abs(number) + "  1:  ".length()));
+                for (int i = -2; i <= 2; i++) {
+                    PlantPot plantPotTo = getPlantPotTo(i);
+                    debug.append(plantPotTo.hasPlant() ? "#" : ".");
+                }
+                System.out.println(debug + " <=> " + matchingPlantGrowNote.map(PlantGrowNote::toString).orElse(""));
+            }
             return matchingPlantGrowNote.map(PlantGrowNote::isResultIntoPotWithPlant).orElse(false);
         }
 
