@@ -9,22 +9,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 public class MineCartMadness {
 
     private MineCartTrack[][] trackSystem;
-    private List<MineCart> minesCarts;
+    private Set<MineCart> mineCarts;
+    private Set<MineCart> crashedMineCarts;
 
     @Getter
     private int tick = 0;
 
 
     public MineCartMadness(List<String> trackLines) {
-        this.minesCarts = new ArrayList<>();
+        this.mineCarts = new HashSet<>();
+        this.crashedMineCarts = new HashSet<>();
 
+        int id = 0;
         this.trackSystem = new MineCartTrack[trackLines.size()][];
         for (int y = 0; y < trackLines.size(); y++) {
             String trackLine = trackLines.get(y);
@@ -37,40 +39,39 @@ public class MineCartMadness {
                 MineCartTrack track = new MineCartTrack(x, y, toTrackLetter(trackLetter));
                 this.trackSystem[y][x] = track;
                 if (isMineCart(trackLetter)) {
-                    minesCarts.add(new MineCart(trackLetter, track));
+                    mineCarts.add(new MineCart(++id, trackLetter, track));
                 }
             }
         }
     }
 
 
-    public void nextTick() {
+    public Collection<MineCart> nextTick() {
         Iterator<MineCart> sortedMineCartIterator = mineCarts() //
                 .sorted(Comparator.comparing(MineCart::getCurrentTrack)) //
                 .iterator(); //
+
         while (sortedMineCartIterator.hasNext()) {
             MineCart mineCart = sortedMineCartIterator.next();
             mineCart.nextTick();
-            if (mineCarts().anyMatch(mineCart::collideWith)) {
-                break;
-            }
+            Optional<MineCart> crashedMineCart = findCrashedMineCard(mineCart);
+            crashedMineCart.ifPresent(otherMineCart -> {
+                crashedMineCarts.add(mineCart);
+                crashedMineCarts.add(otherMineCart);
+            });
         }
         tick++;
+        mineCarts.removeAll(crashedMineCarts);
+        return crashedMineCarts;
+    }
+
+    private Optional<MineCart> findCrashedMineCard(MineCart mineCart) {
+        return mineCarts().filter(mineCart::collideWith).findAny();
     }
 
 
     public Stream<MineCart> mineCarts() {
-        return minesCarts.stream();
-    }
-
-
-    public Stream<MineCart> crashedMineCarts() {
-        return mineCarts().filter(mineCart -> mineCarts().anyMatch(mineCart::collideWith))
-                .sorted(Comparator.comparing(MineCart::getCurrentTrack));
-    }
-
-    public boolean hasAnyCartCrahsed() {
-        return crashedMineCarts().findAny().isPresent();
+        return mineCarts.stream();
     }
 
 
@@ -135,6 +136,11 @@ public class MineCartMadness {
     }
 
 
+    public int mineCartCount() {
+        return mineCarts.size();
+    }
+
+
     @Value
     public class MineCartTrack implements Comparable<MineCartTrack> {
 
@@ -176,16 +182,21 @@ public class MineCartMadness {
         System.out.println(mineCartMadness);
         System.out.println();
 
-        while (!mineCartMadness.hasAnyCartCrahsed()) {
-            mineCartMadness.nextTick();
+        Set<MineCart> crashedMineCarts = new HashSet<>();
+        while (mineCartMadness.mineCartCount() > 1) {
+            if (crashedMineCarts.addAll(mineCartMadness.nextTick())) {
+                MineCart crashedMineCart = crashedMineCarts.stream().findAny().orElseThrow(IllegalStateException::new);
+                MineCartTrack trackWithCrash = crashedMineCart.getCurrentTrack();
+                System.out.println("track with crash: " + trackWithCrash);
+            }
         }
 
         System.out.println(mineCartMadness);
         System.out.println();
 
-        List<MineCart> crashedMineCarts = mineCartMadness.crashedMineCarts().collect(Collectors.toList());
-        MineCartTrack trackWithCrash = crashedMineCarts.get(0).getCurrentTrack();
-        System.out.println("trackWithCrash " + trackWithCrash);
+        MineCart survivingMineCart = mineCartMadness.mineCarts().findAny().orElseThrow(IllegalArgumentException::new);
+        MineCartTrack track = survivingMineCart.getCurrentTrack();
+        System.out.println("track with surviving mineCart: " + track);
     }
 
 }

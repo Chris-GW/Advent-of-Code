@@ -1,10 +1,9 @@
 package de.adventofcode.chrisgw.day13;
 
 import de.adventofcode.chrisgw.day13.MineCartMadness.MineCartTrack;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,17 +16,22 @@ import static de.adventofcode.chrisgw.day13.MineCart.MineCartDirection.*;
 @Setter(AccessLevel.PRIVATE)
 public class MineCart {
 
+    private final int id;
+
     private MineCartTrack currentTrack;
     private MineCartDirection direction;
 
     private int passedIntersectionCount = 0;
+
+    @ToString.Exclude
     private List<UnaryOperator<MineCartDirection>> intersectionTransitions = Arrays.asList( //
             MineCartDirection::toLeft, // it turns left the first time
             direction -> direction, // goes straight the second time
             MineCartDirection::toRight); // turns right the third time
 
 
-    public MineCart(char mineCartLetter, MineCartTrack track) {
+    public MineCart(int id, char mineCartLetter, MineCartTrack track) {
+        this.id = id;
         this.direction = MineCartDirection.forDirectionLetter(mineCartLetter);
         this.currentTrack = track;
     }
@@ -66,6 +70,26 @@ public class MineCart {
 
     public boolean collideWith(MineCart otherMineCart) {
         return this != otherMineCart && isOnTrack(otherMineCart.getCurrentTrack());
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof MineCart)) {
+            return false;
+        }
+
+        MineCart mineCart = (MineCart) o;
+        return new EqualsBuilder().append(getId(), mineCart.getId()).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(getId()).toHashCode();
     }
 
 
