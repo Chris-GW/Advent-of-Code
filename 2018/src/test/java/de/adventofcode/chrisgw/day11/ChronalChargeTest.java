@@ -1,6 +1,7 @@
 package de.adventofcode.chrisgw.day11;
 
 import de.adventofcode.chrisgw.day11.ChronalCharge.FuelCellSquare;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -90,7 +91,7 @@ public class ChronalChargeTest {
         ChronalCharge chronalCharge = new ChronalCharge(fuelCellGridSize, gridSerialNumber);
         FuelCellSquare highestFuelCellSquare = chronalCharge.findHighestPowerLevelFuelCellSquare(3);
         int totalPowerLevel = highestFuelCellSquare.getTotalPowerLevel();
-        FuelCell topLeftFuelCell = highestFuelCellSquare.topLeftFuelCell();
+        FuelCell topLeftFuelCell = highestFuelCellSquare.getTopLeftFuelCell();
         int x = topLeftFuelCell.getX();
         int y = topLeftFuelCell.getY();
 
@@ -114,12 +115,12 @@ public class ChronalChargeTest {
 
         ChronalCharge chronalCharge = new ChronalCharge(fuelCellGridSize, gridSerialNumber);
         FuelCellSquare highestFuelCellSquare = chronalCharge.findHighestPowerLevelFuelCellSquare();
-        FuelCell topLeftFuelCell = highestFuelCellSquare.topLeftFuelCell();
+        FuelCell topLeftFuelCell = highestFuelCellSquare.getTopLeftFuelCell();
 
         System.out.println(highestFuelCellSquare);
         assertEquals("x", expectedX, topLeftFuelCell.getX());
         assertEquals("y", expectedY, topLeftFuelCell.getY());
-        assertEquals("fuelCellSquareSize", expectedSuqareSize, highestFuelCellSquare.size());
+        assertEquals("fuelCellSquareSize", expectedSuqareSize, highestFuelCellSquare.getSize());
         assertEquals("totalPower", expectedTotalPower, highestFuelCellSquare.getTotalPowerLevel());
     }
 
@@ -134,12 +135,12 @@ public class ChronalChargeTest {
 
         ChronalCharge chronalCharge = new ChronalCharge(fuelCellGridSize, gridSerialNumber);
         FuelCellSquare highestFuelCellSquare = chronalCharge.findHighestPowerLevelFuelCellSquare();
-        FuelCell topLeftFuelCell = highestFuelCellSquare.topLeftFuelCell();
+        FuelCell topLeftFuelCell = highestFuelCellSquare.getTopLeftFuelCell();
 
         System.out.println(highestFuelCellSquare);
         assertEquals("x", expectedX, topLeftFuelCell.getX());
         assertEquals("y", expectedY, topLeftFuelCell.getY());
-        assertEquals("fuelCellSquareSize", expectedSuqareSize, highestFuelCellSquare.size());
+        assertEquals("fuelCellSquareSize", expectedSuqareSize, highestFuelCellSquare.getSize());
         assertEquals("totalPower", expectedTotalPower, highestFuelCellSquare.getTotalPowerLevel());
     }
 
@@ -155,12 +156,12 @@ public class ChronalChargeTest {
 
         ChronalCharge chronalCharge = new ChronalCharge(fuelCellGridSize, gridSerialNumber);
         FuelCellSquare highestFuelCellSquare = chronalCharge.findHighestPowerLevelFuelCellSquare();
-        FuelCell topLeftFuelCell = highestFuelCellSquare.topLeftFuelCell();
+        FuelCell topLeftFuelCell = highestFuelCellSquare.getTopLeftFuelCell();
 
         System.out.println(highestFuelCellSquare);
         assertEquals("x", expectedX, topLeftFuelCell.getX());
         assertEquals("y", expectedY, topLeftFuelCell.getY());
-        assertEquals("fuelCellSquareSize", expectedSuqareSize, highestFuelCellSquare.size());
+        assertEquals("fuelCellSquareSize", expectedSuqareSize, highestFuelCellSquare.getSize());
         assertEquals("totalPower", expectedTotalPower, highestFuelCellSquare.getTotalPowerLevel());
     }
 
