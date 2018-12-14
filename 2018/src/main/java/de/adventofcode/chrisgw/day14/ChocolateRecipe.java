@@ -5,12 +5,25 @@ import lombok.Value;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Value
 public class ChocolateRecipe {
 
     private final int qualityScore;
+    private static List<ChocolateRecipe> chocolateRecipeCache = Collections.unmodifiableList(
+            IntStream.range(0, 10).mapToObj(ChocolateRecipe::new).collect(Collectors.toList()));
+
+
+    private ChocolateRecipe(int qualityScore) {
+        this.qualityScore = qualityScore;
+    }
+
+    public static ChocolateRecipe of(int qualityScore) {
+        return chocolateRecipeCache.get(qualityScore);
+    }
 
 
     public List<ChocolateRecipe> combineRecipes(ChocolateRecipe otherRecipe) {
@@ -20,10 +33,10 @@ public class ChocolateRecipe {
             return Collections.singletonList(newRecipe);
         } else {
             int firstRecipeQuality = sum / 10;
-            ChocolateRecipe firstNewRecipe = new ChocolateRecipe(firstRecipeQuality);
+            ChocolateRecipe firstNewRecipe = ChocolateRecipe.of(firstRecipeQuality);
 
             int secondRecipeQuality = sum % 10;
-            ChocolateRecipe secondNewRecipe = new ChocolateRecipe(secondRecipeQuality);
+            ChocolateRecipe secondNewRecipe = ChocolateRecipe.of(secondRecipeQuality);
             return Arrays.asList(firstNewRecipe, secondNewRecipe);
         }
     }

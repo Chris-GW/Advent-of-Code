@@ -24,11 +24,11 @@ public class ChocolateCharts {
 
 
     public ChocolateCharts() {
-        ChocolateRecipe firstRecipe = new ChocolateRecipe(3);
+        ChocolateRecipe firstRecipe = ChocolateRecipe.of(3);
         chocolateRecipes.add(firstRecipe);
         firstElve = new ChocolateElve(1, 0, firstRecipe);
 
-        ChocolateRecipe secondRecipe = new ChocolateRecipe(7);
+        ChocolateRecipe secondRecipe = ChocolateRecipe.of(7);
         chocolateRecipes.add(secondRecipe);
         secondElve = new ChocolateElve(2, 1, secondRecipe);
     }
@@ -47,21 +47,53 @@ public class ChocolateCharts {
             secondElve.takeNextRecipe();
             rounds++;
         }
-        return lastTenRecipes();
+        return lastRecipes(10);
     }
+
+    public int makeRecipeTillReachingQualitySequence(List<Integer> wantedQualitySequence) {
+        while (needsMoreRecpies(wantedQualitySequence)) {
+            ChocolateRecipe firstRecipe = firstElve.getCurrentRecipe();
+            ChocolateRecipe secondRecipe = secondElve.getCurrentRecipe();
+            List<ChocolateRecipe> newCombinedRecipes = firstRecipe.combineRecipes(secondRecipe);
+            for (int i = 0; i < newCombinedRecipes.size() && needsMoreRecpies(wantedQualitySequence); i++) {
+                chocolateRecipes.add(newCombinedRecipes.get(i));
+            }
+
+            firstElve.takeNextRecipe();
+            secondElve.takeNextRecipe();
+            rounds++;
+        }
+        return size() - wantedQualitySequence.size();
+    }
+
 
     private boolean needsMoreRecpies(int neededRecipes) {
         return size() < neededRecipes + 10;
     }
 
+    private boolean needsMoreRecpies(List<Integer> wantedQualitySequence) {
+        if (size() < wantedQualitySequence.size()) {
+            return true;
+        }
+        List<ChocolateRecipe> qualitySequence = lastRecipes(wantedQualitySequence.size());
+        for (int i = 0; i < wantedQualitySequence.size() && i < qualitySequence.size(); i++) {
+            int actualQuality = qualitySequence.get(i).getQualityScore();
+            int wantedQuality = wantedQualitySequence.get(i);
+            if (actualQuality != wantedQuality) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public List<ChocolateRecipe> lastTenRecipes() {
+
+    public List<ChocolateRecipe> lastRecipes(int wantedRecipes) {
         if (size() == 0) {
             return Collections.emptyList();
         }
-        int fromIndex = Math.max(0, size() - 10);
+        int fromIndex = Math.max(0, size() - wantedRecipes);
         int toIndex = size();
-        return Collections.unmodifiableList(chocolateRecipes.subList(fromIndex, toIndex));
+        return chocolateRecipes.subList(fromIndex, toIndex);
     }
 
 
@@ -125,7 +157,7 @@ public class ChocolateCharts {
         String joinedLastTenRecipeStr = lastTenRecipes.stream()
                 .map(ChocolateRecipe::toString)
                 .collect(Collectors.joining(""));
-        System.out.println("lastTenRecipes: " + joinedLastTenRecipeStr);
+        System.out.println("lastRecipes: " + joinedLastTenRecipeStr);
     }
 
 }
