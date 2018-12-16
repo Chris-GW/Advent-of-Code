@@ -14,6 +14,9 @@ public class BeverageBandits {
     @Getter
     private int battleRounds = 0;
 
+    @Getter
+    private int turns = 0;
+
     private GameField[][] gameArea;
 
     private List<GameUnit> gameUnits = new ArrayList<>();
@@ -45,8 +48,14 @@ public class BeverageBandits {
 
 
     public void nextBattleRound() {
-        aliveGameUnits().forEachOrdered(GameUnit::takeNextTurn);
-        battleRounds++;
+        List<GameUnit> livingUnits = aliveGameUnits().collect(Collectors.toList());
+        while (!isOnlyOneFactionAlive() && livingUnits.size() > 0) {
+            GameUnit nextUnit = livingUnits.remove(0);
+            nextUnit.takeNextTurn();
+        }
+        if (livingUnits.size() == 0) {
+            battleRounds++;
+        }
     }
 
     void nextTurn() {
@@ -72,7 +81,7 @@ public class BeverageBandits {
 
 
     private Stream<GameUnit> aliveGameUnits() {
-        return gameUnits.stream().sorted(Comparator.comparing(GameUnit::getCurrentField)).filter(GameUnit::isAlive);
+        return gameUnits.stream().filter(GameUnit::isAlive).sorted(Comparator.comparing(GameUnit::getCurrentField));
     }
 
 
@@ -111,10 +120,21 @@ public class BeverageBandits {
                     sb.append('#');
                 }
             }
+
+            sb.append("   ");
+            sb.append(formatUnitStatusPerRow(gameArea[y]));
             sb.append("\n");
         }
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
+    }
+
+    private String formatUnitStatusPerRow(GameField[] array) {
+        return Arrays.stream(array).filter(GameField::isHoldingUnit).map(GameField::getUnit).map(gameUnit -> {
+            char factionLetter = gameUnit.getFaction().getUnitFactionLetter();
+            int hitPoints = gameUnit.getHitPoints();
+            return factionLetter + "(" + hitPoints + ")";
+        }).collect(Collectors.joining(", "));
     }
 
 
@@ -136,13 +156,14 @@ public class BeverageBandits {
 
 
         public void takeNextTurn() {
+            if (!isAlive()) {
+                return;
+            }
             if (!isInRangeForAttackingEnemyUnit()) {
                 moveIntoRangeOfNearestEnemyUnit();
             }
-            if (isInRangeForAttackingEnemyUnit()) {
-                attackNearestEnemyUnit();
-            }
-            System.out.println(BeverageBandits.this);
+            attackNearestEnemyUnit();
+            turns++;
         }
 
         private boolean isInRangeForAttackingEnemyUnit() {
@@ -153,32 +174,47 @@ public class BeverageBandits {
 
 
         private void moveIntoRangeOfNearestEnemyUnit() {
-            List<GameUnit> enemyUnits = aliveGameUnits().filter(this::isEnemyTo).sorted().collect(Collectors.toList());
-
-            List<GameField> freeAdjacentFields = enemyUnits.stream()
+            List<List<GameField>> shortestPaths = aliveGameUnits().filter(this::isEnemyTo)
+                    .sorted()
                     .flatMap(GameUnit::adjacentCavernFields)
                     .filter(GameField::isFreeCavern)
                     .sorted()
+                    .map(currentField::shortestPathTo)
                     .collect(Collectors.toList());
 
-            Optional<GameField> chosenField = freeAdjacentFields.stream()
-                    .min(Comparator.comparingInt(currentField::distanceTo).thenComparing(Comparator.naturalOrder()));
+            int shortestPathLength = shortestPaths.stream()
+                    .mapToInt(List::size)
+                    .filter(pathLength -> pathLength > 0)
+                    .min()
+                    .orElse(1);
 
-            chosenField.map(currentField::shortestPathTo).map(gameFields -> gameFields.get(1)).ifPresent(this::moveTo);
+            shortestPaths.stream()
+                    .filter(gameFields -> gameFields.size() == shortestPathLength)
+                    .map(gameFields -> gameFields.get(1))
+                    .min(Comparator.naturalOrder())
+                    .ifPresent(this::moveTo);
         }
 
-
         private void attackNearestEnemyUnit() {
-            currentField.adjacentFields()
+            List<GameUnit> adjacentEnemies = currentField.adjacentFields()
                     .filter(GameField::isHoldingUnit)
                     .map(GameField::getUnit)
                     .filter(this::isEnemyTo)
-                    .findFirst()
-                    .ifPresent(this::attackEnemyUnit);
+                    .collect(Collectors.toList());
+            Optional<GameUnit> selectedEnemyTarget = adjacentEnemies.stream()
+                    .min(Comparator.comparingInt(GameUnit::getHitPoints).thenComparing(Comparator.naturalOrder()));
+            selectedEnemyTarget.ifPresent(this::attackEnemyUnit);
         }
 
         private void attackEnemyUnit(GameUnit enemyUnit) {
             enemyUnit.hitPoints -= this.attackValue;
+            if (!enemyUnit.isAlive()) {
+                enemyUnit.moveTo(null);
+            }
+        }
+
+        void setHitPoints(int hitPoints) {
+            this.hitPoints = hitPoints;
         }
 
 
@@ -186,7 +222,9 @@ public class BeverageBandits {
             if (this.currentField != null) {
                 this.currentField.unit = null;
             }
-            field.unit = this;
+            if (field != null) {
+                field.unit = this;
+            }
             this.currentField = field;
         }
 
@@ -250,15 +288,15 @@ public class BeverageBandits {
                         .orElseThrow(IllegalStateException::new);
                 q.remove(u);
 
-                u.adjacentFields().sorted().forEachOrdered(v -> {
-                    int length = u.distanceTo(v);
+                u.adjacentFields().filter(GameField::isCavern).sorted().forEachOrdered(v -> {
                     int distanceU = distance.getOrDefault(u, Integer.MAX_VALUE);
                     int distanceV = distance.getOrDefault(v, Integer.MAX_VALUE);
-                    int altDistance = distanceU + length;
+                    int altDistance = distanceU + 1;
+                    if (altDistance < 0 || !u.equals(this) && !u.isFreeCavern()) {
+                        return;
+                    }
                     if (altDistance < distanceV) {
                         distance.put(v, altDistance);
-                        prev.put(v, u);
-                    } else if (altDistance == distanceV && v.compareTo(prev.get(v)) < 0) {
                         prev.put(v, u);
                     }
                 });
@@ -275,8 +313,8 @@ public class BeverageBandits {
                     s.add(u);
                     u = prev.get(u);
                 }
+                Collections.reverse(s);
             }
-            Collections.reverse(s);
             return s;
         }
 
