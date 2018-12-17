@@ -3,6 +3,9 @@ package de.adventofcode.chrisgw.day15;
 import lombok.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,13 +17,23 @@ public class BeverageBandits {
     @Getter
     private int battleRounds = 0;
 
-    @Getter
-    private int turns = 0;
-
     private GameField[][] gameArea;
 
     private List<GameUnit> gameUnits = new ArrayList<>();
 
+
+    public BeverageBandits(BeverageBandits game) {
+        this.battleRounds = game.battleRounds;
+        this.gameArea = new GameField[game.gameArea.length][];
+        for (int y = 0; y < game.gameArea.length; y++) {
+            this.gameArea[y] = new GameField[game.gameArea[y].length];
+            for (int x = 0; x < this.gameArea[y].length; x++) {
+                GameField gameField = game.gameArea[y][x];
+                this.gameArea[y][x] = new GameField(x, y, gameField.isCavern());
+            }
+        }
+        this.gameUnits = game.gameUnits.stream().map(GameUnit::new).collect(Collectors.toList());
+    }
 
     public BeverageBandits(List<String> gameAreaLines) {
         gameArea = new GameField[gameAreaLines.size()][];
@@ -63,14 +76,53 @@ public class BeverageBandits {
     }
 
 
+    public BeverageBandits findWinningBattleForFaction(GameFaction faction) {
+        int lowerAttackValue = 4;
+        int upperAtackValue = 200;
+        BeverageBandits winningGame = null;
+
+        while (lowerAttackValue <= upperAtackValue) {
+            int midAttackValue = (lowerAttackValue + upperAtackValue) / 2;
+            BeverageBandits gameWithAttackValue = calculateFinishingGameScore(faction, midAttackValue);
+
+            if (gameWithAttackValue.isAnyUnitDeadOfFaction(faction)) {
+                lowerAttackValue = midAttackValue + 1;
+                System.out.println(midAttackValue + " is to low");
+            } else {
+                upperAtackValue = midAttackValue - 1;
+                System.out.println(midAttackValue + " could be to high");
+                winningGame = gameWithAttackValue;
+            }
+        }
+        return winningGame;
+    }
+
+    private BeverageBandits calculateFinishingGameScore(GameFaction faction, int attackValue) {
+        BeverageBandits game = new BeverageBandits(this);
+        game.gameUnits.stream()
+                .filter(unit -> unit.getFaction().equals(faction))
+                .forEach(unit -> unit.setAttackValue(attackValue));
+        while (!game.isAnyUnitDeadOfFaction(faction) && !game.isOnlyOneFactionAlive()) {
+            game.nextBattleRound();
+        }
+        return game;
+    }
+
+
     public boolean isOnlyOneFactionAlive() {
         return Arrays.stream(GameFaction.values())
                 .map(this::isAnyUnitAliveOfFaction)
                 .reduce(false, (factionIsAlive, otherFactionIsAlive) -> factionIsAlive ^ otherFactionIsAlive);
     }
 
-    private boolean isAnyUnitAliveOfFaction(GameFaction faction) {
+    public boolean isAnyUnitAliveOfFaction(GameFaction faction) {
         return aliveGameUnits().map(GameUnit::getFaction).anyMatch(faction::equals);
+    }
+
+    public boolean isAnyUnitDeadOfFaction(GameFaction faction) {
+        return !gameUnits.stream()
+                .filter(gameUnit -> gameUnit.getFaction().equals(faction))
+                .allMatch(GameUnit::isAlive);
     }
 
 
@@ -149,6 +201,13 @@ public class BeverageBandits {
         private int attackValue = 3;
 
 
+        public GameUnit(GameUnit unit) {
+            this.faction = unit.faction;
+            int x = unit.currentField.x;
+            int y = unit.currentField.y;
+            moveTo(fieldAt(x, y));
+        }
+
         public GameUnit(GameFaction faction, GameField currentField) {
             this.faction = faction;
             moveTo(currentField);
@@ -163,7 +222,6 @@ public class BeverageBandits {
                 moveIntoRangeOfNearestEnemyUnit();
             }
             attackNearestEnemyUnit();
-            turns++;
         }
 
         private boolean isInRangeForAttackingEnemyUnit() {
@@ -175,6 +233,7 @@ public class BeverageBandits {
 
         private void moveIntoRangeOfNearestEnemyUnit() {
             List<List<GameField>> shortestPaths = aliveGameUnits().filter(this::isEnemyTo)
+                    .parallel()
                     .sorted()
                     .flatMap(GameUnit::adjacentCavernFields)
                     .filter(GameField::isFreeCavern)
@@ -215,6 +274,10 @@ public class BeverageBandits {
 
         void setHitPoints(int hitPoints) {
             this.hitPoints = hitPoints;
+        }
+
+        void setAttackValue(int attackValue) {
+            this.attackValue = attackValue;
         }
 
 
@@ -374,11 +437,29 @@ public class BeverageBandits {
 
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
-            System.out.println("Usage <neededRecipes>");
+        if (args.length < 1) {
+            System.out.println("Usage <puzzleInputFile>");
             return;
         }
+        Path puzzleInputFile = Paths.get(args[0]);
+        BeverageBandits game = new BeverageBandits(Files.readAllLines(puzzleInputFile));
+        System.out.println(game);
+        System.out.println();
 
+        BeverageBandits winningBattleForElves = game.findWinningBattleForFaction(GameFaction.ELVE);
+
+        while (!game.isOnlyOneFactionAlive()) {
+            game.nextBattleRound();
+        }
+        System.out.println(game);
+        int battleRounds = game.getBattleRounds();
+        int gameScore = game.calculateFinishingGameScore();
+        System.out.println("After " + battleRounds + " with score: " + gameScore);
+        System.out.println();
+
+        int winningBattleRounds = winningBattleForElves.getBattleRounds();
+        int winningGameScore = winningBattleForElves.calculateFinishingGameScore();
+        System.out.println("After " + winningBattleRounds + " with score: " + winningGameScore);
     }
 
 }
