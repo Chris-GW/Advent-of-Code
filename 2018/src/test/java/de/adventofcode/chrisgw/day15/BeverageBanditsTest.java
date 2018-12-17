@@ -1,6 +1,7 @@
 package de.adventofcode.chrisgw.day15;
 
 import de.adventofcode.chrisgw.TestUtils;
+import de.adventofcode.chrisgw.day15.BeverageBandits.GameFaction;
 import de.adventofcode.chrisgw.day15.BeverageBandits.GameUnit;
 import org.junit.Test;
 
@@ -518,6 +519,85 @@ public class BeverageBanditsTest {
 
         assertEquals("expectedBattleRounds", expectedBattleRounds, battleRounds);
         assertEquals("expectedFinishingScore", expectedFinishingScore, finishingGameScore);
+    }
+
+
+    // part 02
+
+
+    @Test
+    public void findWinningBattleForFaction_example01() {
+        List<String> gameAreaLines = Arrays.asList( //
+                "#######", //
+                "#.G...#", //
+                "#...EG#", //
+                "#.#.#G#", //
+                "#..G#E#", //
+                "#.....#", //
+                "#######");
+        int expectedWinningScore = 4988;
+
+        BeverageBandits game = new BeverageBandits(gameAreaLines);
+        BeverageBandits winningBattleForFaction = game.findWinningBattleForFaction(GameFaction.ELVE);
+        int winningScore = winningBattleForFaction.calculateFinishingGameScore();
+        assertEquals("winningScore", expectedWinningScore, winningScore);
+    }
+
+    @Test
+    public void findWinningBattleForFaction_example02() {
+        List<String> gameAreaLines = Arrays.asList( //
+                "#######", //
+                "#E..EG#", //
+                "#.#G.E#", //
+                "#E.##E#", //
+                "#G..#.#", //
+                "#..E#.#", //
+                "#######");
+        int expectedWinningScore = 31284;
+
+        BeverageBandits game = new BeverageBandits(gameAreaLines);
+        BeverageBandits winningBattleForFaction = game.findWinningBattleForFaction(GameFaction.ELVE);
+        int winningScore = winningBattleForFaction.calculateFinishingGameScore();
+        assertEquals("winningScore", expectedWinningScore, winningScore);
+    }
+
+    @Test
+    public void findWinningBattleForFaction_example03() {
+        List<String> gameAreaLines = Arrays.asList( //
+                "#######", //
+                "#E.G#.#", //
+                "#.#G..#", //
+                "#G.#.G#", //
+                "#G..#.#", //
+                "#...E.#", //
+                "#######");
+        int expectedWinningScore = 3478;
+
+        BeverageBandits game = new BeverageBandits(gameAreaLines);
+        BeverageBandits winningBattleForFaction = game.findWinningBattleForFaction(GameFaction.ELVE);
+        int winningScore = winningBattleForFaction.calculateFinishingGameScore();
+        assertEquals("winningScore", expectedWinningScore, winningScore);
+    }
+
+
+    @Test
+    public void findWinningBattleForFaction_myPuzzleInput() throws Exception {
+        Path myGameFile = TestUtils.getResourcePath("/day15/myPuzzleInput.txt");
+        List<String> gameAreaLines = Files.readAllLines(myGameFile);
+
+        int expectedBattleRounds = 31;
+        int expectedRemainingUnitHitPointSum = 1433;
+        int expectedFinishingScore = expectedBattleRounds * expectedRemainingUnitHitPointSum; // 44423
+
+        BeverageBandits game = new BeverageBandits(gameAreaLines);
+        BeverageBandits winningBattleForFaction = game.findWinningBattleForFaction(GameFaction.ELVE);
+        System.out.println(winningBattleForFaction);
+        int battleRounds = winningBattleForFaction.getBattleRounds();
+        int winningScore = winningBattleForFaction.calculateFinishingGameScore();
+        System.out.println(winningScore);
+
+        assertEquals("expectedBattleRounds", expectedBattleRounds, battleRounds);
+        assertEquals("expectedFinishingScore", expectedFinishingScore, winningScore);
     }
 
 
