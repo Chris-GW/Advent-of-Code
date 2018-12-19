@@ -75,7 +75,7 @@ public class ReservoirResearch {
 
 
     public boolean nextWaterSquare() {
-        long restingWaterCount = waterSquares().filter(WaterSquare::isRestingWater).count();
+        int restingWaterCount = countRestingWater();
 
         List<WaterSquare> flowingWaterSquares = new ArrayList<>();
         flowingWaterSquares.add(new WaterSquare(WATER_SPRING_SQUARE));
@@ -83,6 +83,7 @@ public class ReservoirResearch {
         while (flowingWaterSquares.size() > 0) {
             flowingWaterSquares = flowingWaterSquares.stream()
                     .flatMap(WaterSquare::flowToNextSquare)
+                    .distinct()
                     .collect(Collectors.toList());
 
             Predicate<WaterSquare> isRestingWater = WaterSquare::isRestingWater;
@@ -90,7 +91,7 @@ public class ReservoirResearch {
         }
         printToFile(Collections.emptyList());
         rounds++;
-        return restingWaterCount < waterSquares().filter(WaterSquare::isRestingWater).count();
+        return restingWaterCount < countRestingWater();
     }
 
 
@@ -152,6 +153,11 @@ public class ReservoirResearch {
     }
 
 
+    public int countRestingWater() {
+        return (int) waterSquares().filter(WaterSquare::isRestingWater).count();
+    }
+
+
     @Data
     @Setter(AccessLevel.PRIVATE)
     public class WaterSquare {
@@ -180,8 +186,13 @@ public class ReservoirResearch {
                 WaterSquare rightWaterSquare = waterSquares.getLast();
                 if (leftWaterSquare.canRest() && rightWaterSquare.canRest()) {
                     waterSquares.forEach(waterSquare -> waterSquare.flowDirection = RESTING);
+                    int y = currentSquare.getY() - 1;
+                    return getWaterSquare(currentSquare.getX(), y).map(Stream::of).orElse(Stream.empty());
+                } else {
+                    return Stream.of(leftWaterSquare, rightWaterSquare)
+                            .filter(waterSquare -> !this.equals(waterSquare))
+                            .distinct();
                 }
-                return Stream.of(leftWaterSquare, rightWaterSquare).filter(waterSquare -> !this.equals(waterSquare));
             } else {
                 return Stream.empty();
             }
