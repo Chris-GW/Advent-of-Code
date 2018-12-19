@@ -55,22 +55,28 @@ public class ReservoirResearchTest {
             System.out.println(i);
             System.out.println(reservoirResearch);
         }
-        int allWaterSquares = reservoirResearch.countAllWaterSquares();
+        System.out.println(reservoirResearch);
+        int allWaterSquares = reservoirResearch.waterSquareCount();
         assertEquals("countAllWaterSquares", expectedAllWaterSquares, allWaterSquares);
     }
 
     @Test
     public void countAllWaterSquares_myPuzzleInput() throws Exception {
-        int expectedAllWaterSquares = 57;
+        int expectedAllWaterSquares = 31412;
         Path myPuzzleInputFile = TestUtils.getResourcePath("/day17/myPuzzleInput.txt");
         ReservoirResearch reservoirResearch = new ReservoirResearch(Files.readAllLines(myPuzzleInputFile));
-        System.out.println(reservoirResearch);
 
         for (int round = 1; reservoirResearch.nextWaterSquare(); round++) {
-            System.out.println(round);
+//            System.out.println(round);
         }
         System.out.println(reservoirResearch);
-        int allWaterSquares = reservoirResearch.countAllWaterSquares();
+        System.out.println(reservoirResearch.getRounds());
+        int allWaterSquares = reservoirResearch.waterSquareCount();
+        // 31402 to low
+        // 31410 to low
+        // 31413 wrong
+        // 31414 to high
+
         assertEquals("countAllWaterSquares", expectedAllWaterSquares, allWaterSquares);
     }
 

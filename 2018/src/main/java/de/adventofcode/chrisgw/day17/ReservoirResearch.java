@@ -1,9 +1,6 @@
 package de.adventofcode.chrisgw.day17;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Setter;
-import lombok.Value;
+import lombok.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +12,6 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static de.adventofcode.chrisgw.day17.ReservoirResearch.WaterSquareFlowDirection.*;
@@ -24,13 +20,15 @@ import static de.adventofcode.chrisgw.day17.ReservoirResearch.WaterSquareFlowDir
 public class ReservoirResearch {
 
     public static final Pattern CLAY_VEIN_LINE_PATTERN = Pattern.compile("([yx])=(\\d+),\\s+[yx]=(\\d+)\\.\\.(\\d+)");
-    public static final WaterSquare WATER_SPRING_SQUARE = new WaterSquare(new GroundSquare(500, 0));
+    public static final GroundSquare WATER_SPRING_SQUARE = new GroundSquare(500, 0);
 
 
     private final Map<Integer, Map<Integer, GroundSquare>> clayGroundSquareMap = new HashMap<>();
     private final Map<Integer, Map<Integer, WaterSquare>> waterSquareMap = new HashMap<>();
     private final GroundSquare topLeftGroundSquare;
     private final GroundSquare bottomRightGroundSquare;
+
+    @Getter
     private int rounds = 0;
 
 
@@ -42,7 +40,6 @@ public class ReservoirResearch {
                 .forEach(this::putClayGroundSquare);
         this.topLeftGroundSquare = cornerGroundSquare(Math::min);
         this.bottomRightGroundSquare = cornerGroundSquare(Math::max);
-        putWaterSquare(new WaterSquare(new GroundSquare(500, 0)));
     }
 
     private static List<GroundSquare> parseClayVeinLine(String clayVeinLine) {
@@ -69,49 +66,31 @@ public class ReservoirResearch {
         return clayGroundSquares;
     }
 
-    private GroundSquare cornerGroundSquare(IntBinaryOperator intBinaryOperator) {
-        int x = clayGroundSquares().mapToInt(GroundSquare::getX).reduce(intBinaryOperator).orElse(0);
-        int y = clayGroundSquares().mapToInt(GroundSquare::getY).reduce(intBinaryOperator).orElse(0);
+    private GroundSquare cornerGroundSquare(IntBinaryOperator minOrMaxOperation) {
+        int x = clayGroundSquares().mapToInt(GroundSquare::getX).reduce(minOrMaxOperation).orElse(0);
+        x = minOrMaxOperation.applyAsInt(x - 1, x + 1);
+        int y = clayGroundSquares().mapToInt(GroundSquare::getY).reduce(minOrMaxOperation).orElse(0);
         return new GroundSquare(x, y);
     }
 
 
     public boolean nextWaterSquare() {
-        int restingWaterCount = waterSquareCount();
+        long restingWaterCount = waterSquares().filter(WaterSquare::isRestingWater).count();
+
+        List<WaterSquare> flowingWaterSquares = new ArrayList<>();
+        flowingWaterSquares.add(new WaterSquare(WATER_SPRING_SQUARE));
 
         while (flowingWaterSquares.size() > 0) {
             flowingWaterSquares = flowingWaterSquares.stream()
                     .flatMap(WaterSquare::flowToNextSquare)
                     .collect(Collectors.toList());
-
-            flowingWaterSquares.stream().filter(WaterSquare::isRestingWater).forEach(this::putWaterSquare);
 
             Predicate<WaterSquare> isRestingWater = WaterSquare::isRestingWater;
             flowingWaterSquares.removeIf(isRestingWater.or(WaterSquare::isFlowingEndless));
-            if (rounds == 41) {
-                System.out.println(this.toString(flowingWaterSquares));
-                System.out.println();
-            }
         }
-        printToFile();
+        printToFile(Collections.emptyList());
         rounds++;
-        return restingWaterCount < waterSquareCount();
-    }
-
-
-    public int countAllWaterSquares() {
-        List<WaterSquare> flowingWaterSquares = Collections.singletonList(new WaterSquare(new GroundSquare(500, 0)));
-        Set<GroundSquare> allVisitedSquares = new HashSet<>();
-
-        while (flowingWaterSquares.size() > 0) {
-            flowingWaterSquares = flowingWaterSquares.stream()
-                    .flatMap(WaterSquare::flowToNextSquare)
-                    .collect(Collectors.toList());
-
-            flowingWaterSquares.removeIf(WaterSquare::isFlowingEndless);
-            flowingWaterSquares.stream().map(WaterSquare::getCurrentSquare).forEach(allVisitedSquares::add);
-        }
-        return waterSquareCount() + allVisitedSquares.size();
+        return restingWaterCount < waterSquares().filter(WaterSquare::isRestingWater).count();
     }
 
 
@@ -137,10 +116,21 @@ public class ReservoirResearch {
     }
 
     private void putWaterSquare(WaterSquare waterSquare) {
+        if (waterSquare.isFlowingEndless()) {
+            return;
+        }
         GroundSquare currentSquare = waterSquare.getCurrentSquare();
-        int y = currentSquare.getY();
-        Map<Integer, WaterSquare> row = waterSquareMap.computeIfAbsent(y, HashMap::new);
+        Map<Integer, WaterSquare> row = waterSquareMap.computeIfAbsent(currentSquare.getY(), HashMap::new);
         row.put(currentSquare.getX(), waterSquare);
+    }
+
+
+    public boolean isRestingWaterAt(GroundSquare groundSquare) {
+        return isRestingWaterAt(groundSquare.getX(), groundSquare.getY());
+    }
+
+    public boolean isRestingWaterAt(int x, int y) {
+        return getWaterSquare(x, y).map(WaterSquare::isRestingWater).orElse(false);
     }
 
 
@@ -168,8 +158,6 @@ public class ReservoirResearch {
 
         private GroundSquare currentSquare;
         private WaterSquareFlowDirection flowDirection;
-        private Map<WaterSquareFlowDirection, WaterSquare> nearbyWaterSquares = new HashMap<>();
-        private boolean isResting = false;
 
 
         public WaterSquare(GroundSquare currentSquare) {
@@ -180,67 +168,56 @@ public class ReservoirResearch {
         private WaterSquare(WaterSquare waterSquare) {
             this.currentSquare = waterSquare.getCurrentSquare();
             this.flowDirection = waterSquare.getFlowDirection();
-            this.isResting = waterSquare.isResting;
         }
 
 
-        private void flowToNextSquare() {
-            if (isRestingWater()) {
-            } else if (canFlow(DOWN)) {
-                flow(DOWN);
-            } else if (canFlow(flowDirection)) {
-                flow(flowDirection);
+        private Stream<WaterSquare> flowToNextSquare() {
+            if (canFlow(DOWN)) {
+                return Stream.of(spreadWaterSquares(DOWN).getLast());
+            } else if (DOWN.equals(flowDirection)) {
+                Deque<WaterSquare> waterSquares = spreadWaterSquares();
+                WaterSquare leftWaterSquare = waterSquares.getFirst();
+                WaterSquare rightWaterSquare = waterSquares.getLast();
+                if (leftWaterSquare.canRest() && rightWaterSquare.canRest()) {
+                    waterSquares.forEach(waterSquare -> waterSquare.flowDirection = RESTING);
+                }
+                return Stream.of(leftWaterSquare, rightWaterSquare).filter(waterSquare -> !this.equals(waterSquare));
             } else {
-                WaterSquare leftWaterSquare = new WaterSquare(this);
-                WaterSquare rightWaterSquare = new WaterSquare(this);
-                if (leftWaterSquare.canSettleIn(LEFT) && rightWaterSquare.canSettleIn(RIGHT)) {
-                    return collectRestingWaterSquares(leftWaterSquare, rightWaterSquare);
-                } else if (canFlow(LEFT) && canFlow(RIGHT)) {
-                    rightWaterSquare = new WaterSquare(this);
-                    rightWaterSquare.flow(RIGHT);
-                    this.flow(LEFT);
-                    return Stream.of(this, rightWaterSquare);
-                } else if (canFlow(RIGHT)) {
-                    this.flow(RIGHT);
-                } else if (canFlow(LEFT)) {
-                    this.flow(RIGHT);
-                } else {
-                    flowDirection = RESTING;
-                }
+                return Stream.empty();
             }
-            return Stream.of(this);
         }
 
 
-        private boolean canSettleIn(WaterSquareFlowDirection flowDirection) {
-            while (canFlow(flowDirection)) {
-                flow(flowDirection);
-                if (canFlow(DOWN) || isFlowingEndless()) {
-                    return false;
+        private Deque<WaterSquare> spreadWaterSquares(WaterSquareFlowDirection flowDirection) {
+            Deque<WaterSquare> waterSquares = new ArrayDeque<>();
+            WaterSquare currentWaterSquare = this;
+            waterSquares.add(this);
+
+            while (currentWaterSquare.canFlow(flowDirection)) {
+                currentWaterSquare = currentWaterSquare.flow(flowDirection);
+                waterSquares.add(currentWaterSquare);
+                boolean canFlowDown = !DOWN.equals(flowDirection) && currentWaterSquare.canFlow(DOWN);
+                if (canFlowDown || currentWaterSquare.isFlowingEndless()) {
+                    break;
                 }
             }
-            return true;
+            return waterSquares;
         }
 
-        private Stream<WaterSquare> collectRestingWaterSquares(WaterSquare leftWaterSquare,
-                WaterSquare rightWaterSquare) {
-            int fromX = leftWaterSquare.getCurrentSquare().getX();
-            int toX = rightWaterSquare.getCurrentSquare().getX();
-            return IntStream.rangeClosed(fromX, toX)
-                    .mapToObj(x -> new GroundSquare(x, currentSquare.getY()))
-                    .map(groundSquare -> {
-                        WaterSquare waterSquare = new WaterSquare(this);
-                        waterSquare.currentSquare = groundSquare;
-                        waterSquare.flowDirection = RESTING;
-                        return waterSquare;
-                    });
+
+        private Deque<WaterSquare> spreadWaterSquares() {
+            Deque<WaterSquare> leftWaterSquares = spreadWaterSquares(LEFT);
+            Deque<WaterSquare> rightWaterSquares = spreadWaterSquares(RIGHT);
+            leftWaterSquares.removeFirst();
+            leftWaterSquares.forEach(rightWaterSquares::addFirst);
+            return rightWaterSquares;
         }
 
 
         private boolean canFlow(WaterSquareFlowDirection flowDirection) {
             int x = currentSquare.getX() + flowDirection.getDx();
             int y = currentSquare.getY() + flowDirection.getDy();
-            return !(isClayGroundSquare(x, y) || getWaterSquare(x, y).isPresent());
+            return !(isClayGroundSquare(x, y) || isRestingWaterAt(x, y));
         }
 
         private WaterSquare flow(WaterSquareFlowDirection flowDirection) {
@@ -249,18 +226,23 @@ public class ReservoirResearch {
             WaterSquare waterSquare = new WaterSquare(this);
             waterSquare.currentSquare = new GroundSquare(x, y);
             waterSquare.flowDirection = flowDirection;
+            if (!waterSquare.isFlowingEndless()) {
+                putWaterSquare(waterSquare);
+            }
             return waterSquare;
         }
 
+
+        public boolean canRest() {
+            return !(canFlow(flowDirection) || canFlow(DOWN));
+        }
 
         public boolean isRestingWater() {
             return RESTING.equals(flowDirection);
         }
 
         public boolean isFlowingEndless() {
-            return currentSquare.getX() < topLeftGroundSquare.getX()
-                    || bottomRightGroundSquare.getX() < currentSquare.getX()
-                    || currentSquare.getY() < topLeftGroundSquare.getY()
+            return currentSquare.getY() <= topLeftGroundSquare.getY()
                     || bottomRightGroundSquare.getY() < currentSquare.getY();
         }
 
@@ -269,7 +251,7 @@ public class ReservoirResearch {
 
     public enum WaterSquareFlowDirection {
 
-        DOWN(0, 1), LEFT(-1, 0), RIGHT(1, 0);
+        RESTING(0, 0), DOWN(0, 1), LEFT(-1, 0), RIGHT(1, 0);
 
         private int dx;
         private int dy;
@@ -312,12 +294,37 @@ public class ReservoirResearch {
 
     @Override
     public String toString() {
+        return toString(Collections.emptyList());
+    }
+
+    public String toString(List<WaterSquare> flowingWaterSquares) {
         StringBuilder sb = new StringBuilder();
         appendColumnNumbering(sb);
         for (int y = topLeftGroundSquare.getY(); y <= bottomRightGroundSquare.getY(); y++) {
             sb.append(String.format("%4d ", y));
             for (int x = topLeftGroundSquare.getX(); x <= bottomRightGroundSquare.getX(); x++) {
-                appendSquare(sb, x, y);
+                final int currentX = x;
+                final int currentY = y;
+                Optional<WaterSquare> flowingWaterSquare = flowingWaterSquares.stream()
+                        .filter(waterSquare -> waterSquare.getCurrentSquare().isAt(currentX, currentY))
+                        .findFirst();
+                if (flowingWaterSquare.isPresent()) {
+                    switch (flowingWaterSquare.get().getFlowDirection()) {
+                    case DOWN:
+                        sb.append('v');
+                        break;
+                    case LEFT:
+                        sb.append('<');
+                        break;
+                    case RIGHT:
+                        sb.append('>');
+                        break;
+                    default:
+                        sb.append('X');
+                    }
+                } else {
+                    appendSquare(sb, x, y);
+                }
             }
             sb.append("\n");
         }
@@ -325,16 +332,13 @@ public class ReservoirResearch {
     }
 
     private void appendColumnNumbering(StringBuilder sb) {
-        sb.append("     ");
-        for (int x = topLeftGroundSquare.getX(); x <= bottomRightGroundSquare.getX(); x++) {
-            sb.append((x * 10) % 10);
+        for (int i = 100; i >= 1; i /= 10) {
+            sb.append(String.format("%-3d  ", i));
+            for (int x = topLeftGroundSquare.getX(); x <= bottomRightGroundSquare.getX(); x++) {
+                sb.append((x / i) % 10);
+            }
+            sb.append("\n");
         }
-        sb.append("\n");
-        sb.append("     ");
-        for (int x = topLeftGroundSquare.getX(); x <= bottomRightGroundSquare.getX(); x++) {
-            sb.append(x % 10);
-        }
-        sb.append("\n");
     }
 
     private void appendSquare(StringBuilder sb, int x, int y) {
@@ -353,12 +357,11 @@ public class ReservoirResearch {
     }
 
 
-    private void printToFile() {
+    private void printToFile(List<WaterSquare> flowingWaterSquares) {
         try {
             Path path = Paths.get("target/day16/waterSquares_" + rounds + ".txt");
             Files.createDirectories(path.getParent());
-            Files.write(path, Collections.singletonList(toString()));
-            System.out.println(path.toAbsolutePath());
+            Files.write(path, Collections.singletonList(toString(flowingWaterSquares)));
         } catch (IOException e) {
             e.printStackTrace();
         }
