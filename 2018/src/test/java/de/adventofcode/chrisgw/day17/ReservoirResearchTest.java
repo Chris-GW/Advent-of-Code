@@ -50,6 +50,7 @@ public class ReservoirResearchTest {
     @Test
     public void countAllWaterSquares_example01() {
         int expectedAllWaterSquares = 57;
+        int expectedRestingWaterCount = 29;
         ReservoirResearch reservoirResearch = new ReservoirResearch(groundSliceLines_example01);
         for (int i = 0; reservoirResearch.nextWaterSquare(); i++) {
             System.out.println(i);
@@ -58,25 +59,32 @@ public class ReservoirResearchTest {
         System.out.println(reservoirResearch);
         int allWaterSquares = reservoirResearch.waterSquareCount();
         assertEquals("countAllWaterSquares", expectedAllWaterSquares, allWaterSquares);
+        int restingWaterCount = reservoirResearch.countRestingWater();
+        assertEquals("restingWaterCount", expectedRestingWaterCount, restingWaterCount);
     }
 
     @Test
     public void countAllWaterSquares_myPuzzleInput() throws Exception {
         int expectedAllWaterSquares = 31412;
+        int expectedRestingWaterCount = 25857;
         Path myPuzzleInputFile = TestUtils.getResourcePath("/day17/myPuzzleInput.txt");
         ReservoirResearch reservoirResearch = new ReservoirResearch(Files.readAllLines(myPuzzleInputFile));
 
         for (int round = 1; reservoirResearch.nextWaterSquare(); round++) {
-//            System.out.println(round);
+            //            System.out.println(round);
         }
         System.out.println(reservoirResearch);
         System.out.println(reservoirResearch.getRounds());
         int allWaterSquares = reservoirResearch.waterSquareCount();
-        // 31402 to low
+        int restingWaterSquares = reservoirResearch.countRestingWater();
+        System.out.println("allWaterSquares: " + allWaterSquares);
+        System.out.println("restingWaterSquares: " + restingWaterSquares);
+
         // 31410 to low
-        // 31413 wrong
+        // 31412 right
         // 31414 to high
 
+        assertEquals("restingWaterSquares", expectedRestingWaterCount, restingWaterSquares);
         assertEquals("countAllWaterSquares", expectedAllWaterSquares, allWaterSquares);
     }
 
