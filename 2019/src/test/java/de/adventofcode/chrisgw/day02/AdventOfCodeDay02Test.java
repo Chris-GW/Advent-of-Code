@@ -10,7 +10,7 @@ public class AdventOfCodeDay02Test {
 
     @Test
     public void myPuzzleInputPart01() {
-        String intCodeProgrammStr = TestUtils.readSingleLineOfClassPathResource("/day02/myPuzzleInput.txt");
+        String intCodeProgrammStr = TestUtils.readSingleLineOfClassPathResource("/puzzleInputDay02.txt");
         int expectedOutputValue = 7594646;
 
         AdventOfCodeDay02 adventOfCodeDay02 = new AdventOfCodeDay02(intCodeProgrammStr);
@@ -20,7 +20,7 @@ public class AdventOfCodeDay02Test {
 
     @Test
     public void myPuzzleInputPart02() {
-        String intCodeProgrammStr = TestUtils.readSingleLineOfClassPathResource("/day02/myPuzzleInput.txt");
+        String intCodeProgrammStr = TestUtils.readSingleLineOfClassPathResource("/puzzleInputDay02.txt");
         int whisedOutput = 19690720;
         int expectedResult = 3376;
 
