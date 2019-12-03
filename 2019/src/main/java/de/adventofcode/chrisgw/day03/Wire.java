@@ -10,8 +10,7 @@ import java.util.stream.Collectors;
 @Data
 public class Wire implements Iterable<GridPoint> {
 
-    private Set<GridPoint> wirePath = new LinkedHashSet<>();
-    private List<Direction> pathDirections = new ArrayList<>();
+    private Map<GridPoint, Integer> wirePath = new LinkedHashMap<>();
 
     public static Wire parseWirePath(GridPoint startingPoint, String wirePathStr) {
         Wire wire = new Wire();
@@ -21,28 +20,39 @@ public class Wire implements Iterable<GridPoint> {
                 .map(GridDirection::parse)
                 .collect(Collectors.toList());
 
+        int distance = 0;
+        wire.wirePath.put(startingPoint, distance++);
         GridPoint currentPoint = startingPoint;
         for (GridDirection wirePathDirection : wirePathDirections) {
             List<GridPoint> wirePath = wirePathDirection.pathFrom(currentPoint);
-            wire.wirePath.addAll(wirePath);
-            //            Stream.generate(wirePathDirection::getDirection)
-            //                    .limit(wirePathDirection.getLength())
-            //                    .forEach(wire.pathDirections::add);
+            for (GridPoint point : wirePath) {
+                wire.wirePath.putIfAbsent(point, distance++);
+            }
             currentPoint = wirePath.get(wirePath.size() - 1);
         }
         return wire;
     }
 
     public Set<GridPoint> intersectionPointsWith(Wire otherWire) {
-        Set<GridPoint> intersectionPoints = new HashSet<>(this.wirePath);
-        intersectionPoints.retainAll(otherWire.wirePath);
+        Set<GridPoint> intersectionPoints = new HashSet<>(intersectionPoints());
+        intersectionPoints.retainAll(otherWire.intersectionPoints());
         return intersectionPoints;
+    }
+
+
+    public int signalDistanceTo(GridPoint intersectionPoint) {
+        return wirePath.getOrDefault(intersectionPoint, Integer.MAX_VALUE);
+    }
+
+
+    public Set<GridPoint> intersectionPoints() {
+        return wirePath.keySet();
     }
 
 
     @Override
     public Iterator<GridPoint> iterator() {
-        return wirePath.iterator();
+        return intersectionPoints().iterator();
     }
 
 }

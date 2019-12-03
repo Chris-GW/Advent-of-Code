@@ -34,7 +34,6 @@ public class GridDirection {
 
     public List<GridPoint> pathFrom(GridPoint startingPoint) {
         List<GridPoint> path = new ArrayList<>(length);
-        path.add(startingPoint);
         GridPoint currentPoint = startingPoint;
         for (int i = 0; i < length; i++) {
             currentPoint = currentPoint.moveTo(direction);
