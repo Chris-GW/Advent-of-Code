@@ -47,17 +47,26 @@ public class AdventOfCodeDay03 {
     }
 
 
+    public int closesSignalIntersectionPoint() {
+        return getIntersectionPoints().stream().mapToInt(this::signalDistanceTo).min().orElse(0);
+    }
+
+    private int signalDistanceTo(GridPoint intersectionPoint) {
+        return wires.stream().mapToInt(wire -> wire.signalDistanceTo(intersectionPoint)).sum();
+    }
+
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         GridPoint topLeft = wires.stream()
-                .map(Wire::getWirePath)
+                .map(Wire::intersectionPoints)
                 .flatMap(Collection::stream)
                 .max(comparingInt(GridPoint::getX).reversed().thenComparingInt(GridPoint::getY))
                 .orElse(centralPort);
 
         GridPoint bottomRight = wires.stream()
-                .map(Wire::getWirePath)
+                .map(Wire::intersectionPoints)
                 .flatMap(Collection::stream)
                 .max(comparingInt(GridPoint::getX).thenComparing(comparingInt(GridPoint::getY).reversed()))
                 .orElse(centralPort);
@@ -81,7 +90,7 @@ public class AdventOfCodeDay03 {
     }
 
     private boolean isWirePoint(GridPoint gridPoint) {
-        return wires.stream().map(Wire::getWirePath).flatMap(Collection::stream).anyMatch(gridPoint::isAt);
+        return wires.stream().map(Wire::intersectionPoints).flatMap(Collection::stream).anyMatch(gridPoint::isAt);
     }
 
 
