@@ -42,7 +42,7 @@ public class AdventOfCodeDay02 {
         while (intCodeProgram.hasNext()) {
             intCodeProgram.next();
         }
-        return intCodeProgram.getOutput();
+        return intCodeProgram.getExitOutput();
     }
 
 }

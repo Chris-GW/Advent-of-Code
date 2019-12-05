@@ -1,5 +1,8 @@
 package de.adventofcode.chrisgw.day02;
 
+import static de.adventofcode.chrisgw.day02.IntCodeProgram.PARAMETER_IMMEDIATE_MODE;
+
+
 public class AddIntCodeInstruction implements IntCodeInstruction {
 
     @Override
@@ -19,12 +22,10 @@ public class AddIntCodeInstruction implements IntCodeInstruction {
 
     @Override
     public void execute(IntCodeProgram intCodeProgram) {
-        int firstAddress = intCodeProgram.parameterAt(0);
-        int secondAddress = intCodeProgram.parameterAt(1);
-        int firstSummand = intCodeProgram.valueAt(firstAddress);
-        int secondSummand = intCodeProgram.valueAt(secondAddress);
+        int firstSummand = intCodeProgram.parameterAt(0);
+        int secondSummand = intCodeProgram.parameterAt(1);
         int sum = firstSummand + secondSummand;
-        int destinationAddress = intCodeProgram.parameterAt(2);
+        int destinationAddress = intCodeProgram.parameterAt(2, PARAMETER_IMMEDIATE_MODE);
         intCodeProgram.setValueAt(destinationAddress, sum);
     }
 
