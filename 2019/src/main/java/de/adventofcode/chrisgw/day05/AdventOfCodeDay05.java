@@ -20,8 +20,12 @@ public class AdventOfCodeDay05 {
 
 
     public int runTestAndReturnDignosticCode() {
+        return runTestAndReturnDignosticCode(1);
+    }
+
+    public int runTestAndReturnDignosticCode(int systemId) {
         intCodeProgram.reset();
-        intCodeProgram.addInput(1);
+        intCodeProgram.addInput(systemId);
         while (intCodeProgram.hasNext()) {
             intCodeProgram.next();
         }
