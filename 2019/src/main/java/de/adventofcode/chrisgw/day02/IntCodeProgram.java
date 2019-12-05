@@ -1,5 +1,8 @@
 package de.adventofcode.chrisgw.day02;
 
+import de.adventofcode.chrisgw.day05.InputCodeInstruction;
+import de.adventofcode.chrisgw.day05.OutputCodeInstruction;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -7,18 +10,23 @@ import java.util.stream.Collectors;
 
 public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
+    public static final int PARAMETER_POSITION_MODE = 0;
+    public static final int PARAMETER_IMMEDIATE_MODE = 1;
     private final int[] initialState;
     private final Map<Integer, IntCodeInstruction> instructionSet;
 
     private int noun;
     private int verb;
+    private Deque<Integer> inputs = new ArrayDeque<>();
+    private Deque<Integer> outputs = new ArrayDeque<>();
 
     private int[] memory;
     private int instructionPointer;
 
 
     public IntCodeProgram(int[] initialState) {
-        this(initialState, Set.of(new AddIntCodeInstruction(), new MulIntCodeInstruction()));
+        this(initialState, Set.of(new AddIntCodeInstruction(), new MulIntCodeInstruction(), // day 02
+                new InputCodeInstruction(), new OutputCodeInstruction())); // day 05
     }
 
     public IntCodeProgram(int[] initialState, Set<IntCodeInstruction> instructionSet) {
@@ -32,6 +40,8 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     public void reset() {
         this.memory = Arrays.copyOf(initialState, initialState.length);
         this.instructionPointer = 0;
+        this.inputs.clear();
+        this.outputs.clear();
     }
 
 
@@ -43,9 +53,10 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     @Override
     public IntCodeInstruction next() {
         int opCode = nextOpCode();
-        IntCodeInstruction intCodeInstruction = instructionSet.get(opCode);
+        int code = opCode % 100;
+        IntCodeInstruction intCodeInstruction = instructionSet.get(code);
         if (intCodeInstruction == null) {
-            throw new IllegalArgumentException("Unknown opCode: " + opCode);
+            throw new IllegalArgumentException("Unknown opCode: " + code);
         }
         intCodeInstruction.execute(this);
         instructionPointer += intCodeInstruction.instructionSize();
@@ -59,9 +70,33 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
 
     public int parameterAt(int index) {
-        int address = instructionPointer + 1 + index;
-        return memory[address];
+        int parameterMode = parameterModeAt(index);
+        return parameterAt(index, parameterMode);
     }
+
+    public int parameterAt(int index, int parameterMode) {
+        int parameterIndex = instructionPointer + 1 + index;
+        switch (parameterMode) {
+        case PARAMETER_POSITION_MODE:
+            int adress = valueAt(parameterIndex);
+            return valueAt(adress);
+        case PARAMETER_IMMEDIATE_MODE:
+            return valueAt(parameterIndex);
+        default:
+            throw new RuntimeException("unknown parameterMode: " + parameterMode);
+        }
+    }
+
+
+    private int parameterModeAt(int index) {
+        String opCodeStr = String.valueOf(nextOpCode());
+        int parameterModeIndex = opCodeStr.length() - 1 - 2 - index;
+        if (parameterModeIndex < 0 || parameterModeIndex >= opCodeStr.length()) {
+            return 0;
+        }
+        return opCodeStr.charAt(parameterModeIndex) - '0';
+    }
+
 
     public int valueAt(int address) {
         return memory[address];
@@ -92,8 +127,30 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     }
 
 
-    public int getOutput() {
-        return memory[0];
+    public int getExitOutput() {
+        return valueAt(0);
+    }
+
+
+    public int nextInput() {
+        return inputs.removeFirst();
+    }
+
+    public void addInput(int input) {
+        inputs.addLast(input);
+    }
+
+
+    public void addOutput(int output) {
+        outputs.addLast(output);
+    }
+
+    public int nextOutput() {
+        return outputs.removeFirst();
+    }
+
+    public int lastOutput() {
+        return outputs.getLast();
     }
 
 
