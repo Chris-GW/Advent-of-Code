@@ -1,7 +1,6 @@
 package de.adventofcode.chrisgw.day02;
 
-import de.adventofcode.chrisgw.day05.InputCodeInstruction;
-import de.adventofcode.chrisgw.day05.OutputCodeInstruction;
+import de.adventofcode.chrisgw.day05.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -21,12 +20,15 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     private Deque<Integer> outputs = new ArrayDeque<>();
 
     private int[] memory;
+    private boolean movedInstructionPointer;
     private int instructionPointer;
 
 
     public IntCodeProgram(int[] initialState) {
         this(initialState, Set.of(new AddIntCodeInstruction(), new MulIntCodeInstruction(), // day 02
-                new InputCodeInstruction(), new OutputCodeInstruction())); // day 05
+                new InputCodeInstruction(), new OutputCodeInstruction(), // day 05 part 01
+                new JumpIfTrueCodeInstruction(), new JumpIfFalseCodeInstruction(), //
+                new LessThanCodeInstruction(), new EqualsCodeInstruction())); // day 05 part 02
     }
 
     public IntCodeProgram(int[] initialState, Set<IntCodeInstruction> instructionSet) {
@@ -58,8 +60,12 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
         if (intCodeInstruction == null) {
             throw new IllegalArgumentException("Unknown opCode: " + code);
         }
+
+        movedInstructionPointer = false;
         intCodeInstruction.execute(this);
-        instructionPointer += intCodeInstruction.instructionSize();
+        if (!movedInstructionPointer) {
+            instructionPointer += intCodeInstruction.instructionSize();
+        }
         return intCodeInstruction;
     }
 
@@ -95,6 +101,12 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
             return 0;
         }
         return opCodeStr.charAt(parameterModeIndex) - '0';
+    }
+
+
+    public void moveInstructionPointerTo(int instructionPointerDestination) {
+        this.instructionPointer = instructionPointerDestination;
+        this.movedInstructionPointer = true;
     }
 
 
