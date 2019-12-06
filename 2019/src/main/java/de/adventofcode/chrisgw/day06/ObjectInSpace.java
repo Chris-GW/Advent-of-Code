@@ -2,7 +2,7 @@ package de.adventofcode.chrisgw.day06;
 
 import lombok.Data;
 
-import java.util.function.Predicate;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -23,8 +23,7 @@ public class ObjectInSpace {
 
 
     public Stream<ObjectInSpace> toCenterOfMass() {
-        Predicate<ObjectInSpace> isNotCenterOfMass = Predicate.not(ObjectInSpace::isCenterOfMass);
-        return Stream.iterate(this, isNotCenterOfMass, ObjectInSpace::getCenterObject);
+        return Stream.iterate(this.getCenterObject(), Objects::nonNull, ObjectInSpace::getCenterObject);
     }
 
 

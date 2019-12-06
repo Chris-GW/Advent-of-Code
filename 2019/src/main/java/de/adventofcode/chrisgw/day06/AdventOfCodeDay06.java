@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -75,6 +76,24 @@ public class AdventOfCodeDay06 {
                 .stream()
                 .mapToLong(objectInSpace -> objectInSpace.toCenterOfMass().count())
                 .sum();
+    }
+
+
+    public int countNeededOrbitalTransfers() {
+        ObjectInSpace youObject = findObjectInSpace("YOU");
+        ObjectInSpace sanObject = findObjectInSpace("SAN");
+
+        List<ObjectInSpace> toCenterPathYou = youObject.toCenterOfMass().collect(Collectors.toList());
+        List<ObjectInSpace> toCenterPathSan = sanObject.toCenterOfMass().collect(Collectors.toList());
+
+        ObjectInSpace intersectionObject = toCenterPathYou.stream()
+                .filter(toCenterPathSan::contains)
+                .findFirst()
+                .orElseThrow();
+
+        int stepsYou = toCenterPathYou.indexOf(intersectionObject);
+        int stepsSan = toCenterPathSan.indexOf(intersectionObject);
+        return stepsYou + stepsSan;
     }
 
 
