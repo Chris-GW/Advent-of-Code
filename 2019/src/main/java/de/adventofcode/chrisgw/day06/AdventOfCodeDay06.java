@@ -57,8 +57,8 @@ public class AdventOfCodeDay06 {
     public long countTotalOrbits() {
         return universalOrbitMap.values()
                 .stream()
-                .mapToLong(objectInSpace -> objectInSpace.toCenterOfMass().count())
-                .sum();
+                .flatMap(ObjectInSpace::toCenterOfMass)
+                .count();
     }
 
 
