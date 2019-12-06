@@ -1,6 +1,7 @@
 package de.adventofcode.chrisgw.day06;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -14,6 +15,8 @@ public class ObjectInSpace {
     public static final String CENTER_OF_MASS_NAME = "COM";
 
     private final String name;
+
+    @EqualsAndHashCode.Exclude
     private ObjectInSpace centerObject;
 
 
@@ -33,26 +36,8 @@ public class ObjectInSpace {
 
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ObjectInSpace)) {
-            return false;
-        }
-
-        ObjectInSpace that = (ObjectInSpace) o;
-        return getName().equals(that.getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return getName().hashCode();
-    }
-
-    @Override
     public String toString() {
-        return name;
+        return getName();
     }
 
 }
