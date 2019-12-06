@@ -31,10 +31,6 @@ public class AdventOfCodeDay06 {
     private static void parseObjectInSpace(AdventOfCodeDay06 aocDay06, String line) {
         Matcher matcher = ORBIT_RELATIONSHIP_PATTERN.matcher(line);
         if (matcher.matches()) {
-            String centerObjectName = matcher.group(1);
-            ObjectInSpace centerObject = new ObjectInSpace(centerObjectName);
-            aocDay06.universalOrbitMap.putIfAbsent(centerObjectName, centerObject);
-
             String orbitObjectName = matcher.group(2);
             ObjectInSpace orbitObject = new ObjectInSpace(orbitObjectName);
             aocDay06.universalOrbitMap.putIfAbsent(orbitObjectName, orbitObject);
