@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static de.adventofcode.chrisgw.day06.ObjectInSpace.CENTER_OF_MASS_NAME;
+
 
 /**
  * 2019 Day 6: Universal Orbit Map
@@ -21,40 +23,25 @@ public class AdventOfCodeDay06 {
 
     public static AdventOfCodeDay06 parseUniversalOrbitMap(List<String> lines) {
         AdventOfCodeDay06 aocDay06 = new AdventOfCodeDay06();
-        ObjectInSpace centerOfMass = new ObjectInSpace(ObjectInSpace.CENTER_OF_MASS_NAME);
-        aocDay06.putObjectInSpace(centerOfMass);
-        lines.forEach(line -> parseObjectInSpace(aocDay06, line));
-        lines.forEach(line -> parseOrbitRelationship(aocDay06, line));
+        lines.forEach(line -> putOrbitRelationship(aocDay06, line));
         return aocDay06;
     }
 
-    private static void parseObjectInSpace(AdventOfCodeDay06 aocDay06, String line) {
+    private static void putOrbitRelationship(AdventOfCodeDay06 aocDay06, String line) {
         Matcher matcher = ORBIT_RELATIONSHIP_PATTERN.matcher(line);
-        if (matcher.matches()) {
-            String orbitObjectName = matcher.group(2);
-            ObjectInSpace orbitObject = new ObjectInSpace(orbitObjectName);
-            aocDay06.universalOrbitMap.putIfAbsent(orbitObjectName, orbitObject);
-        } else {
-            throw new IllegalArgumentException("Expect line to match pattern: " + ORBIT_RELATIONSHIP_PATTERN);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException(line + " must match pattern: " + ORBIT_RELATIONSHIP_PATTERN);
         }
+        String centerObjectName = matcher.group(1);
+        ObjectInSpace centerObject = aocDay06.putObjectInSpace(centerObjectName);
+
+        String orbitObjectName = matcher.group(2);
+        ObjectInSpace orbitObject = aocDay06.putObjectInSpace(orbitObjectName);
+        orbitObject.setCenterObject(centerObject);
     }
 
-    private static void parseOrbitRelationship(AdventOfCodeDay06 aocDay06, String line) {
-        Matcher matcher = ORBIT_RELATIONSHIP_PATTERN.matcher(line);
-        if (matcher.matches()) {
-            String centerObjectName = matcher.group(1);
-            ObjectInSpace centerObject = aocDay06.findObjectInSpace(centerObjectName);
-
-            String orbitObjectName = matcher.group(2);
-            ObjectInSpace orbitObject = aocDay06.findObjectInSpace(orbitObjectName);
-            orbitObject.setCenterObject(centerObject);
-        }
-    }
-
-
-    private void putObjectInSpace(ObjectInSpace objectInSpace) {
-        String name = objectInSpace.getName();
-        universalOrbitMap.put(name, objectInSpace);
+    private ObjectInSpace putObjectInSpace(String objectName) {
+        return universalOrbitMap.computeIfAbsent(objectName, ObjectInSpace::new);
     }
 
 
@@ -63,7 +50,7 @@ public class AdventOfCodeDay06 {
     }
 
     public ObjectInSpace centerOfMass() {
-        return findObjectInSpace(ObjectInSpace.CENTER_OF_MASS_NAME);
+        return findObjectInSpace(CENTER_OF_MASS_NAME);
     }
 
 
