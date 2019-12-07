@@ -13,9 +13,7 @@ public class AdventOfCodeDay05 {
     private IntCodeProgram intCodeProgram;
 
     public AdventOfCodeDay05(String intCodeProgramStr) {
-        Pattern splitPattern = Pattern.compile(",");
-        int[] initialState = splitPattern.splitAsStream(intCodeProgramStr).mapToInt(Integer::parseInt).toArray();
-        this.intCodeProgram = new IntCodeProgram(initialState);
+        this.intCodeProgram = IntCodeProgram.parseIntCodeProgram(intCodeProgramStr);
     }
 
 
@@ -26,9 +24,7 @@ public class AdventOfCodeDay05 {
     public int runTestAndReturnDignosticCode(int systemId) {
         intCodeProgram.reset();
         intCodeProgram.addInput(systemId);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         return intCodeProgram.lastOutput();
     }
 

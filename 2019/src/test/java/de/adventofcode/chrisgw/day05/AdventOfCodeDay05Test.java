@@ -16,9 +16,7 @@ public class AdventOfCodeDay05Test {
         int[] expectedFinalMemoryState = new int[] { 1002, 4, 3, 4, 99 };
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
     }
 
@@ -46,9 +44,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -60,9 +56,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -75,9 +69,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -89,9 +81,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -106,9 +96,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -120,9 +108,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -135,9 +121,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -149,9 +133,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -166,9 +148,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -180,9 +160,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -195,9 +173,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -209,9 +185,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -228,9 +202,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -244,9 +216,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
@@ -260,9 +230,7 @@ public class AdventOfCodeDay05Test {
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
         intCodeProgram.addInput(input);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
         assertEquals("lastOutput", expectedOutput, intCodeProgram.lastOutput());
     }
 
