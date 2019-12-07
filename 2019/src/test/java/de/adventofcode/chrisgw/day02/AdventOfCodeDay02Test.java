@@ -15,9 +15,7 @@ public class AdventOfCodeDay02Test {
         int expectedOutput = 3500;
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
         assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
@@ -30,9 +28,7 @@ public class AdventOfCodeDay02Test {
         int expectedOutput = 2;
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
         assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
@@ -45,9 +41,7 @@ public class AdventOfCodeDay02Test {
         int expectedOutput = 2;
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
         assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
@@ -60,9 +54,7 @@ public class AdventOfCodeDay02Test {
         int expectedOutput = 2;
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
         assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
@@ -75,9 +67,7 @@ public class AdventOfCodeDay02Test {
         int expectedOutput = 30;
 
         IntCodeProgram intCodeProgram = new IntCodeProgram(initialState);
-        while (intCodeProgram.hasNext()) {
-            intCodeProgram.next();
-        }
+        intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
         assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());

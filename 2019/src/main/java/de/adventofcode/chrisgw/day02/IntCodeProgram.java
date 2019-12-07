@@ -4,6 +4,7 @@ import de.adventofcode.chrisgw.day05.*;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -31,11 +32,21 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
                 new LessThanCodeInstruction(), new EqualsCodeInstruction())); // day 05 part 02
     }
 
-    public IntCodeProgram(int[] initialState, Set<IntCodeInstruction> instructionSet) {
+    public IntCodeProgram(int[] initialState, Collection<IntCodeInstruction> instructionSet) {
         this.initialState = Arrays.copyOf(initialState, initialState.length);
         this.instructionSet = instructionSet.stream()
                 .collect(Collectors.toMap(IntCodeInstruction::opCode, Function.identity()));
         reset();
+    }
+
+    public IntCodeProgram(IntCodeProgram intCodeProgram) {
+        this(intCodeProgram.initialState, intCodeProgram.instructionSet.values()); // day 07
+    }
+
+    public static IntCodeProgram parseIntCodeProgram(String intCodeProgramStr) {
+        Pattern splitPattern = Pattern.compile(",");
+        int[] initialState = splitPattern.splitAsStream(intCodeProgramStr).mapToInt(Integer::parseInt).toArray();
+        return new IntCodeProgram(initialState);
     }
 
 
@@ -67,6 +78,12 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
             instructionPointer += intCodeInstruction.instructionSize();
         }
         return intCodeInstruction;
+    }
+
+    public void run() {
+        while (hasNext()) {
+            next();
+        }
     }
 
 
