@@ -3,6 +3,7 @@ package de.adventofcode.chrisgw.day07;
 import de.adventofcode.chrisgw.day02.IntCodeProgram;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -17,47 +18,93 @@ public class AdventOfCodeDay07 {
 
     public AdventOfCodeDay07(IntCodeProgram controllerSoftware) {
         IntStream.range(0, 5).forEach(value -> thrusterAmplifiers.add(new ThrusterAmplifier(controllerSoftware)));
+        for (int i = 1; i < thrusterAmplifiers.size(); i++) {
+            ThrusterAmplifier outputAmplifier = thrusterAmplifiers.get(i);
+            ThrusterAmplifier inputAmplifier = thrusterAmplifiers.get(i - 1);
+            inputAmplifier.connectOutputTo(outputAmplifier);
+        }
     }
 
 
-    public int findHighestThrusterSignal() {
-        int[] phaseSettings = new int[5];
-        List<int[]> possibleThrusterPhaseSettings = possiblePhaseSettings(phaseSettings, 0);
-        return possibleThrusterPhaseSettings.stream().mapToInt(this::runThrusterWith).max().orElseThrow();
+    private void setThrusterPhaseSettings(int[] phaseSettings) {
+        for (int i = 0; i < thrusterAmplifiers.size(); i++) {
+            ThrusterAmplifier thrusterAmplifier = thrusterAmplifiers.get(i);
+            thrusterAmplifier.withPhaseSetting(phaseSettings[i]);
+        }
     }
 
-    public List<int[]> possiblePhaseSettings(int[] phaseSettings, int index) {
+    private int runThruster(int[] phaseSettings) {
+        setThrusterPhaseSettings(phaseSettings);
+        thrusterAmplifiers.get(0).addInputSignal(0);
+        return runThruster();
+    }
+
+    private int runThruster() {
+        int signal = 0;
+        for (ThrusterAmplifier thrusterAmplifier : thrusterAmplifiers) {
+            signal = thrusterAmplifier.runControllerSoftware();
+        }
+        return signal;
+    }
+
+
+    private List<int[]> possiblePhaseSettings(int[] phaseSettings, int index, Set<Integer> unusedPhaseSettings) {
         List<int[]> possiblePhaseSettings = new ArrayList<>();
         if (index >= thrusterAmplifiers.size()) {
             possiblePhaseSettings.add(Arrays.copyOf(phaseSettings, phaseSettings.length));
             return possiblePhaseSettings;
         }
 
-        for (int phaseSetting = 0; phaseSetting <= 4; phaseSetting++) {
-            if (isUsedPhaseSetting(phaseSettings, phaseSetting, index)) {
-                continue;
-            }
+        for (int phaseSetting : unusedPhaseSettings) {
             phaseSettings[index] = phaseSetting;
-            possiblePhaseSettings.addAll(possiblePhaseSettings(phaseSettings, index + 1));
+            Set<Integer> newUnusedPhaseSettings = new HashSet<>(unusedPhaseSettings);
+            newUnusedPhaseSettings.remove(phaseSetting);
+            possiblePhaseSettings.addAll(possiblePhaseSettings(phaseSettings, index + 1, newUnusedPhaseSettings));
         }
         return possiblePhaseSettings;
     }
 
-    private static boolean isUsedPhaseSetting(int[] phaseSettings, int phaseSetting, int index) {
-        return Arrays.stream(phaseSettings, 0, index).anyMatch(value -> value == phaseSetting);
+
+    // part 01
+
+    public int findHighestThrusterSignal() {
+        int[] phaseSettings = new int[thrusterAmplifiers.size()];
+        Set<Integer> unusedPhaseSettings = IntStream.range(0, thrusterAmplifiers.size())
+                .boxed()
+                .collect(Collectors.toSet());
+        List<int[]> possibleThrusterPhaseSettings = possiblePhaseSettings(phaseSettings, 0, unusedPhaseSettings);
+        return possibleThrusterPhaseSettings.stream().mapToInt(this::runThruster).max().orElseThrow();
     }
 
 
-    public int runThrusterWith(int[] phaseSettings) {
-        int signal = 0;
-        for (int i = 0; i < thrusterAmplifiers.size(); i++) {
-            ThrusterAmplifier thrusterAmplifier = thrusterAmplifiers.get(i);
-            int phaseSetting = phaseSettings[i];
-            thrusterAmplifier.setPhaseSetting(phaseSetting);
-            thrusterAmplifier.setInputSignal(signal);
-            signal = thrusterAmplifier.runControllerSoftware();
+    // part 02
+
+    public int findHighestThrusterSignalWithFeedbackLoop() {
+        int[] phaseSettings = new int[thrusterAmplifiers.size()];
+        Set<Integer> unusedPhaseSettings = IntStream.range(0, thrusterAmplifiers.size())
+                .map(phaseSetting -> phaseSetting + 5)
+                .boxed()
+                .collect(Collectors.toSet());
+        List<int[]> possibleThrusterPhaseSettings = possiblePhaseSettings(phaseSettings, 0, unusedPhaseSettings);
+        return possibleThrusterPhaseSettings.stream().mapToInt(this::runThrusterInFeedbackLoopWith).max().orElseThrow();
+    }
+
+    public int runThrusterInFeedbackLoopWith(int[] phaseSettings) {
+        setThrusterPhaseSettings(phaseSettings);
+        thrusterAmplifiers.get(0).addInputSignal(0);
+
+        // close loop
+        ThrusterAmplifier lastThrusterAmplifier = thrusterAmplifiers.get(thrusterAmplifiers.size() - 1);
+        ThrusterAmplifier firstThrusterAmplifier = thrusterAmplifiers.get(0);
+        lastThrusterAmplifier.connectOutputTo(firstThrusterAmplifier);
+        int previousSignal = runThruster();
+        int signal = runThruster();
+        while (previousSignal != signal) {
+            previousSignal = signal;
+            signal = runThruster();
         }
         return signal;
     }
+
 
 }

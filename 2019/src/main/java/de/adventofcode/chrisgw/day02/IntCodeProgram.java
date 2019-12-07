@@ -60,22 +60,33 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
     @Override
     public boolean hasNext() {
-        return nextOpCode() != 99;
+        return nextOpCode() != 99 && !isWaitingForNextInput();
+    }
+
+    private boolean isWaitingForNextInput() {
+        return inputs.isEmpty() && nextIntCodeInstruction().opCode() == new InputCodeInstruction().opCode();
     }
 
     @Override
     public IntCodeInstruction next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException("IntCodeProgram is exited or waiting for input");
+        }
+        movedInstructionPointer = false;
+        IntCodeInstruction intCodeInstruction = nextIntCodeInstruction();
+        intCodeInstruction.execute(this);
+        if (!movedInstructionPointer) {
+            instructionPointer += intCodeInstruction.instructionSize();
+        }
+        return intCodeInstruction;
+    }
+
+    private IntCodeInstruction nextIntCodeInstruction() {
         int opCode = nextOpCode();
         int code = opCode % 100;
         IntCodeInstruction intCodeInstruction = instructionSet.get(code);
         if (intCodeInstruction == null) {
             throw new IllegalArgumentException("Unknown opCode: " + code);
-        }
-
-        movedInstructionPointer = false;
-        intCodeInstruction.execute(this);
-        if (!movedInstructionPointer) {
-            instructionPointer += intCodeInstruction.instructionSize();
         }
         return intCodeInstruction;
     }
