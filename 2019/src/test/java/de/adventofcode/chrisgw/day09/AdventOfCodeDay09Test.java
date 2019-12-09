@@ -46,12 +46,24 @@ public class AdventOfCodeDay09Test {
     }
 
     @Test
-    public void my_part01() {
+    public void myPuzzleInput_part01() {
         String intCodeProgrammStr = TestUtils.readSingleLineOfClassPathResource("/puzzleInputDay09.txt");
         long expectedBoostKeycode = 2745604242L;
 
         IntCodeProgram boostProgram = IntCodeProgram.parseIntCodeProgram(intCodeProgrammStr);
         long boostKeycode = AdventOfCodeDay09.runBoostProgramInTestMode(boostProgram);
+        System.out.println("boostProgram output: " + Arrays.toString(boostProgram.getAllOutput().toArray()));
+        assertEquals("boostKeycode", expectedBoostKeycode, boostKeycode);
+    }
+
+
+    @Test
+    public void myPuzzleInput_part02() {
+        String intCodeProgrammStr = TestUtils.readSingleLineOfClassPathResource("/puzzleInputDay09.txt");
+        long expectedBoostKeycode = 51135L;
+
+        IntCodeProgram boostProgram = IntCodeProgram.parseIntCodeProgram(intCodeProgrammStr);
+        long boostKeycode = AdventOfCodeDay09.runBoostProgramInBoostMode(boostProgram);
         assertEquals("boostKeycode", expectedBoostKeycode, boostKeycode);
     }
 
