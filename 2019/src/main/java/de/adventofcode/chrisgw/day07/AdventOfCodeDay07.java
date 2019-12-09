@@ -1,6 +1,6 @@
 package de.adventofcode.chrisgw.day07;
 
-import de.adventofcode.chrisgw.day02.IntCodeProgram;
+import de.adventofcode.chrisgw.intcode.IntCodeProgram;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,14 +33,14 @@ public class AdventOfCodeDay07 {
         }
     }
 
-    private int runThruster(int[] phaseSettings) {
+    private long runThruster(int[] phaseSettings) {
         setThrusterPhaseSettings(phaseSettings);
         thrusterAmplifiers.get(0).addInputSignal(0);
         return runThruster();
     }
 
-    private int runThruster() {
-        int signal = 0;
+    private long runThruster() {
+        long signal = 0;
         for (ThrusterAmplifier thrusterAmplifier : thrusterAmplifiers) {
             signal = thrusterAmplifier.runControllerSoftware();
         }
@@ -67,29 +67,29 @@ public class AdventOfCodeDay07 {
 
     // part 01
 
-    public int findHighestThrusterSignal() {
+    public long findHighestThrusterSignal() {
         int[] phaseSettings = new int[thrusterAmplifiers.size()];
         Set<Integer> unusedPhaseSettings = IntStream.range(0, thrusterAmplifiers.size())
                 .boxed()
                 .collect(Collectors.toSet());
         List<int[]> possibleThrusterPhaseSettings = possiblePhaseSettings(phaseSettings, 0, unusedPhaseSettings);
-        return possibleThrusterPhaseSettings.stream().mapToInt(this::runThruster).max().orElseThrow();
+        return possibleThrusterPhaseSettings.stream().mapToLong(this::runThruster).max().orElseThrow();
     }
 
 
     // part 02
 
-    public int findHighestThrusterSignalWithFeedbackLoop() {
+    public long findHighestThrusterSignalWithFeedbackLoop() {
         int[] phaseSettings = new int[thrusterAmplifiers.size()];
         Set<Integer> unusedPhaseSettings = IntStream.range(0, thrusterAmplifiers.size())
                 .map(phaseSetting -> phaseSetting + 5)
                 .boxed()
                 .collect(Collectors.toSet());
         List<int[]> possibleThrusterPhaseSettings = possiblePhaseSettings(phaseSettings, 0, unusedPhaseSettings);
-        return possibleThrusterPhaseSettings.stream().mapToInt(this::runThrusterInFeedbackLoopWith).max().orElseThrow();
+        return possibleThrusterPhaseSettings.stream().mapToLong(this::runThrusterInFeedbackLoopWith).max().orElseThrow();
     }
 
-    public int runThrusterInFeedbackLoopWith(int[] phaseSettings) {
+    public long runThrusterInFeedbackLoopWith(int[] phaseSettings) {
         setThrusterPhaseSettings(phaseSettings);
         thrusterAmplifiers.get(0).addInputSignal(0);
 
@@ -97,8 +97,8 @@ public class AdventOfCodeDay07 {
         ThrusterAmplifier lastThrusterAmplifier = thrusterAmplifiers.get(thrusterAmplifiers.size() - 1);
         ThrusterAmplifier firstThrusterAmplifier = thrusterAmplifiers.get(0);
         lastThrusterAmplifier.connectOutputTo(firstThrusterAmplifier);
-        int previousSignal = runThruster();
-        int signal = runThruster();
+        long previousSignal = runThruster();
+        long signal = runThruster();
         while (previousSignal != signal) {
             previousSignal = signal;
             signal = runThruster();

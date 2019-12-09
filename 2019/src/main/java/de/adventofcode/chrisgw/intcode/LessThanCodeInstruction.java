@@ -1,9 +1,4 @@
-package de.adventofcode.chrisgw.day05;
-
-import de.adventofcode.chrisgw.day02.IntCodeInstruction;
-import de.adventofcode.chrisgw.day02.IntCodeProgram;
-
-import static de.adventofcode.chrisgw.day02.IntCodeProgram.PARAMETER_IMMEDIATE_MODE;
+package de.adventofcode.chrisgw.intcode;
 
 
 public class LessThanCodeInstruction implements IntCodeInstruction {
@@ -25,9 +20,9 @@ public class LessThanCodeInstruction implements IntCodeInstruction {
 
     @Override
     public void execute(IntCodeProgram intCodeProgram) {
-        int firstValue = intCodeProgram.parameterAt(0);
-        int secondValue = intCodeProgram.parameterAt(1);
-        int destinationAddress = intCodeProgram.parameterAt(2, PARAMETER_IMMEDIATE_MODE);
+        long firstValue = intCodeProgram.parameterAt(0);
+        long secondValue = intCodeProgram.parameterAt(1);
+        int destinationAddress = intCodeProgram.parameterAddressAt(2);
         if (firstValue < secondValue) {
             intCodeProgram.setValueAt(destinationAddress, 1);
         } else {

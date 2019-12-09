@@ -1,7 +1,4 @@
-package de.adventofcode.chrisgw.day05;
-
-import de.adventofcode.chrisgw.day02.IntCodeInstruction;
-import de.adventofcode.chrisgw.day02.IntCodeProgram;
+package de.adventofcode.chrisgw.intcode;
 
 
 public class OutputCodeInstruction implements IntCodeInstruction {
@@ -23,7 +20,7 @@ public class OutputCodeInstruction implements IntCodeInstruction {
 
     @Override
     public void execute(IntCodeProgram intCodeProgram) {
-        int output = intCodeProgram.parameterAt(0);
+        long output = intCodeProgram.parameterAt(0);
         intCodeProgram.addOutput(output);
     }
 

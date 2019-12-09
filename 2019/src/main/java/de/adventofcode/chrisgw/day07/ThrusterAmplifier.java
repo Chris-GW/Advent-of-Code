@@ -1,6 +1,6 @@
 package de.adventofcode.chrisgw.day07;
 
-import de.adventofcode.chrisgw.day02.IntCodeProgram;
+import de.adventofcode.chrisgw.intcode.IntCodeProgram;
 
 
 public class ThrusterAmplifier {
@@ -13,15 +13,15 @@ public class ThrusterAmplifier {
         this.controllerSoftware = new IntCodeProgram(controllerSoftware);
     }
 
-    public void withPhaseSetting(int phaseSetting) {
+    public void withPhaseSetting(long phaseSetting) {
         controllerSoftware.reset();
         controllerSoftware.addInput(phaseSetting);
     }
 
 
-    public int runControllerSoftware() {
+    public long runControllerSoftware() {
         controllerSoftware.run();
-        int outputSignal = outputSignal();
+        long outputSignal = outputSignal();
         if (outputAmplifier != null) {
             outputAmplifier.addInputSignal(outputSignal);
         }
@@ -29,11 +29,11 @@ public class ThrusterAmplifier {
     }
 
 
-    public void addInputSignal(int inputSignal) {
+    public void addInputSignal(long inputSignal) {
         controllerSoftware.addInput(inputSignal);
     }
 
-    public int outputSignal() {
+    public long outputSignal() {
         return controllerSoftware.lastOutput();
     }
 

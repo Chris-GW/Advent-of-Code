@@ -1,8 +1,6 @@
 package de.adventofcode.chrisgw.day05;
 
-import de.adventofcode.chrisgw.day02.IntCodeProgram;
-
-import java.util.regex.Pattern;
+import de.adventofcode.chrisgw.intcode.IntCodeProgram;
 
 
 /**
@@ -17,11 +15,11 @@ public class AdventOfCodeDay05 {
     }
 
 
-    public int runTestAndReturnDignosticCode() {
+    public long runTestAndReturnDignosticCode() {
         return runTestAndReturnDignosticCode(1);
     }
 
-    public int runTestAndReturnDignosticCode(int systemId) {
+    public long runTestAndReturnDignosticCode(int systemId) {
         intCodeProgram.reset();
         intCodeProgram.addInput(systemId);
         intCodeProgram.run();
