@@ -1,38 +1,41 @@
-package de.adventofcode.chrisgw.day02;
-
-import de.adventofcode.chrisgw.day05.*;
+package de.adventofcode.chrisgw.intcode;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 
 public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
     public static final int PARAMETER_POSITION_MODE = 0;
     public static final int PARAMETER_IMMEDIATE_MODE = 1;
-    private final int[] initialState;
+    public static final int PARAMETER_RELATIVE_MODE = 2;
+
+    private final long[] initialState;
     private final Map<Integer, IntCodeInstruction> instructionSet;
 
-    private int noun;
-    private int verb;
-    private Deque<Integer> inputs = new ArrayDeque<>();
-    private Deque<Integer> outputs = new ArrayDeque<>();
+    private long noun;
+    private long verb;
+    private Deque<Long> inputs = new ArrayDeque<>();
+    private Deque<Long> outputs = new ArrayDeque<>();
 
-    private int[] memory;
     private boolean movedInstructionPointer;
     private int instructionPointer;
+    private int relativeBase = 0;
+    private long[] memory;
 
 
-    public IntCodeProgram(int[] initialState) {
+    public IntCodeProgram(long[] initialState) {
         this(initialState, Set.of(new AddIntCodeInstruction(), new MulIntCodeInstruction(), // day 02
                 new InputCodeInstruction(), new OutputCodeInstruction(), // day 05 part 01
                 new JumpIfTrueCodeInstruction(), new JumpIfFalseCodeInstruction(), //
-                new LessThanCodeInstruction(), new EqualsCodeInstruction())); // day 05 part 02
+                new LessThanCodeInstruction(), new EqualsCodeInstruction(), // day 05 part 02
+                new AdjustRelativeBaseCodeInstruction())); // day 09 part 01
     }
 
-    public IntCodeProgram(int[] initialState, Collection<IntCodeInstruction> instructionSet) {
+    public IntCodeProgram(long[] initialState, Collection<IntCodeInstruction> instructionSet) {
         this.initialState = Arrays.copyOf(initialState, initialState.length);
         this.instructionSet = instructionSet.stream()
                 .collect(Collectors.toMap(IntCodeInstruction::opCode, Function.identity()));
@@ -45,7 +48,7 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
     public static IntCodeProgram parseIntCodeProgram(String intCodeProgramStr) {
         Pattern splitPattern = Pattern.compile(",");
-        int[] initialState = splitPattern.splitAsStream(intCodeProgramStr).mapToInt(Integer::parseInt).toArray();
+        long[] initialState = splitPattern.splitAsStream(intCodeProgramStr).mapToLong(Long::parseLong).toArray();
         return new IntCodeProgram(initialState);
     }
 
@@ -53,6 +56,7 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     public void reset() {
         this.memory = Arrays.copyOf(initialState, initialState.length);
         this.instructionPointer = 0;
+        this.relativeBase = 0;
         this.inputs.clear();
         this.outputs.clear();
     }
@@ -64,7 +68,7 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     }
 
     private boolean isWaitingForNextInput() {
-        return inputs.isEmpty() && nextIntCodeInstruction().opCode() == new InputCodeInstruction().opCode();
+        return !hasNextInput() && nextIntCodeInstruction().opCode() == new InputCodeInstruction().opCode();
     }
 
     @Override
@@ -99,28 +103,42 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
 
     private int nextOpCode() {
-        return memory[instructionPointer];
+        return (int) valueAt(instructionPointer);
     }
 
 
-    public int parameterAt(int index) {
+    public long parameterAt(int index) {
         int parameterMode = parameterModeAt(index);
-        return parameterAt(index, parameterMode);
-    }
-
-    public int parameterAt(int index, int parameterMode) {
         int parameterIndex = instructionPointer + 1 + index;
         switch (parameterMode) {
         case PARAMETER_POSITION_MODE:
-            int adress = valueAt(parameterIndex);
+            int adress = addressAt(parameterIndex);
             return valueAt(adress);
         case PARAMETER_IMMEDIATE_MODE:
             return valueAt(parameterIndex);
+        case PARAMETER_RELATIVE_MODE:
+            int relativeAdress = addressAt(parameterIndex);
+            return valueAt(relativeBase + relativeAdress);
         default:
             throw new RuntimeException("unknown parameterMode: " + parameterMode);
         }
     }
 
+    public int parameterAddressAt(int index) {
+        int parameterMode = parameterModeAt(index);
+        int parameterIndex = instructionPointer + 1 + index;
+        switch (parameterMode) {
+        case PARAMETER_POSITION_MODE:
+        case PARAMETER_IMMEDIATE_MODE:
+            return (int) valueAt(parameterIndex);
+        case PARAMETER_RELATIVE_MODE:
+            int relativeAdress = addressAt(parameterIndex);
+            return relativeBase + relativeAdress;
+        default:
+            throw new RuntimeException("unknown parameterMode: " + parameterMode);
+        }
+
+    }
 
     private int parameterModeAt(int index) {
         String opCodeStr = String.valueOf(nextOpCode());
@@ -132,73 +150,114 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     }
 
 
+    public int addressAt(int address) {
+        return (int) valueAt(address);
+    }
+
+    public long valueAt(int address) {
+        if (address < 0) {
+            throw new IllegalArgumentException("Can't access negative addresses, but was: " + address);
+        } else if (address >= memory.length) {
+            return 0;
+        } else {
+            return memory[address];
+        }
+    }
+
+    public void setValueAt(int address, long value) {
+        if (address < 0) {
+            throw new IllegalArgumentException("Can't write negative addresses, but was: " + address);
+        } else if (address >= memory.length) {
+            growMemoryToAdress(address);
+        }
+        memory[address] = value;
+    }
+
+    private void growMemoryToAdress(int address) {
+        int oldCapacity = memory.length;
+        int minCapacity = address + 1;
+        int grow = Math.max(minCapacity - oldCapacity, /* minimum growth */
+                oldCapacity >> 1 /* preferred growth */);
+        int newCapacity = oldCapacity + grow;
+        memory = Arrays.copyOf(memory, newCapacity);
+    }
+
+
     public void moveInstructionPointerTo(int instructionPointerDestination) {
         this.instructionPointer = instructionPointerDestination;
         this.movedInstructionPointer = true;
     }
 
 
-    public int valueAt(int address) {
-        return memory[address];
-    }
-
-    public void setValueAt(int address, int value) {
-        memory[address] = value;
+    public void adjustRelativeBase(long parameterValue) {
+        relativeBase += parameterValue;
     }
 
 
-    public int getNoun() {
+    public long getNoun() {
         return noun;
     }
 
-    public void setNoun(int noun) {
+    public void setNoun(long noun) {
         this.noun = noun;
-        this.memory[1] = noun;
+        setValueAt(1, noun);
     }
 
 
-    public int getVerb() {
+    public long getVerb() {
         return verb;
     }
 
-    public void setVerb(int verb) {
+    public void setVerb(long verb) {
         this.verb = verb;
-        this.memory[2] = verb;
+        setValueAt(2, verb);
     }
 
 
-    public int getExitOutput() {
+    public long getExitOutput() {
         return valueAt(0);
     }
 
 
-    public int nextInput() {
+    public long nextInput() {
         return inputs.removeFirst();
     }
 
-    public void addInput(int input) {
+    public void addInput(long input) {
         inputs.addLast(input);
     }
 
+    public boolean hasNextInput() {
+        return !inputs.isEmpty();
+    }
 
-    public void addOutput(int output) {
+
+    public void addOutput(long output) {
         outputs.addLast(output);
     }
 
-    public int nextOutput() {
+    public long nextOutput() {
         return outputs.removeFirst();
     }
 
-    public int lastOutput() {
+    public long lastOutput() {
         return outputs.getLast();
     }
 
+    public LongStream getAllOutput() {
+        return LongStream.generate(this::nextOutput).limit(outputs.size());
+    }
 
-    public int[] getInitialState() {
+    public boolean hasNextOutput() {
+        return !outputs.isEmpty();
+    }
+
+
+    public long[] getInitialState() {
         return Arrays.copyOf(initialState, initialState.length);
     }
 
-    public int[] getMemory() {
+    public long[] getMemory() {
         return Arrays.copyOf(memory, memory.length);
     }
 

@@ -1,9 +1,4 @@
-package de.adventofcode.chrisgw.day05;
-
-import de.adventofcode.chrisgw.day02.IntCodeInstruction;
-import de.adventofcode.chrisgw.day02.IntCodeProgram;
-
-import static de.adventofcode.chrisgw.day02.IntCodeProgram.PARAMETER_IMMEDIATE_MODE;
+package de.adventofcode.chrisgw.intcode;
 
 
 public class InputCodeInstruction implements IntCodeInstruction {
@@ -25,8 +20,8 @@ public class InputCodeInstruction implements IntCodeInstruction {
 
     @Override
     public void execute(IntCodeProgram intCodeProgram) {
-        int input = intCodeProgram.nextInput();
-        int destinationAddress = intCodeProgram.parameterAt(0, PARAMETER_IMMEDIATE_MODE);
+        long input = intCodeProgram.nextInput();
+        int destinationAddress =  intCodeProgram.parameterAddressAt(0);
         intCodeProgram.setValueAt(destinationAddress, input);
     }
 

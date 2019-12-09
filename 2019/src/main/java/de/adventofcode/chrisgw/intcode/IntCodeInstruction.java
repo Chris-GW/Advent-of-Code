@@ -1,4 +1,7 @@
-package de.adventofcode.chrisgw.day02;
+package de.adventofcode.chrisgw.intcode;
+
+import de.adventofcode.chrisgw.intcode.IntCodeProgram;
+
 
 public interface IntCodeInstruction {
 

@@ -1,6 +1,4 @@
-package de.adventofcode.chrisgw.day02;
-
-import static de.adventofcode.chrisgw.day02.IntCodeProgram.PARAMETER_IMMEDIATE_MODE;
+package de.adventofcode.chrisgw.intcode;
 
 
 public class MulIntCodeInstruction implements IntCodeInstruction {
@@ -22,10 +20,10 @@ public class MulIntCodeInstruction implements IntCodeInstruction {
 
     @Override
     public void execute(IntCodeProgram intCodeProgram) {
-        int firstFactor = intCodeProgram.parameterAt(0);
-        int secondFactor = intCodeProgram.parameterAt(1);
-        int product = firstFactor * secondFactor;
-        int destinationAddress = intCodeProgram.parameterAt(2, PARAMETER_IMMEDIATE_MODE);
+        long firstFactor = intCodeProgram.parameterAt(0);
+        long secondFactor = intCodeProgram.parameterAt(1);
+        long product = firstFactor * secondFactor;
+        int destinationAddress = intCodeProgram.parameterAddressAt(2);
         intCodeProgram.setValueAt(destinationAddress, product);
     }
 
