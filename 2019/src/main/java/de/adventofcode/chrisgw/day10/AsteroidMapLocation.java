@@ -14,7 +14,7 @@ public class AsteroidMapLocation {
     private final AdventOfCodeDay10 asteriodMap;
     private final int x;
     private final int y;
-    private final boolean asteroid;
+    private boolean asteroid;
 
 
     public long visibleAsteroidCount() {
@@ -31,14 +31,7 @@ public class AsteroidMapLocation {
     public Stream<AsteroidLineOfSight> lineOfSights() {
         return asteriodMap.asteroidLocations()
                 .filter(Predicate.not(this::equals))
-                .map(asteroidLocation -> new AsteroidLineOfSight(this, asteroidLocation));
-    }
-
-
-    public int distanceTo(AsteroidMapLocation otherLocation) {
-        int distanceX = Math.abs(this.x - otherLocation.x);
-        int distanceY = Math.abs(this.y - otherLocation.y);
-        return distanceX + distanceY;
+                .map(asteroidLocation -> AsteroidLineOfSight.between(this, asteroidLocation));
     }
 
 

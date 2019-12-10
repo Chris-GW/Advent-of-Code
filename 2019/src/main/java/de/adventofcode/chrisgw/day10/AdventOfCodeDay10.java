@@ -1,8 +1,10 @@
 package de.adventofcode.chrisgw.day10;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -24,7 +26,9 @@ public class AdventOfCodeDay10 {
             this.asteroidMap[y] = new AsteroidMapLocation[width];
             for (int x = 0; x < width; x++) {
                 boolean isAsteroid = asteroidRowStr.charAt(x) == '#';
-                this.asteroidMap[y][x] = new AsteroidMapLocation(this, x, y, isAsteroid);
+                AsteroidMapLocation mapLocation = new AsteroidMapLocation(this, x, y);
+                mapLocation.setAsteroid(isAsteroid);
+                this.asteroidMap[y][x] = mapLocation;
             }
         }
     }
@@ -33,6 +37,28 @@ public class AdventOfCodeDay10 {
     public AsteroidMapLocation findBestMonitoringStationLocation() {
         return asteroidLocations().max(Comparator.comparingLong(AsteroidMapLocation::visibleAsteroidCount))
                 .orElseThrow();
+    }
+
+
+    public List<AsteroidMapLocation> vaporizedAsteroids() {
+        AsteroidMapLocation lazerLocation = findBestMonitoringStationLocation();
+
+        List<AsteroidMapLocation> vaporizedAsteroids = new ArrayList<>(200);
+        while (asteroidLocations().skip(1).findAny().isPresent()) {
+            List<AsteroidMapLocation> newVaporizedAsteroids = fireLazer360(lazerLocation);
+            newVaporizedAsteroids.forEach(asteroid -> asteroid.setAsteroid(false));
+            vaporizedAsteroids.addAll(newVaporizedAsteroids);
+        }
+        return vaporizedAsteroids;
+    }
+
+
+    private List<AsteroidMapLocation> fireLazer360(AsteroidMapLocation lazerLocation) {
+        return lazerLocation.visibleAsteroids()
+                .map(visibleAsteroidLocation -> AsteroidLineOfSight.between(lazerLocation, visibleAsteroidLocation))
+                .sorted(Comparator.comparingDouble(AsteroidLineOfSight::winkel))
+                .map(AsteroidLineOfSight::getToLocation)
+                .collect(Collectors.toList());
     }
 
 

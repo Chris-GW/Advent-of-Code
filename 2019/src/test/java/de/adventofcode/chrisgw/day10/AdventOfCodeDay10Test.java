@@ -143,7 +143,7 @@ public class AdventOfCodeDay10Test {
     @Test
     public void myPuzzleInput_part01() {
         List<String> asteroidMap = TestUtils.readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
-        long expectedVisibleAsteroidCount = 1;
+        long expectedVisibleAsteroidCount = 227;
 
         AdventOfCodeDay10 aocDay10 = new AdventOfCodeDay10(asteroidMap);
         System.out.println(aocDay10);
@@ -151,5 +151,88 @@ public class AdventOfCodeDay10Test {
         assertEquals("visibleAsteroidCount", expectedVisibleAsteroidCount, monitoringStation.visibleAsteroidCount());
     }
 
+
+    // part 02
+
+    @Test
+    public void example06_part02() {
+        List<String> asteroidMap = List.of( //
+                ".#....#####...#..", //
+                "##...##.#####..##", //
+                "##...#...#.#####.", //
+                "..#.....#...###..", //
+                "..#.#.....#....##");
+        int expectedLastShotAsteroidX = 14;
+        int expectedLastShotAsteroidY = 3;
+
+        AdventOfCodeDay10 aocDay10 = new AdventOfCodeDay10(asteroidMap);
+        List<AsteroidMapLocation> vaporizedAsteroids = aocDay10.vaporizedAsteroids();
+        AsteroidMapLocation lastShotAsteroid = vaporizedAsteroids.get(vaporizedAsteroids.size() - 1);
+        assertThat("lastShotAsteroid", lastShotAsteroid, allOf(hasProperty("x", is(expectedLastShotAsteroidX)),
+                hasProperty("y", is(expectedLastShotAsteroidY))));
+    }
+
+    @Test
+    public void example07_part02() {
+        List<String> asteroidMap = List.of( //
+                ".#..##.###...#######", //
+                "##.############..##.", //
+                ".#.######.########.#", //
+                ".###.#######.####.#.", //
+                "#####.##.#.##.###.##", //
+                "..#####..#.#########", //
+                "####################", //
+                "#.####....###.#.#.##", //
+                "##.#################", //
+                "#####.##.###..####..", //
+                "..######..##.#######", //
+                "####.##.####...##..#", //
+                ".#####..#.######.###", //
+                "##...#.##########...", //
+                "#.##########.#######", //
+                ".####.#.###.###.#.##", //
+                "....##.##.###..#####", //
+                ".#.#.###########.###", //
+                "#.#.#.#####.####.###", //
+                "###.##.####.##.#..##");
+        int expectedLastShotAsteroidX = 11;
+        int expectedLastShotAsteroidY = 1;
+        int expected200AsteroidX = 8;
+        int expected200AsteroidY = 2;
+
+        AdventOfCodeDay10 aocDay10 = new AdventOfCodeDay10(asteroidMap);
+        List<AsteroidMapLocation> vaporizedAsteroids = aocDay10.vaporizedAsteroids();
+
+        AsteroidMapLocation vaporizedAsteroid200 = vaporizedAsteroids.get(199);
+        System.out.println(vaporizedAsteroid200);
+        assertThat("vaporizedAsteroid200", vaporizedAsteroid200,
+                allOf(hasProperty("x", is(expected200AsteroidX)), hasProperty("y", is(expected200AsteroidY))));
+
+        AsteroidMapLocation lastShotAsteroid = vaporizedAsteroids.get(vaporizedAsteroids.size() - 1);
+        assertThat("lastShotAsteroid", lastShotAsteroid, allOf(hasProperty("x", is(expectedLastShotAsteroidX)),
+                hasProperty("y", is(expectedLastShotAsteroidY))));
+    }
+
+
+    @Test
+    public void myPuzzleInput_part02() {
+        List<String> asteroidMap = TestUtils.readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
+        int expectedLastShotAsteroidX = 0;
+        int expectedLastShotAsteroidY = 2;
+        int expected200AsteroidX = 6;
+        int expected200AsteroidY = 4;
+
+        AdventOfCodeDay10 aocDay10 = new AdventOfCodeDay10(asteroidMap);
+        List<AsteroidMapLocation> vaporizedAsteroids = aocDay10.vaporizedAsteroids();
+
+        AsteroidMapLocation vaporizedAsteroid200 = vaporizedAsteroids.get(199);
+        System.out.println(vaporizedAsteroid200);
+        assertThat("vaporizedAsteroid200", vaporizedAsteroid200,
+                allOf(hasProperty("x", is(expected200AsteroidX)), hasProperty("y", is(expected200AsteroidY))));
+
+        AsteroidMapLocation lastShotAsteroid = vaporizedAsteroids.get(vaporizedAsteroids.size() - 1);
+        assertThat("lastShotAsteroid", lastShotAsteroid, allOf(hasProperty("x", is(expectedLastShotAsteroidX)),
+                hasProperty("y", is(expectedLastShotAsteroidY))));
+    }
 
 }
