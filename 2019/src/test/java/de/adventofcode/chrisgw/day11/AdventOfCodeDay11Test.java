@@ -30,7 +30,7 @@ public class AdventOfCodeDay11Test {
                 + ".###..###..#..#.#..#...#..#..#.#..#.#......\n" //
                 + ".#..#.#....###..#..#..#...#..#.###..#......\n" //
                 + ".#..#.#....#....#..#.#....#..#.#....#..#.→.\n" //
-                + ".###..#....#.....##..####..##..#.....##....";
+                + ".###..#....#.....##..####..##..#.....##....\n";
 
         String hullIdentificationStr = AdventOfCodeDay11.runPaintingRobotOnWhiteStartingPanel(robotProgram);
         assertEquals("hullIdentificationStr", expectedHullIdentificationStr, hullIdentificationStr);
