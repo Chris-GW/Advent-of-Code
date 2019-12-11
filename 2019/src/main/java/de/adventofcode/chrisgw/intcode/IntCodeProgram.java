@@ -62,12 +62,18 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     }
 
 
+
+    public boolean isFinished() {
+        return nextOpCode() != 99;
+    }
+
+
     @Override
     public boolean hasNext() {
         return nextOpCode() != 99 && !isWaitingForNextInput();
     }
 
-    private boolean isWaitingForNextInput() {
+    public boolean isWaitingForNextInput() {
         return !hasNextInput() && nextIntCodeInstruction().opCode() == new InputCodeInstruction().opCode();
     }
 
@@ -89,7 +95,7 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
         int opCode = nextOpCode();
         int code = opCode % 100;
         IntCodeInstruction intCodeInstruction = instructionSet.get(code);
-        if (intCodeInstruction == null) {
+        if (code != 99 && intCodeInstruction == null) {
             throw new IllegalArgumentException("Unknown opCode: " + code);
         }
         return intCodeInstruction;

@@ -8,7 +8,7 @@ public enum Direction {
     UP(0, 1, 'U'),  //
     RIGHT(1, 0, 'R'), //
     DOWN(0, -1, 'D'), //
-    LEFT(-1, 0, 'L'); //
+    LEFT(-1, 0, 'L'); // clockwise order
 
     @Getter
     private final int dx;
@@ -33,6 +33,21 @@ public enum Direction {
             }
         }
         throw new IllegalArgumentException("Unknown Direction with letter: " + directionLetter);
+    }
+
+
+    public Direction rotateRight() {
+        Direction[] directions = values();
+        int nextIndex = (ordinal() + 1) % directions.length;
+        return directions[nextIndex];
+    }
+
+    public Direction rotateLeft() {
+        return rotateOpposite().rotateRight();
+    }
+
+    private Direction rotateOpposite() {
+        return rotateRight().rotateRight();
     }
 
 }
