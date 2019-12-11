@@ -2,7 +2,6 @@ package de.adventofcode.chrisgw.day02;
 
 import de.adventofcode.chrisgw.TestUtils;
 import de.adventofcode.chrisgw.intcode.IntCodeProgram;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -20,7 +19,7 @@ public class AdventOfCodeDay02Test {
         intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
-        assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
+        assertEquals("output", expectedOutput, intCodeProgram.valueAt(0));
     }
 
     @Test
@@ -33,7 +32,7 @@ public class AdventOfCodeDay02Test {
         intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
-        assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
+        assertEquals("output", expectedOutput, intCodeProgram.valueAt(0));
     }
 
     @Test
@@ -46,7 +45,7 @@ public class AdventOfCodeDay02Test {
         intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
-        assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
+        assertEquals("output", expectedOutput, intCodeProgram.valueAt(0));
     }
 
     @Test
@@ -59,7 +58,7 @@ public class AdventOfCodeDay02Test {
         intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
-        assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
+        assertEquals("output", expectedOutput, intCodeProgram.valueAt(0));
     }
 
     @Test
@@ -72,7 +71,7 @@ public class AdventOfCodeDay02Test {
         intCodeProgram.run();
 
         assertArrayEquals("memory", expectedFinalMemoryState, intCodeProgram.getMemory());
-        assertEquals("output", expectedOutput, intCodeProgram.getExitOutput());
+        assertEquals("output", expectedOutput, intCodeProgram.valueAt(0));
     }
 
 

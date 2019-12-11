@@ -12,8 +12,6 @@ public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
     private final long[] initialState;
     private final Map<Integer, IntCodeIntstruction> instructionSet;
 
-    private long noun;
-    private long verb;
     private Deque<Long> inputs = new ArrayDeque<>();
     private Deque<Long> outputs = new ArrayDeque<>();
 
@@ -198,28 +196,12 @@ public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
     }
 
 
-    public long getNoun() {
-        return noun;
-    }
-
     public void setNoun(long noun) {
-        this.noun = noun;
         setValueAt(1, noun);
     }
 
-
-    public long getVerb() {
-        return verb;
-    }
-
     public void setVerb(long verb) {
-        this.verb = verb;
         setValueAt(2, verb);
-    }
-
-
-    public long getExitOutput() {
-        return valueAt(0);
     }
 
 

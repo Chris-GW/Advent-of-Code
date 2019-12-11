@@ -38,7 +38,7 @@ public class AdventOfCodeDay02 {
         intCodeProgram.setNoun(noun);
         intCodeProgram.setVerb(verb);
         intCodeProgram.run();
-        return intCodeProgram.getExitOutput();
+        return intCodeProgram.valueAt(0);
     }
 
 }

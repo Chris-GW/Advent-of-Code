@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 
 public enum IntCodeIntstruction {
 
-
     // day 02
     ADD(1, 4, IntCodeIntstruction::add), //
     MULITPLY(2, 4, IntCodeIntstruction::multiply), //
