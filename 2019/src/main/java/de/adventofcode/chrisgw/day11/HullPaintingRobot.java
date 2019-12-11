@@ -32,7 +32,7 @@ public class HullPaintingRobot {
 
 
     public void run() {
-        while (robotProgram.isFinished()) {
+        while (!robotProgram.isFinished()) {
             HullPanelPaintingColor panelColor = panelColorAt(x, y);
             robotProgram.addInput(panelColor.getColorCode());
             robotProgram.run();

@@ -7,14 +7,10 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 
-public class IntCodeProgram implements Iterator<IntCodeInstruction> {
-
-    public static final int PARAMETER_POSITION_MODE = 0;
-    public static final int PARAMETER_IMMEDIATE_MODE = 1;
-    public static final int PARAMETER_RELATIVE_MODE = 2;
+public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
 
     private final long[] initialState;
-    private final Map<Integer, IntCodeInstruction> instructionSet;
+    private final Map<Integer, IntCodeIntstruction> instructionSet;
 
     private long noun;
     private long verb;
@@ -22,23 +18,20 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     private Deque<Long> outputs = new ArrayDeque<>();
 
     private boolean movedInstructionPointer;
+    private boolean finished = false;
     private int instructionPointer;
     private int relativeBase = 0;
     private long[] memory;
 
 
     public IntCodeProgram(long[] initialState) {
-        this(initialState, Set.of(new AddIntCodeInstruction(), new MulIntCodeInstruction(), // day 02
-                new InputCodeInstruction(), new OutputCodeInstruction(), // day 05 part 01
-                new JumpIfTrueCodeInstruction(), new JumpIfFalseCodeInstruction(), //
-                new LessThanCodeInstruction(), new EqualsCodeInstruction(), // day 05 part 02
-                new AdjustRelativeBaseCodeInstruction())); // day 09 part 01
+        this(initialState, Arrays.asList(IntCodeIntstruction.values()));
     }
 
-    public IntCodeProgram(long[] initialState, Collection<IntCodeInstruction> instructionSet) {
+    public IntCodeProgram(long[] initialState, Collection<IntCodeIntstruction> instructionSet) {
         this.initialState = Arrays.copyOf(initialState, initialState.length);
         this.instructionSet = instructionSet.stream()
-                .collect(Collectors.toMap(IntCodeInstruction::opCode, Function.identity()));
+                .collect(Collectors.toMap(IntCodeIntstruction::opCode, Function.identity()));
         reset();
     }
 
@@ -59,31 +52,26 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
         this.relativeBase = 0;
         this.inputs.clear();
         this.outputs.clear();
-    }
-
-
-
-    public boolean isFinished() {
-        return nextOpCode() != 99;
+        this.finished = false;
     }
 
 
     @Override
     public boolean hasNext() {
-        return nextOpCode() != 99 && !isWaitingForNextInput();
+        return !finished && !isWaitingForNextInput();
     }
 
     public boolean isWaitingForNextInput() {
-        return !hasNextInput() && nextIntCodeInstruction().opCode() == new InputCodeInstruction().opCode();
+        return !hasNextInput() && nextInstruction().opCode() == IntCodeIntstruction.INPUT.opCode();
     }
 
     @Override
-    public IntCodeInstruction next() {
+    public IntCodeIntstruction next() {
         if (!hasNext()) {
             throw new NoSuchElementException("IntCodeProgram is exited or waiting for input");
         }
         movedInstructionPointer = false;
-        IntCodeInstruction intCodeInstruction = nextIntCodeInstruction();
+        IntCodeIntstruction intCodeInstruction = nextInstruction();
         intCodeInstruction.execute(this);
         if (!movedInstructionPointer) {
             instructionPointer += intCodeInstruction.instructionSize();
@@ -91,10 +79,10 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
         return intCodeInstruction;
     }
 
-    private IntCodeInstruction nextIntCodeInstruction() {
+    private IntCodeIntstruction nextInstruction() {
         int opCode = nextOpCode();
         int code = opCode % 100;
-        IntCodeInstruction intCodeInstruction = instructionSet.get(code);
+        IntCodeIntstruction intCodeInstruction = instructionSet.get(code);
         if (code != 99 && intCodeInstruction == null) {
             throw new IllegalArgumentException("Unknown opCode: " + code);
         }
@@ -114,15 +102,15 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
 
     public long parameterAt(int index) {
-        int parameterMode = parameterModeAt(index);
+        ParameterMode parameterMode = parameterModeAt(index);
         int parameterIndex = instructionPointer + 1 + index;
         switch (parameterMode) {
-        case PARAMETER_POSITION_MODE:
+        case POSITION_MODE:
             int adress = addressAt(parameterIndex);
             return valueAt(adress);
-        case PARAMETER_IMMEDIATE_MODE:
+        case IMMEDIATE_MODE:
             return valueAt(parameterIndex);
-        case PARAMETER_RELATIVE_MODE:
+        case RELATIVE_MODE:
             int relativeAdress = addressAt(parameterIndex);
             return valueAt(relativeBase + relativeAdress);
         default:
@@ -131,13 +119,13 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
     }
 
     public int parameterAddressAt(int index) {
-        int parameterMode = parameterModeAt(index);
+        ParameterMode parameterMode = parameterModeAt(index);
         int parameterIndex = instructionPointer + 1 + index;
         switch (parameterMode) {
-        case PARAMETER_POSITION_MODE:
-        case PARAMETER_IMMEDIATE_MODE:
+        case POSITION_MODE:
+        case IMMEDIATE_MODE:
             return (int) valueAt(parameterIndex);
-        case PARAMETER_RELATIVE_MODE:
+        case RELATIVE_MODE:
             int relativeAdress = addressAt(parameterIndex);
             return relativeBase + relativeAdress;
         default:
@@ -146,13 +134,14 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
     }
 
-    private int parameterModeAt(int index) {
+    private ParameterMode parameterModeAt(int index) {
         String opCodeStr = String.valueOf(nextOpCode());
         int parameterModeIndex = opCodeStr.length() - 1 - 2 - index;
         if (parameterModeIndex < 0 || parameterModeIndex >= opCodeStr.length()) {
-            return 0;
+            return ParameterMode.POSITION_MODE;
         }
-        return opCodeStr.charAt(parameterModeIndex) - '0';
+        int parameterModeCode = opCodeStr.charAt(parameterModeIndex) - '0';
+        return ParameterMode.forCode(parameterModeCode);
     }
 
 
@@ -197,6 +186,15 @@ public class IntCodeProgram implements Iterator<IntCodeInstruction> {
 
     public void adjustRelativeBase(long parameterValue) {
         relativeBase += parameterValue;
+    }
+
+
+    public void finishProgram() {
+        this.finished = true;
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
 
