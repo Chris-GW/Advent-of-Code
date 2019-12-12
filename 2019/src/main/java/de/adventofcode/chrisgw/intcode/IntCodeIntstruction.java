@@ -18,7 +18,7 @@ public enum IntCodeIntstruction {
     EQUALS(8, 4, IntCodeIntstruction::equalsTo), //
     // day 09 part 01
     ADJUST_RELATIVE_BASE(9, 2, IntCodeIntstruction::adjustRelativeBase), //
-    EXIT(99, 0, IntCodeProgram::finishProgram);
+    EXIT(99, 0, IntCodeProgram::finish);
 
     private final int opCode;
     private final int instructionSize;

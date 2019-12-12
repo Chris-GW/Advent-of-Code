@@ -15,7 +15,6 @@ public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
     private Deque<Long> inputs = new ArrayDeque<>();
     private Deque<Long> outputs = new ArrayDeque<>();
 
-    private boolean movedInstructionPointer;
     private boolean finished = false;
     private int instructionPointer;
     private int relativeBase = 0;
@@ -68,10 +67,10 @@ public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
         if (!hasNext()) {
             throw new NoSuchElementException("IntCodeProgram is exited or waiting for input");
         }
-        movedInstructionPointer = false;
+        int currentInstructionPointer = instructionPointer;
         IntCodeIntstruction intCodeInstruction = nextInstruction();
         intCodeInstruction.execute(this);
-        if (!movedInstructionPointer) {
+        if (currentInstructionPointer == instructionPointer) {
             instructionPointer += intCodeInstruction.instructionSize();
         }
         return intCodeInstruction;
@@ -87,15 +86,15 @@ public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
         return intCodeInstruction;
     }
 
+    private int nextOpCode() {
+        return (int) valueAt(instructionPointer);
+    }
+
+
     public void run() {
         while (hasNext()) {
             next();
         }
-    }
-
-
-    private int nextOpCode() {
-        return (int) valueAt(instructionPointer);
     }
 
 
@@ -178,7 +177,6 @@ public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
 
     public void moveInstructionPointerTo(int instructionPointerDestination) {
         this.instructionPointer = instructionPointerDestination;
-        this.movedInstructionPointer = true;
     }
 
 
@@ -187,7 +185,7 @@ public class IntCodeProgram implements Iterator<IntCodeIntstruction> {
     }
 
 
-    public void finishProgram() {
+    public void finish() {
         this.finished = true;
     }
 
