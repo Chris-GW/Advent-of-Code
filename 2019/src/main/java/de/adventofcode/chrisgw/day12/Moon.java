@@ -2,9 +2,7 @@ package de.adventofcode.chrisgw.day12;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,27 +13,20 @@ public class Moon {
     public static final Pattern MOON_POSITION_PATTERN = Pattern.compile("<x=(-?\\d+), y=(-?\\d+), z=(-?\\d+)>");
 
     private int[] position;
-    private int[] startPosition;
     private int[] velocity;
-    private List<Moon> moonStates = new ArrayList<>();
+    private int[] startPosition;
 
 
     public Moon(int x, int y, int z) {
         this(new int[] { x, y, z });
     }
 
-    public Moon(int[] position) {
-        this.position = Arrays.copyOf(position, position.length);
-        this.startPosition = Arrays.copyOf(position, position.length);
+    public Moon(int[] startPosition) {
+        this.position = Arrays.copyOf(startPosition, startPosition.length);
         this.velocity = new int[this.position.length];
-        this.moonStates.add(new Moon(this));
+        this.startPosition = Arrays.copyOf(startPosition, startPosition.length);
     }
 
-    public Moon(Moon moon) {
-        this.position = Arrays.copyOf(moon.position, moon.position.length);
-        this.startPosition = Arrays.copyOf(moon.startPosition, moon.startPosition.length);
-        this.velocity = Arrays.copyOf(moon.velocity, moon.velocity.length);
-    }
 
     public static Moon parseMoonPosition(String moonPositionStr) {
         Matcher matcher = MOON_POSITION_PATTERN.matcher(moonPositionStr);
@@ -51,7 +42,7 @@ public class Moon {
 
 
     public void applyGravity(Moon otherMoon) {
-        for (int i = 0; i < this.position.length; i++) {
+        for (int i = 0; i < dimension(); i++) {
             int coordinate = this.position[i];
             int otherCoordinate = otherMoon.position[i];
             if (coordinate < otherCoordinate) {
@@ -66,10 +57,9 @@ public class Moon {
 
 
     public void applyVelocity() {
-        for (int i = 0; i < position.length; i++) {
+        for (int i = 0; i < dimension(); i++) {
             position[i] += velocity[i];
         }
-        moonStates.add(new Moon(this));
     }
 
 
@@ -87,7 +77,11 @@ public class Moon {
 
 
     public boolean isAtStartPoisitionForCoordinate(int i) {
-        return startPosition[i] == position[i] && velocity[i] == 0;
+        return velocity[i] == 0 && startPosition[i] == position[i];
+    }
+
+    public int dimension() {
+        return position.length;
     }
 
 
