@@ -89,18 +89,6 @@ public class AdventOfCodeDay12 {
     }
 
 
-    public boolean hasSameMoonSystemState(AdventOfCodeDay12 otherSystemState) {
-        for (int i = 0; i < moons.size(); i++) {
-            Moon thisMoon = moons.get(i);
-            Moon otherMoon = otherSystemState.moons.get(i);
-            if (!thisMoon.equals(otherMoon)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
     @Override
     public String toString() {
         String stepHeader = String.format("After %2d steps:%n", timeSteps);
