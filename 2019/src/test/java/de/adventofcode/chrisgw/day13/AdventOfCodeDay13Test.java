@@ -21,4 +21,16 @@ public class AdventOfCodeDay13Test {
         assertEquals("blockTileCount", expectedBlockTileCount, blockTileCount);
     }
 
+
+    @Test
+    public void myPuzzleInput_part02() {
+        String intCodeProgrammStr = TestUtils.readSingleLineOfClassPathResource("/puzzleInputDay13.txt");
+        IntCodeProgram arcadeCabinetProgram = IntCodeProgram.parseIntCodeProgram(intCodeProgrammStr);
+        ArcadeCabinet arcadeCabinet = new ArcadeCabinet(arcadeCabinetProgram);
+        long expectedCountWinningScore = 13824;
+
+        long countWinningScore = AdventOfCodeDay13.countWinningScore(arcadeCabinet);
+        assertEquals("countWinningScore", expectedCountWinningScore, countWinningScore);
+    }
+
 }
