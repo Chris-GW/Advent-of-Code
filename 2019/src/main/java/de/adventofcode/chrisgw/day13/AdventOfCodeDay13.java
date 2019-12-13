@@ -6,4 +6,13 @@ package de.adventofcode.chrisgw.day13;
  */
 public class AdventOfCodeDay13 {
 
+    private AdventOfCodeDay13() {
+
+    }
+
+    public static long countBlockTilesOnScreen(ArcadeCabinet arcadeCabinet) {
+        arcadeCabinet.startGame();
+        return arcadeCabinet.countTiles(ScreenTileType.BLOCK);
+    }
+
 }

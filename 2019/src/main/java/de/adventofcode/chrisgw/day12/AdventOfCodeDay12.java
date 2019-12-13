@@ -23,11 +23,6 @@ public class AdventOfCodeDay12 {
     private final List<Moon> moons;
 
 
-    public AdventOfCodeDay12(AdventOfCodeDay12 other) {
-        this.moons = other.moons().map(Moon::new).collect(Collectors.toList());
-        this.moonPairs = moonPairs();
-    }
-
     public AdventOfCodeDay12(List<Moon> moons) {
         this.moons = new ArrayList<>(moons);
         this.moonPairs = moonPairs();
