@@ -26,11 +26,10 @@ public class AdventOfCodeDay19Test {
         String intCodeProgramStr = TestUtils.readSingleLineOfClassPathResource("/puzzleInputDay19.txt");
         IntCodeProgram droneProgram = IntCodeProgram.parseIntCodeProgram(intCodeProgramStr);
         int shipSize = 100;
-        long expectedLocation = 9330815; // to high
+        long expectedLocation = 9290812;
 
         AdventOfCodeDay19 aocDay19 = new AdventOfCodeDay19(droneProgram);
         long location = aocDay19.findShip(shipSize);
-        System.out.println(aocDay19);
         assertEquals("location", expectedLocation, location);
     }
 

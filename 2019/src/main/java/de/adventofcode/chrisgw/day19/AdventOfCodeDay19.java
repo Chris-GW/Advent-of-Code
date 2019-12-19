@@ -62,7 +62,7 @@ public class AdventOfCodeDay19 {
 
         for (long row = lowerShipRow.getRow() + 1; true; row++) {
             lowerShipRow = scanAffectedBeamRow(row);
-            uperShipRow = affectedRows.get(lowerShipRow.getRow() - shipSize);
+            uperShipRow = affectedRows.get(lowerShipRow.getRow() - shipSize + 1);
             if (fitsShip(shipSize, lowerShipRow, uperShipRow)) {
                 break;
             }
@@ -94,7 +94,8 @@ public class AdventOfCodeDay19 {
         }
         long upperRight = upperRow.getRight();
         long lowerLeft = lowerRow.getLeft();
-        return upperRight - lowerLeft >= shipSize - 1;
+        long width = upperRight - lowerLeft + 1;
+        return width == shipSize;
     }
 
 
@@ -160,19 +161,10 @@ public class AdventOfCodeDay19 {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        long rows = affectedRows.values().stream().mapToLong(AffectedBeamRow::getRow).max().orElse(20) + 1;
-        long columns = affectedRows.values().stream().mapToLong(AffectedBeamRow::getRight).max().orElse(20) + 1;
-        for (int y = 0; y <= rows; y++) {
-            AffectedBeamRow affectedBeamRow = affectedRows.get(Long.valueOf(y));
-            for (int x = 0; x <= columns; x++) {
+        for (int y = 0; y < affectedPoints.size(); y++) {
+            for (int x = 0; x < affectedPoints.size(); x++) {
                 Vector2D point = new Vector2D(x, y);
-                if (isShipPoint(point)) {
-                    sb.append("O");
-                } else if (affectedBeamRow != null && affectedBeamRow.isAffected(point)) {
-                    sb.append("X");
-                } else if (affectedBeamRow != null && affectedBeamRow.isAffected(point) && !isAffected(point)) {
-                    sb.append("x");
-                } else if (isAffected(point)) {
+                if (isAffected(point)) {
                     sb.append("#");
                 } else {
                     sb.append(".");
@@ -183,11 +175,5 @@ public class AdventOfCodeDay19 {
         return sb.toString();
     }
 
-    private boolean isShipPoint(Vector2D point) {
-        long x = Math.round(point.getX());
-        long y = Math.round(point.getY());
-        boolean isValidX = lowerShipRow.getLeft() <= x && x <= uperShipRow.getRight();
-        return isValidX && uperShipRow.getRow() <= y && y <= lowerShipRow.getRow();
-    }
 
 }

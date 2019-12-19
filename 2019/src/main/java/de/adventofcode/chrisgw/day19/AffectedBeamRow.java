@@ -31,9 +31,6 @@ public class AffectedBeamRow {
     }
 
 
-    public long length() {
-        return right - left;
-    }
 
 
     public Line leftTractorBeam() {
