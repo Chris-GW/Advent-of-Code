@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * https://adventofcode.com/2021/day/1
  */
-public class AdventOfCodeDay01Solver extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver<Integer> {
 
 
-    public AdventOfCodeDay01Solver(List<String> inputLines) {
+    public AdventOfCodeDay01(List<String> inputLines) {
         super(Year.of(2021), 1, inputLines);
     }
 

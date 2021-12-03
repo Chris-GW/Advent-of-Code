@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * https://adventofcode.com/2021/day/2
  */
-public class AdventOfCodeDay02Solver extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver<Integer> {
 
-    public AdventOfCodeDay02Solver(List<String> commandLines) {
+    public AdventOfCodeDay02(List<String> commandLines) {
         super(Year.of(2021), 2, commandLines);
     }
 
