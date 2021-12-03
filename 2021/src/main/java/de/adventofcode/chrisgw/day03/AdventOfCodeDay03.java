@@ -3,7 +3,10 @@ package de.adventofcode.chrisgw.day03;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 
 /**
@@ -40,41 +43,72 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        StringBuilder gammaRateBits = new StringBuilder();
-        StringBuilder epsilonRateBits = new StringBuilder();
+        boolean[] gammaRateBits = new boolean[diagnosticReport[0].length];
+        boolean[] epsilonRateBits = new boolean[diagnosticReport[0].length];
+        List<boolean[]> allNumbers = Arrays.stream(diagnosticReport).toList();
         for (int column = 0; column < diagnosticReport[0].length; column++) {
-            if (mostCommonBitInColumn(column)) {
-                gammaRateBits.append('1');
-                epsilonRateBits.append('0');
-            } else {
-                gammaRateBits.append('0');
-                epsilonRateBits.append('1');
-            }
+            boolean mostCommonBit = mostCommonBitInColumn(column, allNumbers);
+            gammaRateBits[column] = mostCommonBit;
+            epsilonRateBits[column] = !mostCommonBit;
         }
-        int gammaRate = Integer.parseInt(gammaRateBits.toString(), 2);
-        int epsilonRate = Integer.parseInt(epsilonRateBits.toString(), 2);
+
+        int gammaRate = bitsAsNumber(gammaRateBits);
+        int epsilonRate = bitsAsNumber(epsilonRateBits);
         return gammaRate * epsilonRate;
     }
 
-
-    public Integer solveSecondPart() {
-        return null;
-    }
-
-
-    private boolean mostCommonBitInColumn(int column) {
+    private boolean mostCommonBitInColumn(int column, List<boolean[]> numbers) {
         int trueCount = 0;
         int falseCount = 0;
-        for (int row = 0; row < diagnosticReport.length; row++) {
-            boolean bit = diagnosticReport[row][column];
-            if (bit) {
+        for (int row = 0; row < numbers.size(); row++) {
+            boolean[] binaryNumber = numbers.get(row);
+            if (binaryNumber[column]) {
                 trueCount++;
             } else {
                 falseCount++;
             }
         }
-        return falseCount < trueCount;
+        return falseCount <= trueCount;
     }
+
+
+    public Integer solveSecondPart() {
+        List<boolean[]> oxygenGeneratorRatings = new ArrayList<>(Arrays.stream(diagnosticReport).toList());
+        List<boolean[]> c02ScrubberRatings = new ArrayList<>(Arrays.stream(diagnosticReport).toList());
+
+        for (int column = 0; column < diagnosticReport[0].length; column++) {
+            if (oxygenGeneratorRatings.size() > 1) {
+                boolean mostCommonBit = mostCommonBitInColumn(column, oxygenGeneratorRatings);
+                oxygenGeneratorRatings.removeIf(hasBitInColumn(column, !mostCommonBit));
+            }
+            if (c02ScrubberRatings.size() > 1) {
+                boolean mostCommonBit = mostCommonBitInColumn(column, c02ScrubberRatings);
+                c02ScrubberRatings.removeIf(hasBitInColumn(column, mostCommonBit));
+            }
+        }
+
+        int oxygenGeneratorRating = bitsAsNumber(oxygenGeneratorRatings.get(0));
+        int c02ScrubberRating = bitsAsNumber(c02ScrubberRatings.get(0));
+        return oxygenGeneratorRating * c02ScrubberRating;
+    }
+
+    public Predicate<boolean[]> hasBitInColumn(int column, boolean bit) {
+        return binaryNumber -> binaryNumber[column] == bit;
+    }
+
+
+    private int bitsAsNumber(boolean[] binaryNumber) {
+        StringBuilder binaryNumberString = new StringBuilder();
+        for (int column = 0; column < binaryNumber.length; column++) {
+            if (binaryNumber[column]) {
+                binaryNumberString.append('1');
+            } else {
+                binaryNumberString.append('0');
+            }
+        }
+        return Integer.parseInt(binaryNumberString.toString(), 2);
+    }
+
 
     @Override
     public String toString() {
@@ -84,7 +118,11 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver<Integer> {
             boolean[] binaryNumber = diagnosticReport[row];
             for (int column = 0; column < binaryNumber.length; column++) {
                 boolean bit = binaryNumber[column];
-                sb.append(bit);
+                if (bit) {
+                    sb.append('1');
+                } else {
+                    sb.append('0');
+                }
             }
             sb.append("\n");
         }

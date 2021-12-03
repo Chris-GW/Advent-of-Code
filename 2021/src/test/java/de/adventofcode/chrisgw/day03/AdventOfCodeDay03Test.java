@@ -1,7 +1,6 @@
 package de.adventofcode.chrisgw.day03;
 
 import de.adventofcode.chrisgw.TestUtils;
-import de.adventofcode.chrisgw.day02.AdventOfCodeDay02;
 import org.junit.Test;
 
 import java.util.List;
@@ -43,14 +42,14 @@ public class AdventOfCodeDay03Test {
     @Test
     public void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay03(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", (15 * 60), result);
+        assertEquals("secondPart example", 230, result);
     }
 
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> commandLines = TestUtils.readAllLinesOfClassPathResource("/puzzleInputDay03.txt");
         int result = new AdventOfCodeDay03(commandLines).solveSecondPart();
-        assertEquals("secondPart myPuzzleInput", 1340836560, result);
+        assertEquals("secondPart myPuzzleInput", 4245351, result);
     }
 
 }
