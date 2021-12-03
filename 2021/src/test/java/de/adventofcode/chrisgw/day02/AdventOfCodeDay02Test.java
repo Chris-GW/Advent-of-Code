@@ -32,4 +32,18 @@ public class AdventOfCodeDay02Test {
         assertEquals("part01", 1499229, result);
     }
 
+
+    @Test
+    public void part02_example() {
+        int result = AdventOfCodeDay02.part2(commandLinesExample);
+        assertEquals("part01", (15 * 60), result);
+    }
+
+    @Test
+    public void part02_myPuzzleInput() {
+        List<String> commandLines = TestUtils.readAllLinesOfClassPathResource("/puzzleInputDay02.txt");
+        int result = AdventOfCodeDay02.part2(commandLines);
+        assertEquals("part01", 1340836560, result);
+    }
+    
 }

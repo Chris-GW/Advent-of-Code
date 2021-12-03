@@ -1,7 +1,6 @@
 package de.adventofcode.chrisgw.day02;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -16,12 +15,17 @@ public class AdventOfCodeDay02 {
 
     public static int part1(List<String> commandLines) {
         Submarine submarine = new Submarine();
-        List<SubmarineCommand> commands = commandLines.stream()
-                .map(SubmarineCommand::parseSubmarineCommand)
-                .collect(Collectors.toList());
-        submarine.executeCommands(commands);
+        List<SubmarineCommand> commands = commandLines.stream().map(SubmarineCommand::parseSubmarineCommand).toList();
+        submarine.executeCommands(commands, false);
         return submarine.getDepth() * submarine.getHorizontalPosition();
     }
 
+
+    public static int part2(List<String> commandLines) {
+        Submarine submarine = new Submarine();
+        List<SubmarineCommand> commands = commandLines.stream().map(SubmarineCommand::parseSubmarineCommand).toList();
+        submarine.executeCommands(commands, true);
+        return submarine.getDepth() * submarine.getHorizontalPosition();
+    }
 
 }
