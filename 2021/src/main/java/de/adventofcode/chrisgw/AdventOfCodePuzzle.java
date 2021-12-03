@@ -10,12 +10,13 @@ import java.time.Year;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Stream;
 
 import static java.time.Month.DECEMBER;
 
 
 @Data
-public abstract class AdventOfCodePuzzle {
+public abstract class AdventOfCodePuzzle<T> {
 
     public static final Year FIRST_ADVENT_OF_CODE_YEAR = Year.of(2015);
     public static final int ADVENT_OF_CODE_PUZZLE_COUNT = 25;
@@ -26,9 +27,9 @@ public abstract class AdventOfCodePuzzle {
     private final List<String> inputLines;
 
 
-    public abstract Object solveFirstPart();
+    public abstract T solveFirstPart();
 
-    public abstract Object solveSecondPart();
+    public abstract T solveSecondPart();
 
 
     public LocalDate getDate() {
@@ -38,6 +39,11 @@ public abstract class AdventOfCodePuzzle {
     public ZonedDateTime puzzleOpeningDateTime() {
         TimeZone utc = TimeZone.getTimeZone("UTC");
         return ZonedDateTime.of(getDate(), LocalTime.of(5, 0), utc.toZoneId());
+    }
+
+
+    public Stream<String> inputLines() {
+        return getInputLines().stream();
     }
 
 

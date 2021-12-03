@@ -10,7 +10,8 @@ import static org.junit.Assert.*;
 
 public class AdventOfCodeDay02Test {
 
-    private final List<String> commandLinesExample = List.of( //
+
+    private final List<String> inputLinesExample = List.of( //
             "forward 5", //
             "down 5", //
             "forward 8", //
@@ -20,30 +21,30 @@ public class AdventOfCodeDay02Test {
 
 
     @Test
-    public void part01_example() {
-        int result = AdventOfCodeDay02.part1(commandLinesExample);
-        assertEquals("part01", (15 * 10), result);
+    public void solveAocPuzzle_firstPart_example() {
+        int result = new AdventOfCodeDay02(inputLinesExample).solveFirstPart();
+        assertEquals("firstPart example", (15 * 10), result);
     }
 
     @Test
-    public void part01_myPuzzleInput() {
+    public void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> commandLines = TestUtils.readAllLinesOfClassPathResource("/puzzleInputDay02.txt");
-        int result = AdventOfCodeDay02.part1(commandLines);
-        assertEquals("part01", 1499229, result);
+        int result = new AdventOfCodeDay02(commandLines).solveFirstPart();
+        assertEquals("firstPart myPuzzleInput", 1499229, result);
     }
 
 
     @Test
-    public void part02_example() {
-        int result = AdventOfCodeDay02.part2(commandLinesExample);
-        assertEquals("part01", (15 * 60), result);
+    public void solveAocPuzzle_secondPart_example() {
+        int result = new AdventOfCodeDay02(inputLinesExample).solveSecondPart();
+        assertEquals("secondPart example", (15 * 60), result);
     }
 
     @Test
-    public void part02_myPuzzleInput() {
+    public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> commandLines = TestUtils.readAllLinesOfClassPathResource("/puzzleInputDay02.txt");
-        int result = AdventOfCodeDay02.part2(commandLines);
-        assertEquals("part01", 1340836560, result);
+        int result = new AdventOfCodeDay02(commandLines).solveSecondPart();
+        assertEquals("secondPart myPuzzleInput", 1340836560, result);
     }
-    
+
 }

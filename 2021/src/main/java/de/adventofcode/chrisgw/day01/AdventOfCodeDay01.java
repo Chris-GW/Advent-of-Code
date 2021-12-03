@@ -1,17 +1,26 @@
 package de.adventofcode.chrisgw.day01;
 
 
+import de.adventofcode.chrisgw.AdventOfCodePuzzle;
+
+import java.time.Year;
+import java.util.List;
+
+
 /**
  * https://adventofcode.com/2021/day/1
  */
-public class AdventOfCodeDay01 {
+public class AdventOfCodeDay01 extends AdventOfCodePuzzle<Integer> {
 
-    private AdventOfCodeDay01() {
 
+    public AdventOfCodeDay01(List<String> inputLines) {
+        super(Year.of(2021), 1, inputLines);
     }
 
 
-    public static int calculateMeasurementIncreases(int[] measurements) {
+    @Override
+    public Integer solveFirstPart() {
+        int[] measurements = inputAsMeasurements();
         int increaseCounter = 0;
         for (int i = 1; i < measurements.length; i++) {
             int previousMeasurement = measurements[i - 1];
@@ -23,8 +32,9 @@ public class AdventOfCodeDay01 {
         return increaseCounter;
     }
 
-
-    public static int calculateMeasurementIncreasesWithWindow(int[] measurements) {
+    @Override
+    public Integer solveSecondPart() {
+        int[] measurements = inputAsMeasurements();
         int increaseCounter = 0;
         int previousWindowValue = Integer.MAX_VALUE;
         for (int i = 2; i < measurements.length; i++) {
@@ -35,6 +45,11 @@ public class AdventOfCodeDay01 {
             previousWindowValue = currentWindowValue;
         }
         return increaseCounter;
+    }
+
+
+    private int[] inputAsMeasurements() {
+        return inputLines().mapToInt(Integer::parseInt).toArray();
     }
 
 }
