@@ -1,7 +1,7 @@
 package de.adventofcode.chrisgw.day01;
 
 
-import de.adventofcode.chrisgw.AdventOfCodePuzzle;
+import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
 import java.util.List;
@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * https://adventofcode.com/2021/day/1
  */
-public class AdventOfCodeDay01 extends AdventOfCodePuzzle<Integer> {
+public class AdventOfCodeDay01Solver extends AdventOfCodePuzzleSolver<Integer> {
 
 
-    public AdventOfCodeDay01(List<String> inputLines) {
+    public AdventOfCodeDay01Solver(List<String> inputLines) {
         super(Year.of(2021), 1, inputLines);
     }
 
