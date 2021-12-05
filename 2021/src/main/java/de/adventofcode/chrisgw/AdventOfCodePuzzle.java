@@ -17,13 +17,13 @@ public record AdventOfCodePuzzle(Year year, int day) {
     public static final URI ADVENT_OF_CODE_BASE_URI = URI.create("https://adventofcode.com/");
 
 
-    public LocalDate getDate() {
+    public LocalDate date() {
         return year().atMonth(DECEMBER).atDay(day());
     }
 
-    public ZonedDateTime puzzleOpeningDateTime() {
+    public ZonedDateTime puzzleOpening() {
         TimeZone utc = TimeZone.getTimeZone("UTC");
-        return ZonedDateTime.of(getDate(), LocalTime.of(5, 0), utc.toZoneId());
+        return ZonedDateTime.of(date(), LocalTime.of(5, 0), utc.toZoneId());
     }
 
 
