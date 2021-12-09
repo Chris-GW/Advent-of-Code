@@ -14,6 +14,7 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver<Integer> {
         super(Year.of(2021), 4, inputLines);
     }
 
+    
     public Integer solveFirstPart() {
         //TODO solveFirstPart
         return 0;
