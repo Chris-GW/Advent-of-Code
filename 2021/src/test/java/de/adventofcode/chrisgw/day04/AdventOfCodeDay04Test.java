@@ -49,14 +49,15 @@ public class AdventOfCodeDay04Test {
     @Test
     public void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay04(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", 1, result);
+        assertEquals("secondPart example", 148 * 13, result);
     }
 
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay04.txt");
         int result = new AdventOfCodeDay04(inputLines).solveSecondPart();
-        assertEquals("secondPart myPuzzleInput", 1, result);
+        // 6734 to high
+        assertEquals("secondPart myPuzzleInput", 4495, result);
     }
 
 }

@@ -73,7 +73,7 @@ public class BingoBoard {
     public Set<Integer> getMarkedNumbers() {
         return Collections.unmodifiableSet(markedNumbers);
     }
-    
+
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -82,7 +82,11 @@ public class BingoBoard {
             int[] numberRow = numbers[row];
             for (int column = 0; column < numberRow.length; column++) {
                 int number = numberAt(row, column);
-                sb.append(String.format("%2d ", number));
+                if (isMarkedNumber(number)) {
+                    sb.append(String.format("(%2d) ", number));
+                } else {
+                    sb.append(String.format(" %2d  ", number));
+                }
             }
             sb.append("\n");
         }

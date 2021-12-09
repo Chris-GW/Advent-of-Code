@@ -54,8 +54,18 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+        final List<BingoBoard> bingoBoards = parseBingoBoardsFromInput();
+        final List<BingoBoard> winingBoards = new ArrayList<>(bingoBoards.size());
+        int lastDrawnNumber = drawnNumbersFromInput().dropWhile(drawnNumber -> {
+            bingoBoards.forEach(bingoBoard -> bingoBoard.addDrawnNumber(drawnNumber));
+            var nowWinningBoards = bingoBoards.stream().filter(BingoBoard::isWinner).toList();
+            bingoBoards.removeAll(nowWinningBoards);
+            winingBoards.addAll(nowWinningBoards);
+            return !bingoBoards.isEmpty();
+        }).findFirst().orElseThrow();
+
+        BingoBoard lossingBoard = winingBoards.get(winingBoards.size() - 1);
+        return lossingBoard.unmarkedNumberSum() * lastDrawnNumber;
     }
 
 
