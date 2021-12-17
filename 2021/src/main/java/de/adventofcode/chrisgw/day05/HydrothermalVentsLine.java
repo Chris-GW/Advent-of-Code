@@ -1,8 +1,8 @@
 package de.adventofcode.chrisgw.day05;
 
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
@@ -27,9 +27,6 @@ public record HydrothermalVentsLine(Position2D startPosition, Position2D endPosi
         return new HydrothermalVentsLine(new Position2D(x1, y1), new Position2D(x2, y2));
     }
 
-    public boolean isHorizontalOrVerticalLine() {
-        return isHorizontalLine() || isVerticalLine();
-    }
 
     public boolean isHorizontalLine() {
         return startPosition.y() == endPosition.y();
@@ -39,31 +36,34 @@ public record HydrothermalVentsLine(Position2D startPosition, Position2D endPosi
         return startPosition.x() == endPosition.x();
     }
 
-
-    public int length() {
-        if (isHorizontalLine()) {
-            return Math.abs(startPosition.x() - endPosition.x());
-        } else {
-            return Math.abs(startPosition.y() - endPosition.y());
-        }
+    public boolean isDiagonalLine() {
+        return !(isHorizontalLine() || isVerticalLine());
     }
 
 
     public Stream<Position2D> positions() {
-        if (isHorizontalLine()) {
-            int startX = Math.min(startPosition.x(), endPosition.x());
-            int endX = Math.max(startPosition.x(), endPosition.x());
-            return IntStream.rangeClosed(startX, endX).mapToObj(x -> new Position2D(x, startPosition.y()));
-        } else {
-            int startY = Math.min(startPosition.y(), endPosition.y());
-            int endY = Math.max(startPosition.y(), endPosition.y());
-            return IntStream.rangeClosed(startY, endY).mapToObj(y -> new Position2D(startPosition.x(), y));
-        }
+        var positions = Stream.iterate(startPosition, Predicate.not(endPosition::equals), position -> {
+            int dx = 0;
+            int dy = 0;
+            if (position.x() < endPosition.x()) {
+                dx = 1;
+            } else if (position.x() > endPosition.x()) {
+                dx = -1;
+            }
+            if (position.y() < endPosition.y()) {
+                dy = 1;
+            } else if (position.y() > endPosition.y()) {
+                dy = -1;
+            }
+            return position.move(dx, dy);
+        });
+        return Stream.concat(positions, Stream.of(endPosition));
     }
 
     public boolean coverPosition(Position2D position) {
         return positions().anyMatch(position::equals);
     }
+
 
     @Override
     public String toString() {

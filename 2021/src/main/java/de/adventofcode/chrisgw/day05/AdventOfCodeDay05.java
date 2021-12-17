@@ -6,6 +6,7 @@ import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
@@ -24,7 +25,7 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<Long> {
     public Long solveFirstPart() {
         List<HydrothermalVentsLine> hydrothermalVentsLines = parseHydrothermalVentsLines();
         Map<Position2D, Long> coveredPositions = hydrothermalVentsLines.stream()
-                .filter(HydrothermalVentsLine::isHorizontalOrVerticalLine)
+                .filter(Predicate.not(HydrothermalVentsLine::isDiagonalLine))
                 .flatMap(HydrothermalVentsLine::positions)
                 .collect(groupingBy(Function.identity(), counting()));
         return coveredPositions.values().stream().filter(count -> count > 1).count();
@@ -32,8 +33,11 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<Long> {
 
 
     public Long solveSecondPart() {
-        //TODO solveSecondPart
-        return 0L;
+        List<HydrothermalVentsLine> hydrothermalVentsLines = parseHydrothermalVentsLines();
+        Map<Position2D, Long> coveredPositions = hydrothermalVentsLines.stream()
+                .flatMap(HydrothermalVentsLine::positions)
+                .collect(groupingBy(Function.identity(), counting()));
+        return coveredPositions.values().stream().filter(count -> count > 1).count();
     }
 
 
@@ -61,6 +65,5 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<Long> {
         }
         return sb.toString();
     }
-
 
 }
