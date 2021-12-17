@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * https://adventofcode.com/2021/day/5
+ *
  */
 public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<Integer> {
 
