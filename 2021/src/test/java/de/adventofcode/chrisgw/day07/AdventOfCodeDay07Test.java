@@ -1,14 +1,17 @@
 package de.adventofcode.chrisgw.day07;
 
 import org.junit.Test;
+
 import java.util.List;
+
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AdventOfCodeDay07Test {
 
     private static final List<String> inputLinesExample = List.of("16,1,2,0,4,2,7,1,2,14");
 
+    
     @Test
     public void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay07(inputLinesExample).solveFirstPart();
@@ -22,17 +25,18 @@ public class AdventOfCodeDay07Test {
         assertEquals("firstPart myPuzzleInput", 336131, result);
     }
 
+
     @Test
     public void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay07(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", 1, result);
+        assertEquals("secondPart example", 168, result);
     }
 
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay07.txt");
         int result = new AdventOfCodeDay07(inputLines).solveSecondPart();
-        assertEquals("secondPart myPuzzleInput", 1, result);
+        assertEquals("secondPart myPuzzleInput", 92676646, result);
     }
 
 }

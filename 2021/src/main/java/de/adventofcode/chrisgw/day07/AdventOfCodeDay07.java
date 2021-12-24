@@ -30,15 +30,6 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        return findOptimalHorizontalAlignmentPosition();
-    }
-
-    public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
-    }
-
-    public int findOptimalHorizontalAlignmentPosition() {
         int start = crabSubmarines.stream().mapToInt(CrabSubmarine::horizontalPosition).min().orElseThrow();
         int end = crabSubmarines.stream().mapToInt(CrabSubmarine::horizontalPosition).max().orElseThrow();
         return IntStream.rangeClosed(start, end)
@@ -47,9 +38,24 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver<Integer> {
                 .orElseThrow();
     }
 
+    public Integer solveSecondPart() {
+        int start = crabSubmarines.stream().mapToInt(CrabSubmarine::horizontalPosition).min().orElseThrow();
+        int end = crabSubmarines.stream().mapToInt(CrabSubmarine::horizontalPosition).max().orElseThrow();
+        return IntStream.rangeClosed(start, end)
+                .map(this::requiredFuelForCrabAlignmentAt)
+                .min()
+                .orElseThrow();
+    }
+
     public int requiredFuelForAlignmentAt(int horizontalPosition) {
         return crabSubmarines.stream()
                 .mapToInt(crabSubmarine -> crabSubmarine.requiredFuelForMovementTo(horizontalPosition))
+                .sum();
+    }
+
+    public int requiredFuelForCrabAlignmentAt(int horizontalPosition) {
+        return crabSubmarines.stream()
+                .mapToInt(crabSubmarine -> crabSubmarine.requiredFuelForCrabMovementTo(horizontalPosition))
                 .sum();
     }
 
