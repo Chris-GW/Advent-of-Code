@@ -7,19 +7,19 @@ import static org.junit.Assert.*;
 
 public class AdventOfCodeDay07Test {
 
-    private static final List<String> inputLinesExample = List.of("");
+    private static final List<String> inputLinesExample = List.of("16,1,2,0,4,2,7,1,2,14");
 
     @Test
     public void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay07(inputLinesExample).solveFirstPart();
-        assertEquals("firstPart example", 1, result);
+        assertEquals("firstPart example", 37, result);
     }
 
     @Test
     public void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay07.txt");
         int result = new AdventOfCodeDay07(inputLines).solveFirstPart();
-        assertEquals("firstPart myPuzzleInput", 1, result);
+        assertEquals("firstPart myPuzzleInput", 336131, result);
     }
 
     @Test
