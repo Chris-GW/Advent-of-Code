@@ -15,13 +15,19 @@ public class AdventOfCodeDay08 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
     public Integer solveFirstPart() {
-        //TODO solveFirstPart
-        return 0;
+        List<SignalEntry> signalEntries = inputAsSignalEntries();
+        List<SignalPattern> easyOutputDigits = signalEntries.stream().flatMap(SignalEntry::easyOutputDigits).toList();
+        return easyOutputDigits.size();
     }
 
     public Integer solveSecondPart() {
         //TODO solveSecondPart
         return 0;
+    }
+
+
+    private List<SignalEntry> inputAsSignalEntries() {
+        return inputLines().map(SignalEntry::parseSignalEntry).toList();
     }
 
 }
