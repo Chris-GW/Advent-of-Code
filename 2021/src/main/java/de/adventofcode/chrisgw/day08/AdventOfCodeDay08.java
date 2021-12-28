@@ -21,8 +21,8 @@ public class AdventOfCodeDay08 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
     public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+        List<SignalEntry> signalEntries = inputAsSignalEntries();
+        return signalEntries.stream().mapToInt(SignalEntry::decodeOutputNumber).sum();
     }
 
 

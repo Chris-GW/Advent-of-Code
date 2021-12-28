@@ -37,7 +37,14 @@ public class AdventOfCodeDay08Test {
     @Test
     public void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay08(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", 1, result);
+        assertEquals("secondPart example", 61229, result);
+    }
+
+    @Test
+    public void solveAocPuzzle_secondPart_exampleSimple() {
+        List<String> entries = List.of("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf");
+        int result = new AdventOfCodeDay08(entries).solveSecondPart();
+        assertEquals("secondPart example", 5353, result);
     }
 
     @Test

@@ -1,11 +1,12 @@
 package de.adventofcode.chrisgw.day08;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 public record SignalEntry(SignalPattern[] observedSignalPatterns,
                           SignalPattern[] outputSignalPatterns) {
@@ -30,6 +31,23 @@ public record SignalEntry(SignalPattern[] observedSignalPatterns,
     public Stream<SignalPattern> easyOutputDigits() {
         return Arrays.stream(outputSignalPatterns)
                 .filter(signalPattern -> signalPattern.easySegmentDigit().isPresent());
+    }
+
+
+    public int decodeOutputNumber() {
+        Map<SevenSegment, EnumSet<SevenSegment>> mapping = Arrays.stream(SevenSegment.values())
+                .collect(toMap(identity(), sevenSegment -> EnumSet.allOf(SevenSegment.class)));
+
+
+        Stream.concat(Arrays.stream(observedSignalPatterns), Arrays.stream(outputSignalPatterns))
+                .forEach(signalPattern -> {
+                    EnumSet<SevenSegmentDigit> possibleDigits = signalPattern.possibleDigits();
+                    Set<SevenSegment> usedSegments = possibleDigits.stream().map(SevenSegmentDigit::shownSegments).flatMap(Collection::stream).collect(toSet());
+                    for (SevenSegment segment : signalPattern.getSegments()) {
+                        mapping.get(segment).retainAll(usedSegments);
+                    }
+                });
+        return 0;
     }
 
 
