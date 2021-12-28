@@ -15,8 +15,10 @@ public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
     public Integer solveFirstPart() {
-        //TODO solveFirstPart
-        return 0;
+        HeightMap heightMap = HeightMap.parseHeightMap(getInputLines());
+        return heightMap.findLowestPoints()
+                .mapToInt(HeightMap.HeightMapLocation::riskLevel)
+                .sum();
     }
 
     public Integer solveSecondPart() {
