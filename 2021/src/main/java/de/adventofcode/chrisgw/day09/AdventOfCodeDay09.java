@@ -5,6 +5,7 @@ import de.adventofcode.chrisgw.day09.HeightMap.HeightMapLocation;
 
 import java.time.Year;
 import java.util.List;
+import java.util.Set;
 
 /**
  * https://adventofcode.com/2021/day/9
@@ -24,7 +25,13 @@ public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
     public Integer solveSecondPart() {
-        return parseHeightMapFromInput().totalBasinSize();
+        List<Set<HeightMapLocation>> basins = parseHeightMapFromInput().findBasins();
+        return basins.stream()
+                .mapToInt(Set::size)
+                .sorted()
+                .skip(basins.size() - 3) // take only last 3
+                .reduce((left, right) -> left * right)
+                .orElseThrow();
     }
 
     private HeightMap parseHeightMapFromInput() {

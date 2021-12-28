@@ -46,23 +46,26 @@ public class HeightMap {
                 .filter(HeightMapLocation::isLowestPoint);
     }
 
-    public int totalBasinSize() {
-        Comparator<Set<HeightMapLocation>> setSize = Comparator.comparingInt(Set::size);
+    public List<Set<HeightMapLocation>> findBasins() {
         return findLowestPoints()
-                .map(lowestPoint -> findBasinLocations(lowestPoint, new HashSet<>()))
-                .sorted(setSize.reversed())
-                .mapToInt(Set::size)
-                .limit(3)
-                .reduce((left, right) -> left * right)
-                .orElseThrow();
+                .map(this::findBasinLocations)
+                .toList();
     }
 
-    private Set<HeightMapLocation> findBasinLocations(HeightMapLocation lowestPoint, Set<HeightMapLocation> basinLocations) {
-        lowestPoint.adjacentLocations()
-                .filter(HeightMapLocation::isPartOfBasin)
-                .filter(basinLocations::add)
-                .forEach(heightMapLocation -> findBasinLocations(heightMapLocation, basinLocations));
-        return basinLocations;
+    private Set<HeightMapLocation> findBasinLocations(HeightMapLocation lowestPoint) {
+        Set<HeightMapLocation> locations = new HashSet<>();
+        Queue<HeightMapLocation> queue = new ArrayDeque<>();
+        queue.add(lowestPoint);
+
+        HeightMapLocation currentLocation;
+        while (!queue.isEmpty()) {
+            currentLocation = queue.remove();
+            currentLocation.adjacentLocations()
+                    .filter(HeightMapLocation::isPartOfBasin)
+                    .filter(locations::add)
+                    .forEach(queue::add);
+        }
+        return locations;
     }
 
 
