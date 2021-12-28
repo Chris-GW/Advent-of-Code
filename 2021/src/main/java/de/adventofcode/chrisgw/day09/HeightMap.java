@@ -2,9 +2,7 @@ package de.adventofcode.chrisgw.day09;
 
 import lombok.Data;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class HeightMap {
@@ -46,6 +44,25 @@ public class HeightMap {
         return Arrays.stream(locations)
                 .flatMap(Arrays::stream)
                 .filter(HeightMapLocation::isLowestPoint);
+    }
+
+    public int totalBasinSize() {
+        Comparator<Set<HeightMapLocation>> setSize = Comparator.comparingInt(Set::size);
+        return findLowestPoints()
+                .map(lowestPoint -> findBasinLocations(lowestPoint, new HashSet<>()))
+                .sorted(setSize.reversed())
+                .mapToInt(Set::size)
+                .limit(3)
+                .reduce((left, right) -> left * right)
+                .orElseThrow();
+    }
+
+    private Set<HeightMapLocation> findBasinLocations(HeightMapLocation lowestPoint, Set<HeightMapLocation> basinLocations) {
+        lowestPoint.adjacentLocations()
+                .filter(HeightMapLocation::isPartOfBasin)
+                .filter(basinLocations::add)
+                .forEach(heightMapLocation -> findBasinLocations(heightMapLocation, basinLocations));
+        return basinLocations;
     }
 
 
@@ -100,6 +117,11 @@ public class HeightMap {
         }
 
 
+        public boolean isPartOfBasin() {
+            return height < 9;
+        }
+
+
         @Override
         public int compareTo(HeightMapLocation otherLocation) {
             return Integer.compare(this.height, otherLocation.height);
@@ -109,7 +131,6 @@ public class HeightMap {
         public String toString() {
             return "[%2d;%2d]=%1d".formatted(x, y, height);
         }
-
     }
 
 }

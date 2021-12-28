@@ -26,21 +26,21 @@ public class AdventOfCodeDay09Test {
     public void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay09.txt");
         int result = new AdventOfCodeDay09(inputLines).solveFirstPart();
-        // 1486 to high
         assertEquals("firstPart myPuzzleInput", 486, result);
     }
 
     @Test
     public void solveAocPuzzle_secondPart_example() {
+        int expectedResult = 9 * 14 * 9;
         int result = new AdventOfCodeDay09(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", 1, result);
+        assertEquals("secondPart example", expectedResult, result);
     }
 
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay09.txt");
         int result = new AdventOfCodeDay09(inputLines).solveSecondPart();
-        assertEquals("secondPart myPuzzleInput", 1, result);
+        assertEquals("secondPart myPuzzleInput", 1059300, result);
     }
 
 }

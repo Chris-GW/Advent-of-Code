@@ -1,6 +1,7 @@
 package de.adventofcode.chrisgw.day09;
 
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
+import de.adventofcode.chrisgw.day09.HeightMap.HeightMapLocation;
 
 import java.time.Year;
 import java.util.List;
@@ -14,16 +15,20 @@ public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver<Integer> {
         super(Year.of(2021), 9, inputLines);
     }
 
+
     public Integer solveFirstPart() {
-        HeightMap heightMap = HeightMap.parseHeightMap(getInputLines());
-        return heightMap.findLowestPoints()
-                .mapToInt(HeightMap.HeightMapLocation::riskLevel)
+        return parseHeightMapFromInput()
+                .findLowestPoints()
+                .mapToInt(HeightMapLocation::riskLevel)
                 .sum();
     }
 
     public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+        return parseHeightMapFromInput().totalBasinSize();
+    }
+
+    private HeightMap parseHeightMapFromInput() {
+        return HeightMap.parseHeightMap(getInputLines());
     }
 
 }
