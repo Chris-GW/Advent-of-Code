@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.time.Year;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 import static de.adventofcode.chrisgw.AdventOfCodePuzzle.ADVENT_OF_CODE_PUZZLE_COUNT;
@@ -95,7 +96,8 @@ public class AdventOfCodePuzzlePreparer {
         sb.append("/**\n");
         sb.append(" * https://adventofcode.com/").append(year).append("/day/").append(day).append("\n");
         sb.append(" */\n");
-        sb.append("public class AdventOfCodeDay").append(formattedDay)
+        sb.append("public class AdventOfCodeDay")
+                .append(formattedDay)
                 .append(" extends AdventOfCodePuzzleSolver<Integer> {\n\n");
         sb.append("    public AdventOfCodeDay").append(formattedDay).append("(List<String> inputLines) {\n");
         sb.append("        super(Year.of(").append(year).append("), ").append(day).append(", inputLines);\n");
@@ -125,24 +127,36 @@ public class AdventOfCodePuzzlePreparer {
         sb.append("    private static final List<String> inputLinesExample = List.of(\"\");\n\n");
         sb.append("    @Test\n");
         sb.append("    public void solveAocPuzzle_firstPart_example() {\n");
-        sb.append("        int result = new AdventOfCodeDay").append(formattedDay).append("(inputLinesExample).solveFirstPart();\n");
+        sb.append("        int result = new AdventOfCodeDay")
+                .append(formattedDay)
+                .append("(inputLinesExample).solveFirstPart();\n");
         sb.append("        assertEquals(\"firstPart example\", 1, result);\n");
         sb.append("    }\n\n");
         sb.append("    @Test\n");
         sb.append("    public void solveAocPuzzle_firstPart_myPuzzleInput() {\n");
-        sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay").append(formattedDay).append(".txt\");\n");
-        sb.append("        int result = new AdventOfCodeDay").append(formattedDay).append("(inputLines).solveFirstPart();\n");
+        sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay")
+                .append(formattedDay)
+                .append(".txt\");\n");
+        sb.append("        int result = new AdventOfCodeDay")
+                .append(formattedDay)
+                .append("(inputLines).solveFirstPart();\n");
         sb.append("        assertEquals(\"firstPart myPuzzleInput\", 1, result);\n");
         sb.append("    }\n\n");
         sb.append("    @Test\n");
         sb.append("    public void solveAocPuzzle_secondPart_example() {\n");
-        sb.append("        int result = new AdventOfCodeDay").append(formattedDay).append("(inputLinesExample).solveSecondPart();\n");
+        sb.append("        int result = new AdventOfCodeDay")
+                .append(formattedDay)
+                .append("(inputLinesExample).solveSecondPart();\n");
         sb.append("        assertEquals(\"secondPart example\", 1, result);\n");
         sb.append("    }\n\n");
         sb.append("    @Test\n");
         sb.append("    public void solveAocPuzzle_secondPart_myPuzzleInput() {\n");
-        sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay").append(formattedDay).append(".txt\");\n");
-        sb.append("        int result = new AdventOfCodeDay").append(formattedDay).append("(inputLines).solveSecondPart();\n");
+        sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay")
+                .append(formattedDay)
+                .append(".txt\");\n");
+        sb.append("        int result = new AdventOfCodeDay")
+                .append(formattedDay)
+                .append("(inputLines).solveSecondPart();\n");
         sb.append("        assertEquals(\"secondPart myPuzzleInput\", 1, result);\n");
         sb.append("    }\n\n");
         sb.append("}\n");
@@ -174,13 +188,26 @@ public class AdventOfCodePuzzlePreparer {
             System.exit(1);
         }
         String aocSessionCookie = args[0];
-        Year year = Year.now();
+        Year year = promptForYear();
         Path projectDirectory = Paths.get(year.toString()).toAbsolutePath();
         System.out.println("prepare Advent of Code " + year + " in project directory: " + projectDirectory);
         HttpClient httpClient = HttpClient.newHttpClient();
         var aocPuzzlePreparer = new AdventOfCodePuzzlePreparer(projectDirectory, year, aocSessionCookie, httpClient);
         aocPuzzlePreparer.prepareAvailableAocPuzzle();
         System.exit(0);
+    }
+
+    private static Year promptForYear() {
+        Scanner scIn = new Scanner(System.in);
+        Year year = null;
+        while (year == null) {
+            try {
+                System.out.print("enter AoC year: ");
+                year = Year.of(scIn.nextInt());
+            } catch (Exception e) {
+            }
+        }
+        return year;
     }
 
 
