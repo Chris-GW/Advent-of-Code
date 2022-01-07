@@ -3,22 +3,20 @@ package de.adventofcode.chrisgw.day10;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 
 /**
  * https://adventofcode.com/2021/day/10
  */
-public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Long> {
 
     public AdventOfCodeDay10(List<String> inputLines) {
         super(Year.of(2021), 10, inputLines);
     }
 
-    public Integer solveFirstPart() {
-        int syntaxErrorScore = 0;
+    public Long solveFirstPart() {
+        long syntaxErrorScore = 0;
         for (String navigationLine : getInputLines()) {
             syntaxErrorScore += syntaxErrorScoreFor(navigationLine);
         }
@@ -27,16 +25,16 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
         return syntaxErrorScore;
     }
 
-    private int syntaxErrorScoreFor(String navigationLine) {
-        int syntaxErrorScore = 0;
-        Deque<ChunkType> openChunks = new ArrayDeque<>();
+    private long syntaxErrorScoreFor(String navigationLine) {
+        long syntaxErrorScore = 0;
+        Deque<ChunkBracket> openChunks = new ArrayDeque<>();
         for (int i = 0; i < navigationLine.length(); i++) {
             char bracket = navigationLine.charAt(i);
-            ChunkType chunkType = ChunkType.valueOf(bracket);
-            if (chunkType.isOpenBracket(bracket)) {
-                openChunks.push(chunkType);
-            } else if (!openChunks.pop().equals(chunkType)) {
-                syntaxErrorScore += chunkType.getPoints();
+            ChunkBracket chunkBracket = ChunkBracket.valueOf(bracket);
+            if (chunkBracket.isOpenBracket(bracket)) {
+                openChunks.push(chunkBracket);
+            } else if (!openChunks.pop().equals(chunkBracket)) {
+                syntaxErrorScore += chunkBracket.getSyntaxErrorPoints();
                 break;
             }
         }
@@ -44,9 +42,38 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
-    public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+    public Long solveSecondPart() {
+        List<Long> completionScores = new ArrayList<>();
+        for (String navigationLine : getInputLines()) {
+            if (syntaxErrorScoreFor(navigationLine) > 0) {
+                continue;
+            }
+            completionScores.add(completionScoreFor(navigationLine));
+        }
+        completionScores.sort(Comparator.naturalOrder());
+        int middleScoreIndex = completionScores.size() / 2;
+        return completionScores.get(middleScoreIndex);
+    }
+
+    private long completionScoreFor(String navigationLine) {
+        Deque<ChunkBracket> openChunks = new ArrayDeque<>();
+        for (int i = 0; i < navigationLine.length(); i++) {
+            char bracket = navigationLine.charAt(i);
+            ChunkBracket chunkBracket = ChunkBracket.valueOf(bracket);
+            if (chunkBracket.isOpenBracket(bracket)) {
+                openChunks.push(chunkBracket);
+            } else {
+                openChunks.pop();
+            }
+        }
+
+        long completionScore = 0;
+        while (!openChunks.isEmpty()) {
+            ChunkBracket popChunkBracket = openChunks.pop();
+            completionScore *= 5;
+            completionScore += popChunkBracket.getCompletionPoints();
+        }
+        return completionScore;
     }
 
 

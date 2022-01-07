@@ -22,31 +22,33 @@ public class AdventOfCodeDay10Test {
             "<{([([[(<>()){}]>(<<{{", //
             "<{([{{}}[<[[[<>{}]]]>[]]");
 
+
     @Test
     public void solveAocPuzzle_firstPart_example() {
-        int result = new AdventOfCodeDay10(inputLinesExample).solveFirstPart();
-        int expectedResult = 6 + 57 + 1197 + 25137;
+        long result = new AdventOfCodeDay10(inputLinesExample).solveFirstPart();
+        long expectedResult = 6 + 57 + 1197 + 25137;
         assertEquals("firstPart example", expectedResult, result);
     }
 
     @Test
     public void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
-        int result = new AdventOfCodeDay10(inputLines).solveFirstPart();
+        long result = new AdventOfCodeDay10(inputLines).solveFirstPart();
         assertEquals("firstPart myPuzzleInput", 193275, result);
     }
 
+
     @Test
     public void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay10(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", 1, result);
+        long result = new AdventOfCodeDay10(inputLinesExample).solveSecondPart();
+        assertEquals("secondPart example", 288957, result);
     }
 
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
-        int result = new AdventOfCodeDay10(inputLines).solveSecondPart();
-        assertEquals("secondPart myPuzzleInput", 1, result);
+        long result = new AdventOfCodeDay10(inputLines).solveSecondPart();
+        assertEquals("secondPart myPuzzleInput", 2429644557L, result);
     }
 
 }

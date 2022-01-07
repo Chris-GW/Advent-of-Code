@@ -6,23 +6,24 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ChunkType {
+public enum ChunkBracket {
 
-    ROUND_CHUNK('(', ')', 3), //
-    SQUARE_CHUNK('[', ']', 57), //
-    CURLY_CHUNK('{', '}', 1197), //
-    ANGLE_CHUNK('<', '>', 25137); //
+    ROUND_CHUNK('(', ')', 3, 1), //
+    SQUARE_CHUNK('[', ']', 57, 2), //
+    CURLY_CHUNK('{', '}', 1197, 3), //
+    ANGLE_CHUNK('<', '>', 25137, 4); //
 
 
     private final char openBracket;
     private final char closeBracket;
-    private final int points;
+    private final int syntaxErrorPoints;
+    private final int completionPoints;
 
 
-    public static ChunkType valueOf(char bracket) {
-        for (ChunkType chunkType : ChunkType.values()) {
-            if (chunkType.isOpenBracket(bracket) || chunkType.isCloseBracket(bracket)) {
-                return chunkType;
+    public static ChunkBracket valueOf(char bracket) {
+        for (ChunkBracket chunkBracket : ChunkBracket.values()) {
+            if (chunkBracket.isOpenBracket(bracket) || chunkBracket.isCloseBracket(bracket)) {
+                return chunkBracket;
             }
         }
         throw new IllegalArgumentException("unexpected bracket: " + bracket);
