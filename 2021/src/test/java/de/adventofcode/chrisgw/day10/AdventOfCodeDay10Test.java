@@ -1,25 +1,39 @@
 package de.adventofcode.chrisgw.day10;
 
 import org.junit.Test;
+
 import java.util.List;
+
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
 import static org.junit.Assert.*;
 
+
 public class AdventOfCodeDay10Test {
 
-    private static final List<String> inputLinesExample = List.of("");
+    private static final List<String> inputLinesExample = List.of( //
+            "[({(<(())[]>[[{[]{<()<>>", //
+            "[(()[<>])]({[<{<<[]>>(", //
+            "{([(<{}[<>[]}>{[]{[(<()>", //
+            "(((({<>}<{<{<>}{[]{[]{}", //
+            "[[<[([]))<([[{}[[()]]]", //
+            "[{[{({}]{}}([{[{{{}}([]", //
+            "{<[[]]>}<{[{[{[]{()[[[]", //
+            "[<(<(<(<{}))><([]([]()", //
+            "<{([([[(<>()){}]>(<<{{", //
+            "<{([{{}}[<[[[<>{}]]]>[]]");
 
     @Test
     public void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay10(inputLinesExample).solveFirstPart();
-        assertEquals("firstPart example", 1, result);
+        int expectedResult = 6 + 57 + 1197 + 25137;
+        assertEquals("firstPart example", expectedResult, result);
     }
 
     @Test
     public void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
         int result = new AdventOfCodeDay10(inputLines).solveFirstPart();
-        assertEquals("firstPart myPuzzleInput", 1, result);
+        assertEquals("firstPart myPuzzleInput", 193275, result);
     }
 
     @Test
