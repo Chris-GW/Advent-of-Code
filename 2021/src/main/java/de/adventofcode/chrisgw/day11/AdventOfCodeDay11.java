@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -43,7 +42,9 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
+    @Override
     public Integer solveFirstPart() {
+        // How many total flashes are there after 100 steps?
         int totalFlashCount = 0;
         for (int step = 0; step < 100; step++) {
             totalFlashCount += nextStepFlashCount();
@@ -79,9 +80,22 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
+    @Override
     public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+        // What is the first step during which all octopuses flash?
+        int step;
+        for (step = 0; !allWithEnergyLevel(); step++) {
+            nextStepFlashCount();
+        }
+        return step;
+    }
+
+    public boolean allWithEnergyLevel() {
+        Integer anyEnergyLevel = octopuses().findAny()
+                .map(Octopus::getEnergyLevel)
+                .orElse(0);
+        return octopuses().mapToInt(Octopus::getEnergyLevel)
+                .allMatch(anyEnergyLevel::equals);
     }
 
 
