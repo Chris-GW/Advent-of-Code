@@ -1,13 +1,37 @@
 package de.adventofcode.chrisgw.day13;
 
 import org.junit.Test;
+
 import java.util.List;
+
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AdventOfCodeDay13Test {
 
-    private static final List<String> inputLinesExample = List.of("");
+    private static final List<String> inputLinesExample = List.of( //
+            "6,10", //
+            "0,14", //
+            "9,10", //
+            "0,3", //
+            "10,4", //
+            "4,11", //
+            "6,0", //
+            "6,12", //
+            "4,1", //
+            "0,13", //
+            "10,12", //
+            "3,4", //
+            "3,0", //
+            "8,4", //
+            "1,10", //
+            "2,14", //
+            "8,10", //
+            "9,0", //
+            "", //
+            "fold along y=7", //
+            "fold along x=5");
+
 
     @Test
     public void solveAocPuzzle_firstPart_example() {
@@ -28,6 +52,7 @@ public class AdventOfCodeDay13Test {
         assertEquals("secondPart example", 1, result);
     }
 
+    
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay13.txt");
