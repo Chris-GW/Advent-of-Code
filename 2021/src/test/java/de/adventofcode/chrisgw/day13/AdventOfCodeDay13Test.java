@@ -36,14 +36,15 @@ public class AdventOfCodeDay13Test {
     @Test
     public void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay13(inputLinesExample).solveFirstPart();
-        assertEquals("firstPart example", 1, result);
+        assertEquals("firstPart example", 17, result);
     }
 
     @Test
     public void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay13.txt");
         int result = new AdventOfCodeDay13(inputLines).solveFirstPart();
-        assertEquals("firstPart myPuzzleInput", 1, result);
+        // 1020 wrong
+        assertEquals("firstPart myPuzzleInput", 850, result);
     }
 
     @Test
@@ -52,7 +53,7 @@ public class AdventOfCodeDay13Test {
         assertEquals("secondPart example", 1, result);
     }
 
-    
+
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay13.txt");
