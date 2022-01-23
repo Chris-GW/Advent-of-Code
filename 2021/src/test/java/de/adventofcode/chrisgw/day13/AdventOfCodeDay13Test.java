@@ -50,15 +50,24 @@ public class AdventOfCodeDay13Test {
     @Test
     public void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay13(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", 1, result);
+        assertEquals("secondPart example", 16, result);
     }
 
 
     @Test
     public void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay13.txt");
-        int result = new AdventOfCodeDay13(inputLines).solveSecondPart();
-        assertEquals("secondPart myPuzzleInput", 1, result);
+        AdventOfCodeDay13 aoc13 = new AdventOfCodeDay13(inputLines);
+        int result = aoc13.solveSecondPart();
+        String expectedCode = "" + //
+                ".##..#..#..##...##..###...##...##..#..#\n" + //
+                "#..#.#..#.#..#.#..#.#..#.#..#.#..#.#..#\n" + //
+                "#..#.####.#....#....#..#.#....#..#.#..#\n" + //
+                "####.#..#.#.##.#....###..#.##.####.#..#\n" + //
+                "#..#.#..#.#..#.#..#.#....#..#.#..#.#..#\n" + //
+                "#..#.#..#..###..##..#.....###.#..#..##.\n";
+        assertEquals("secondPart myPuzzleInput", 102, result);
+        assertEquals("secondPart myPuzzleInput code", expectedCode, aoc13.toString());
     }
 
 }

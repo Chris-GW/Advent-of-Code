@@ -43,10 +43,11 @@ public class AdventOfCodeDay13 extends AdventOfCodePuzzleSolver<Integer> {
         dots.addAll(visibleDots);
     }
 
-    
+
     public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+        paperFoldInstructions.forEach(this::applyFoldInstruction);
+        System.out.println(this);
+        return dots.size();
     }
 
     public Stream<PaperDot> dots() {
