@@ -1,52 +1,96 @@
 package de.adventofcode.chrisgw.day14;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 
-public record PolymerTemplate(String polymerTemplate) {
+public class PolymerTemplate {
+
+    private final int step;
+    private final Map<Pair<Character, Character>, Long> pairQuantities = new TreeMap<>();
 
 
-    public char elementAt(int index) {
-        return polymerTemplate.charAt(index);
-    }
-
-    public Pair<Character, Character> elementPairAt(int index) {
-        return ImmutablePair.of(elementAt(index), elementAt(index + 1));
-    }
-
-
-    public int length() {
-        return polymerTemplate.length();
-    }
-
-
-    public int calculateScore() {
-        Map<Character, Integer> quantities = new HashMap<>();
-        for (int i = 0; i < length(); i++) {
-            char element = polymerTemplate.charAt(i);
-            quantities.merge(element, 1, Integer::sum);
+    public PolymerTemplate(String polymerTemplate) {
+        this.step = 0;
+        for (int i = 0; i < polymerTemplate.length() - 1; i++) {
+            char left = polymerTemplate.charAt(i);
+            char right = polymerTemplate.charAt(i + 1);
+            var pair = Pair.of(left, right);
+            addPairQuantity(pair, 1L);
         }
+    }
 
-        Entry<Character, Integer> mostCommonElement = quantities.entrySet()
+    private PolymerTemplate(PolymerTemplate otherPolymerTemplate) {
+        this.step = otherPolymerTemplate.step + 1;
+        this.pairQuantities.putAll(otherPolymerTemplate.pairQuantities);
+    }
+
+
+    private void addPairQuantity(Pair<Character, Character> pair, long quantity) {
+        long newQuantity = pairQuantities.merge(pair, quantity, Long::sum);
+        if (newQuantity == 0L) {
+            pairQuantities.remove(pair);
+        }
+    }
+
+
+    public PolymerTemplate applyPairInsertionRules(Collection<PairInsertionRule> pairInsertionRules) {
+        PolymerTemplate newPolymer = new PolymerTemplate(this);
+
+        for (Entry<Pair<Character, Character>, Long> pairQuantityEntry : pairQuantities.entrySet()) {
+            var pair = pairQuantityEntry.getKey();
+            long quantity = pairQuantityEntry.getValue();
+
+            for (PairInsertionRule pairInsertionRule : pairInsertionRules) {
+                if (pairInsertionRule.matchesPair(pair)) {
+                    newPolymer.addPairQuantity(pair, -quantity);
+                    var newBuildPairs = pairInsertionRule.newBuildPairs();
+                    newBuildPairs.forEach(newPair -> newPolymer.addPairQuantity(newPair, quantity));
+                    break;
+                }
+            }
+        }
+        return newPolymer;
+    }
+
+
+    public long calculateScore() {
+        Map<Character, Long> quantities = elementQuantities();
+        Entry<Character, Long> mostCommonElement = quantities.entrySet()
                 .stream()
-                .max(Comparator.comparingInt(Entry::getValue))
+                .max(Comparator.comparingLong(Entry::getValue))
                 .orElseThrow();
-        Entry<Character, Integer> leastCommonElement = quantities.entrySet()
+        Entry<Character, Long> leastCommonElement = quantities.entrySet()
                 .stream()
-                .min(Comparator.comparingInt(Entry::getValue))
+                .min(Comparator.comparingLong(Entry::getValue))
                 .orElseThrow();
         return mostCommonElement.getValue() - leastCommonElement.getValue();
     }
 
+    private Map<Character, Long> elementQuantities() {
+        Map<Character, Long> quantities = new HashMap<>();
+        for (Entry<Pair<Character, Character>, Long> pairQuantityEntry : pairQuantities.entrySet()) {
+            char leftElement = pairQuantityEntry.getKey().getLeft();
+            char rightElement = pairQuantityEntry.getKey().getRight();
+            long quantity = pairQuantityEntry.getValue();
+            quantities.merge(leftElement, quantity, Long::sum);
+            quantities.merge(rightElement, quantity, Long::sum);
+        }
+        quantities.replaceAll((element, quantity) -> ceilDiv(quantity, 2));
+        return quantities;
+    }
+
+
+    public static long ceilDiv(long dividend, long divisor) {
+        return -Math.floorDiv(-dividend, divisor);
+    }
+
+
     @Override
     public String toString() {
-        return polymerTemplate();
+        return pairQuantities.toString();
     }
 
 }
