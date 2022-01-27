@@ -32,6 +32,24 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
+    public AdventOfCodeDay15 duplicateTile(int times) {
+        AdventOfCodeDay15 large = new AdventOfCodeDay15(this.getInputLines());
+        Cave[][] largeCaveMap = new Cave[caveMap.length * times][];
+        for (int y = 0; y < largeCaveMap.length; y++) {
+            Cave[] row = caveMap[y % caveMap.length];
+            largeCaveMap[y] = new Cave[row.length * times];
+
+            for (int x = 0; x < caveMap[y].length; x++) {
+                Cave cave = caveMap[y % caveMap.length][x % caveMap.length];
+                largeCaveMap[y][x] = new Cave(x, y, cave.getRiskLevel());
+            }
+        }
+
+        large.caveMap = largeCaveMap;
+        return large;
+    }
+
+
     public Cave caveAt(int x, int y) {
         if (hasCaveAt(x, y)) {
             return caveMap[y][x];
@@ -121,7 +139,7 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
     public Integer solveSecondPart() {
-        List<Cave> path = dijkstraPathBetween(startCave(), endCave());
+        List<Cave> path = duplicateTile(5).dijkstraPathBetween(startCave(), endCave());
         return calculatePathRiskLevelSum(path);
     }
 

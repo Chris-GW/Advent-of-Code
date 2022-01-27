@@ -40,7 +40,7 @@ public class AdventOfCodeDay15Test {
     @Test
     public void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay15(inputLinesExample).solveSecondPart();
-        assertEquals("secondPart example", 1, result);
+        assertEquals("secondPart example", 315, result);
     }
 
     @Test
