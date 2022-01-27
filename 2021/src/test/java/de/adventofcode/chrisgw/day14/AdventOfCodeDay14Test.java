@@ -42,7 +42,7 @@ public class AdventOfCodeDay14Test {
     public void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay14.txt");
         int result = new AdventOfCodeDay14(inputLines).solveFirstPart();
-        assertEquals("firstPart myPuzzleInput", 1, result);
+        assertEquals("firstPart myPuzzleInput", 2509, result);
     }
 
 
