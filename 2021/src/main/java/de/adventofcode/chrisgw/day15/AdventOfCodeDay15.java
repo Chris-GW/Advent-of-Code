@@ -7,6 +7,8 @@ import java.time.Year;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static de.adventofcode.chrisgw.day15.AdventOfCodeDay15.Cave.MAX_RISK_LEVEL;
+
 
 /**
  * https://adventofcode.com/2021/day/15
@@ -22,7 +24,7 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
         caveMap = new Cave[inputLines.size()][];
         for (int y = 0; y < inputLines.size(); y++) {
             String row = inputLines.get(y);
-            caveMap[y] = new Cave[row.length()];
+            caveMap[y] = new Cave[inputLines.size()];
 
             for (int x = 0; x < row.length(); x++) {
                 int riskLevel = Integer.parseInt(row, x, x + 1, 10);
@@ -34,14 +36,17 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
 
     public AdventOfCodeDay15 duplicateTile(int times) {
         AdventOfCodeDay15 large = new AdventOfCodeDay15(this.getInputLines());
-        Cave[][] largeCaveMap = new Cave[caveMap.length * times][];
-        for (int y = 0; y < largeCaveMap.length; y++) {
-            Cave[] row = caveMap[y % caveMap.length];
-            largeCaveMap[y] = new Cave[row.length * times];
-
-            for (int x = 0; x < caveMap[y].length; x++) {
-                Cave cave = caveMap[y % caveMap.length][x % caveMap.length];
-                largeCaveMap[y][x] = new Cave(x, y, cave.getRiskLevel());
+        int largeSize = size() * times;
+        Cave[][] largeCaveMap = new Cave[largeSize][largeSize];
+        for (int y = 0; y < largeSize; y++) {
+            for (int x = 0; x < largeSize; x++) {
+                Cave cave = caveAt(x % size(), y % size());
+                int additionalRiskLevel = x / size() + y / size();
+                int riskLevel = cave.getRiskLevel() + additionalRiskLevel;
+                if (riskLevel > MAX_RISK_LEVEL) {
+                    riskLevel -= MAX_RISK_LEVEL;
+                }
+                largeCaveMap[y][x] = large.new Cave(x, y, riskLevel);
             }
         }
 
@@ -58,14 +63,18 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
     public boolean hasCaveAt(int x, int y) {
-        return 0 <= y && y < caveMap.length && //
-                0 <= x && x < caveMap[y].length;
+        return 0 <= y && y < size() && //
+                0 <= x && x < size();
+    }
+
+    private int size() {
+        return caveMap.length;
     }
 
 
     public Cave endCave() {
-        int y = caveMap.length - 1;
-        int x = caveMap[y].length - 1;
+        int y = size() - 1;
+        int x = size() - 1;
         return caveAt(x, y);
     }
 
@@ -79,7 +88,7 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
-    private List<Cave> dijkstraPathBetween(Cave start, Cave end) {
+    private List<Cave> dijkstraPathToEndCave() {
         // create vertex set Q
         Map<Cave, Integer> dist = new HashMap<>();
         Map<Cave, Cave> prev = new HashMap<>();
@@ -95,7 +104,7 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
             q.add(v);
         });
         // dist[source] ← 0
-        dist.put(start, 0);
+        dist.put(startCave(), 0);
 
         // while Q is not empty:
         while (!q.isEmpty()) {
@@ -121,7 +130,7 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
         // path ← empty sequence
         List<Cave> path = new ArrayList<>();
         // u ← target
-        Cave u = end;
+        Cave u = endCave();
         // while u is defined:
         while (u != null) {
             // insert u at the beginning of S
@@ -134,12 +143,12 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        List<Cave> path = dijkstraPathBetween(startCave(), endCave());
+        List<Cave> path = dijkstraPathToEndCave();
         return calculatePathRiskLevelSum(path);
     }
 
     public Integer solveSecondPart() {
-        List<Cave> path = duplicateTile(5).dijkstraPathBetween(startCave(), endCave());
+        List<Cave> path = duplicateTile(5).dijkstraPathToEndCave();
         return calculatePathRiskLevelSum(path);
     }
 
@@ -151,6 +160,8 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
     @Data
     public class Cave {
 
+        public static final int MAX_RISK_LEVEL = 9;
+
         private final int x;
         private final int y;
         private final int riskLevel;
@@ -161,7 +172,7 @@ public class AdventOfCodeDay15 extends AdventOfCodePuzzleSolver<Integer> {
             Cave southCave = caveAt(x, y - 1);
             Cave westCave = caveAt(x - 1, y);
             Cave eastCave = caveAt(x + 1, y);
-            return Stream.of(northCave, southCave, westCave, eastCave).filter(Objects::nonNull);
+            return Stream.of( southCave, eastCave, westCave, northCave).filter(Objects::nonNull);
         }
 
 
