@@ -1,13 +1,14 @@
 package de.adventofcode.chrisgw.day16;
 
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigInteger;
 import java.time.Year;
 import java.util.List;
 
 /**
- * https://adventofcode.com/2021/day/16
+ * <a href="https://adventofcode.com/2021/day/16">https://adventofcode.com/2021/day/16</a>
  */
 public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Long> {
 
@@ -41,15 +42,13 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Long> {
     }
 
     private String toBinaryString(String hexPacketString) {
-        BigInteger hexNumber = new BigInteger(hexPacketString, 16);
-        String binaryString = hexNumber.toString(2);
-        return switch (hexPacketString.charAt(0)) {
-            case '0' -> "0000" + binaryString;
-            case '1' -> "000" + binaryString;
-            case '2', '3' -> "00" + binaryString;
-            case '4', '5', '6', '7' -> "0" + binaryString;
-            default -> binaryString;
-        };
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < hexPacketString.length(); i++) {
+            BigInteger hexNumber = new BigInteger(hexPacketString.substring(i, i + 1), 16);
+            String binaryString = hexNumber.toString(2);
+            sb.append(StringUtils.leftPad(binaryString, 4, '0'));
+        }
+        return sb.toString();
     }
 
 }

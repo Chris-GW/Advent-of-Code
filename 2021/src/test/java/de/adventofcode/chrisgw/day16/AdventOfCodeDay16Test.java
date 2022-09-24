@@ -1,6 +1,5 @@
 package de.adventofcode.chrisgw.day16;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -104,7 +103,6 @@ public class AdventOfCodeDay16Test {
     }
 
     @Test
-    @Ignore
     public void solveAocPuzzle_secondPart_example02() {
         List<String> inputLines = List.of("04005AC33890");
         long result = new AdventOfCodeDay16(inputLines).solveSecondPart();
