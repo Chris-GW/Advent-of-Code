@@ -4,7 +4,6 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.math.BigInteger;
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +20,11 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        return readBitsPacket(0).versionSum();
+        return readBitsPacket().versionSum();
+    }
+
+    public BitsPacket readBitsPacket() {
+        return new BitsPacket(binaryString);
     }
 
 
@@ -31,40 +34,22 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
-    public BitsPacket readBitsPacket(int beginIndex) {
-        var packetHeader = BitsPacketHeader.parseHeader(binaryString);
-        return switch (packetHeader.typeId()) {
-            case 4 -> BitsLiteralPacket.readPacket(binaryString, beginIndex);
-            default -> readBitsOperatorPacket(beginIndex);
-        };
-    }
-
-    private BitsOperatorPacket readBitsOperatorPacket(int beginIndex) {
-        BitsPacketHeader packetHeader = BitsPacketHeader.parseHeader(binaryString, beginIndex);
-
-        boolean lengthTypeBit = binaryString.charAt(6) == '0';
-        BigInteger totalLengthInBits;
-        int subPacketBeginIndex;
-        if (lengthTypeBit) {
-            String substring = binaryString.substring(7, 7 + 15);
-            totalLengthInBits = new BigInteger(substring, 2);
-            subPacketBeginIndex = 7 + 15;
-        } else {
-            String substring = binaryString.substring(7, 7 + 11);
-            totalLengthInBits = new BigInteger(substring, 2);
-            subPacketBeginIndex = 7 + 11;
-        }
-
-        List<BitsPacket> subPackets = new ArrayList<>();
-        return new BitsOperatorPacket(packetHeader, subPackets);
-    }
-
     private String readBinaryString() {
         return inputLines()
                 .findFirst()
-                .map(hexPacketString -> new BigInteger(hexPacketString, 16))
-                .map(hexNumber -> hexNumber.toString(2))
+                .map(this::toBinaryString)
                 .orElse("");
+    }
+
+    private String toBinaryString(String hexPacketString) {
+        BigInteger hexNumber = new BigInteger(hexPacketString, 16);
+        String binaryString = hexNumber.toString(2);
+        return switch (hexPacketString.charAt(0)) {
+            case '1' -> "000" + binaryString;
+            case '2', '3' -> "00" + binaryString;
+            case '4', '5', '6', '7' -> "0" + binaryString;
+            default -> binaryString;
+        };
     }
 
 }
