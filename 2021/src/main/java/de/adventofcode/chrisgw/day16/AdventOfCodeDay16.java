@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * https://adventofcode.com/2021/day/16
  */
-public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Long> {
 
     private final String binaryString;
 
@@ -19,7 +19,7 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
-    public Integer solveFirstPart() {
+    public Long solveFirstPart() {
         return readBitsPacket().versionSum();
     }
 
@@ -28,9 +28,8 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
 
-    public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return null;
+    public Long solveSecondPart() {
+        return readBitsPacket().literalValue().longValueExact();
     }
 
 
@@ -45,6 +44,7 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver<Integer> {
         BigInteger hexNumber = new BigInteger(hexPacketString, 16);
         String binaryString = hexNumber.toString(2);
         return switch (hexPacketString.charAt(0)) {
+            case '0' -> "0000" + binaryString;
             case '1' -> "000" + binaryString;
             case '2', '3' -> "00" + binaryString;
             case '4', '5', '6', '7' -> "0" + binaryString;

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static de.adventofcode.chrisgw.day16.BitsPacketType.LITERAL_VALUE;
+
 
 @Data
 public class BitsPacket {
@@ -29,7 +31,7 @@ public class BitsPacket {
     }
 
     public List<BitsPacket> subPackets() {
-        if (typeId() == 4) {
+        if (LITERAL_VALUE.equals(typeId())) {
             return Collections.emptyList();
         }
         int lengthTypeBitIndex = beginIndex + 6;
@@ -72,7 +74,7 @@ public class BitsPacket {
 
 
     public int getEndIndex() {
-        if (typeId() == 4) {
+        if (LITERAL_VALUE.equals(typeId())) {
             return literalEndIndex();
         } else {
             List<BitsPacket> subPackets = subPackets();
@@ -93,9 +95,15 @@ public class BitsPacket {
 
 
     public BigInteger literalValue() {
-        if (typeId() != 4) {
-            return BigInteger.ZERO;
-        }
+        BitsPacketType bitsPacketType = typeId();
+        return subPackets()
+                .stream()
+                .map(BitsPacket::literalValue)
+                .reduce(bitsPacketType.getReduceOperation())
+                .orElseGet(this::parseLiteralValue);
+    }
+
+    private BigInteger parseLiteralValue() {
         StringBuilder literalBinaryString = new StringBuilder();
         int literalBeginIndex = beginIndex + FIRST_LITERAL_PACKET_INDEX;
         for (int i = literalBeginIndex; i < binaryString.length(); i += LITERAL_GROUP_SIZE) {
@@ -111,8 +119,8 @@ public class BitsPacket {
     }
 
 
-    public int versionSum() {
-        return version() + subPackets().stream().mapToInt(BitsPacket::versionSum).sum();
+    public long versionSum() {
+        return version() + subPackets().stream().mapToLong(BitsPacket::versionSum).sum();
     }
 
 
@@ -121,10 +129,11 @@ public class BitsPacket {
         return Integer.parseInt(binaryString, beginIndex, headerEndIndex, 2);
     }
 
-    public int typeId() {
+    public BitsPacketType typeId() {
         int headerBeginIndex = beginIndex + HEADER_PACKET_SIZE;
         int headerEndIndex = headerBeginIndex + HEADER_PACKET_SIZE;
-        return Integer.parseInt(binaryString, headerBeginIndex, headerEndIndex, 2);
+        int typeId = Integer.parseInt(binaryString, headerBeginIndex, headerEndIndex, 2);
+        return BitsPacketType.valueOf(typeId);
     }
 
 
