@@ -119,45 +119,45 @@ public class AdventOfCodePuzzlePreparer {
         String formattedDay = "%02d".formatted(day);
         StringBuilder sb = new StringBuilder();
         sb.append("package de.adventofcode.chrisgw.day").append(formattedDay).append(";\n\n");
-        sb.append("import org.junit.Test;\n");
+        sb.append("import org.junit.jupiter.api.Test;\n");
         sb.append("import java.util.List;\n");
         sb.append("import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;\n");
-        sb.append("import static org.junit.Assert.*;\n\n");
-        sb.append("public class AdventOfCodeDay").append(formattedDay).append("Test {\n\n");
+        sb.append("import static org.junit.jupiter.api.Assertions.*;\n\n");
+        sb.append("class AdventOfCodeDay").append(formattedDay).append("Test {\n\n");
         sb.append("    private static final List<String> inputLinesExample = List.of(\"\");\n\n");
         sb.append("    @Test\n");
         sb.append("    public void solveAocPuzzle_firstPart_example() {\n");
         sb.append("        int result = new AdventOfCodeDay")
                 .append(formattedDay)
                 .append("(inputLinesExample).solveFirstPart();\n");
-        sb.append("        assertEquals(\"firstPart example\", 1, result);\n");
+        sb.append("        assertEquals(1, result, \"firstPart example\");\n");
         sb.append("    }\n\n");
         sb.append("    @Test\n");
-        sb.append("    public void solveAocPuzzle_firstPart_myPuzzleInput() {\n");
+        sb.append("    void solveAocPuzzle_firstPart_myPuzzleInput() {\n");
         sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay")
                 .append(formattedDay)
                 .append(".txt\");\n");
         sb.append("        int result = new AdventOfCodeDay")
                 .append(formattedDay)
                 .append("(inputLines).solveFirstPart();\n");
-        sb.append("        assertEquals(\"firstPart myPuzzleInput\", 1, result);\n");
+        sb.append("        assertEquals(1, result, \"firstPart myPuzzleInput\");\n");
         sb.append("    }\n\n");
         sb.append("    @Test\n");
-        sb.append("    public void solveAocPuzzle_secondPart_example() {\n");
+        sb.append("    void solveAocPuzzle_secondPart_example() {\n");
         sb.append("        int result = new AdventOfCodeDay")
                 .append(formattedDay)
                 .append("(inputLinesExample).solveSecondPart();\n");
-        sb.append("        assertEquals(\"secondPart example\", 1, result);\n");
+        sb.append("        assertEquals(1, result, \"secondPart example\");\n");
         sb.append("    }\n\n");
         sb.append("    @Test\n");
-        sb.append("    public void solveAocPuzzle_secondPart_myPuzzleInput() {\n");
+        sb.append("    void solveAocPuzzle_secondPart_myPuzzleInput() {\n");
         sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay")
                 .append(formattedDay)
                 .append(".txt\");\n");
         sb.append("        int result = new AdventOfCodeDay")
                 .append(formattedDay)
                 .append("(inputLines).solveSecondPart();\n");
-        sb.append("        assertEquals(\"secondPart myPuzzleInput\", 1, result);\n");
+        sb.append("        assertEquals(1, result, \"secondPart myPuzzleInput\");\n");
         sb.append("    }\n\n");
         sb.append("}\n");
         return sb;
