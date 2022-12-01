@@ -188,7 +188,12 @@ public class AdventOfCodePuzzlePreparer {
             System.exit(1);
         }
         String aocSessionCookie = args[0];
-        Year year = promptForYear();
+        Year year;
+        if (args.length >= 2) {
+            year = Year.of(Integer.parseInt(args[1]));
+        } else {
+            year = promptForYear();
+        }
         Path projectDirectory = Paths.get(year.toString()).toAbsolutePath();
         System.out.println("prepare Advent of Code " + year + " in project directory: " + projectDirectory);
         HttpClient httpClient = HttpClient.newHttpClient();
