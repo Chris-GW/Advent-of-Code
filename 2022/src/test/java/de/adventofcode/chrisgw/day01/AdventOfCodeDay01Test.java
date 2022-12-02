@@ -14,18 +14,14 @@ class AdventOfCodeDay01Test {
             "2000", //
             "3000", //
             "", //
-            "", //
             "4000", //
-            "", //
             "", //
             "5000", //
             "6000", //
             "", //
-            "", //
             "7000", //
             "8000", //
             "9000", //
-            "", //
             "", //
             "10000");
 
@@ -46,14 +42,15 @@ class AdventOfCodeDay01Test {
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay01(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        int expectedCaloriesTop3 = 24000 + 11000 + 10000;
+        assertEquals(expectedCaloriesTop3, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay01.txt");
         int result = new AdventOfCodeDay01(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(196804, result, "secondPart myPuzzleInput");
     }
 
 }

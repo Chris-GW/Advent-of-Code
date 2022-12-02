@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -19,32 +20,38 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver<Integer> {
 
     public Integer solveFirstPart() {
         List<ElfInventory> elfInventories = parseElfInventoriesFromInput();
-        return findMostTotalCalories(elfInventories);
+        return sumCaloriesTop3(elfInventories, 1);
     }
+
+
+    public Integer solveSecondPart() {
+        List<ElfInventory> elfInventories = parseElfInventoriesFromInput();
+        return sumCaloriesTop3(elfInventories, 3);
+    }
+
 
     private List<ElfInventory> parseElfInventoriesFromInput() {
         List<ElfInventory> elfInventories = new ArrayList<>();
         List<String> inventoryList = getInputLines();
+
         int inventoryStartIndex = 0;
         for (int i = 0; i < inventoryList.size(); i++) {
-            String inventoryLine = inventoryList.get(i);
-            if (StringUtils.isBlank(inventoryLine)) {
-                List<String> subInventoryList = inventoryList.subList(inventoryStartIndex, i);
+            if (i + 1 >= inventoryList.size() || StringUtils.isBlank(inventoryList.get(i + 1))) {
+                List<String> subInventoryList = inventoryList.subList(inventoryStartIndex, i + 1);
                 ElfInventory elfInventory = ElfInventory.parseElfInventoryList(subInventoryList);
                 elfInventories.add(elfInventory);
-                inventoryStartIndex = i + 1;
+                inventoryStartIndex = i + 2;
             }
         }
         return elfInventories;
     }
 
-    private static int findMostTotalCalories(List<ElfInventory> elfInventories) {
-        return elfInventories.stream().mapToInt(ElfInventory::totalFoodCalories).max().orElse(0);
-    }
-
-    public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+    private static int sumCaloriesTop3(List<ElfInventory> elfInventories, int top) {
+        return elfInventories.stream()
+                .sorted(Comparator.reverseOrder())
+                .mapToInt(ElfInventory::totalFoodCalories)
+                .limit(top)
+                .sum();
     }
 
 }
