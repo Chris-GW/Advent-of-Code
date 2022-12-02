@@ -10,19 +10,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AdventOfCodeDay01Test {
 
-    private static final List<String> inputLinesExample = List.of("");
+    private static final List<String> inputLinesExample = List.of("1000", //
+            "2000", //
+            "3000", //
+            "", //
+            "", //
+            "4000", //
+            "", //
+            "", //
+            "5000", //
+            "6000", //
+            "", //
+            "", //
+            "7000", //
+            "8000", //
+            "9000", //
+            "", //
+            "", //
+            "10000");
 
     @Test
     public void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay01(inputLinesExample).solveFirstPart();
-        assertEquals(1, result, "firstPart example");
+        int expectedMaxCalories = 7000 + 8000 + 9000;
+        assertEquals(expectedMaxCalories, result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay01.txt");
         int result = new AdventOfCodeDay01(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        assertEquals(66186, result, "firstPart myPuzzleInput");
     }
 
     @Test
