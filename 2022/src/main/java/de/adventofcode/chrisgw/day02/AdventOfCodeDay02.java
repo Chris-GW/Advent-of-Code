@@ -20,12 +20,15 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        return inputLinesAsRockPaperScissorsRounds().stream().mapToInt(RockPaperScissorsRound::score).sum();
+        return inputLinesAsRockPaperScissorsRounds().stream()
+                .mapToInt(RockPaperScissorsRound::scoreAccordingToFixedHandShape)
+                .sum();
     }
 
     public Integer solveSecondPart() {
-        //TODO solveSecondPart
-        return 0;
+        return inputLinesAsRockPaperScissorsRounds().stream()
+                .mapToInt(RockPaperScissorsRound::scoreAccordingToFixedOutcome)
+                .sum();
     }
 
 
@@ -33,6 +36,7 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver<Integer> {
         Pattern strategyGuideLinePattern = Pattern.compile("([ABC])\\s([XYZ])");
         List<String> inputLines = getInputLines();
         List<RockPaperScissorsRound> rockPaperScissorsRounds = new ArrayList<>(inputLines.size());
+
         for (int round = 0; round < inputLines.size(); round++) {
             String line = inputLines.get(round);
             Matcher matcher = strategyGuideLinePattern.matcher(line);
@@ -41,9 +45,10 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver<Integer> {
                         "Expect strategyGuideLine at %6d matching pattern '%s', but was: '%s'" //
                                 .formatted(round, strategyGuideLinePattern, line));
             }
-            HandShape opponentHandShape = HandShape.valueOf(matcher.group(1).charAt(0));
-            HandShape playerHandShape = HandShape.valueOf(matcher.group(2).charAt(0));
-            var rockPaperScissorsRound = new RockPaperScissorsRound(round, opponentHandShape, playerHandShape);
+
+            HandShape opponentHandShape = HandShape.valueOfCode(matcher.group(1).charAt(0));
+            char strategyCode = matcher.group(2).charAt(0);
+            var rockPaperScissorsRound = new RockPaperScissorsRound(round, opponentHandShape, strategyCode);
             rockPaperScissorsRounds.add(rockPaperScissorsRound);
         }
         return rockPaperScissorsRounds;

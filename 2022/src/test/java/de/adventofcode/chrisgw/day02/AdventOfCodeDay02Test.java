@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class AdventOfCodeDay02Test {
@@ -34,14 +34,15 @@ class AdventOfCodeDay02Test {
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay02(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        int expectedScore = 4 + 1 + 7;
+        assertEquals(expectedScore, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay02.txt");
         int result = new AdventOfCodeDay02(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(13509, result, "secondPart myPuzzleInput");
     }
 
 }

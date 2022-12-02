@@ -12,26 +12,21 @@ public enum HandShape {
     PAPER(2, 'B', 'Y'), //
     SCISSORS(3, 'C', 'Z');
 
-    private final char firstPlayerCode;
-    private final char secondPlayerCode;
+    private final char opponentHandShapeCode;
+    private final char playerHandShapeCode;
     private final int shapeScore;
 
 
-    HandShape(int shapeScore, char firstPlayerCode, char secondPlayerCode) {
+    HandShape(int shapeScore, char opponentHandShapeCode, char playerHandShapeCode) {
         this.shapeScore = shapeScore;
-        this.firstPlayerCode = firstPlayerCode;
-        this.secondPlayerCode = secondPlayerCode;
+        this.opponentHandShapeCode = opponentHandShapeCode;
+        this.playerHandShapeCode = playerHandShapeCode;
     }
 
 
-    public boolean hasCode(char code) {
-        return firstPlayerCode == code || secondPlayerCode == code;
-    }
-
-
-    public static HandShape valueOf(char code) {
+    public static HandShape valueOfCode(char code) {
         return Arrays.stream(HandShape.values())
-                .filter(handShape -> handShape.hasCode(code))
+                .filter(handShape -> handShape.opponentHandShapeCode == code || handShape.playerHandShapeCode == code)
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Could not find HandShape for code: " + code));
     }
