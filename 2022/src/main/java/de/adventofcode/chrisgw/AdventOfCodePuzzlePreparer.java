@@ -94,7 +94,8 @@ public class AdventOfCodePuzzlePreparer {
         sb.append("import java.time.Year;\n");
         sb.append("import java.util.List;\n\n");
         sb.append("/**\n");
-        sb.append(" * https://adventofcode.com/").append(year).append("/day/").append(day).append("\n");
+        sb.append(" * <a href=\"https://adventofcode.com/").append(year).append("/day/").append(day).append("\">");
+        sb.append("Advent of Code ").append(year).append(" - day ").append(day).append("</a>");
         sb.append(" */\n");
         sb.append("public class AdventOfCodeDay")
                 .append(formattedDay)
@@ -126,7 +127,7 @@ public class AdventOfCodePuzzlePreparer {
         sb.append("class AdventOfCodeDay").append(formattedDay).append("Test {\n\n");
         sb.append("    private static final List<String> inputLinesExample = List.of(\"\");\n\n");
         sb.append("    @Test\n");
-        sb.append("    public void solveAocPuzzle_firstPart_example() {\n");
+        sb.append("    void solveAocPuzzle_firstPart_example() {\n");
         sb.append("        int result = new AdventOfCodeDay")
                 .append(formattedDay)
                 .append("(inputLinesExample).solveFirstPart();\n");

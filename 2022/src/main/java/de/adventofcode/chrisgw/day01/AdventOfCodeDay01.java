@@ -10,7 +10,7 @@ import java.util.List;
 
 
 /**
- * https://adventofcode.com/2022/day/1
+ * <a href="https://adventofcode.com/2022/day/1">Advent of Code - day 01</a>
  */
 public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver<Integer> {
 
@@ -18,15 +18,15 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver<Integer> {
         super(Year.of(2022), 1, inputLines);
     }
 
+
     public Integer solveFirstPart() {
         List<ElfInventory> elfInventories = parseElfInventoriesFromInput();
-        return sumCaloriesTop3(elfInventories, 1);
+        return sumCaloriesTopX(elfInventories, 1);
     }
-
 
     public Integer solveSecondPart() {
         List<ElfInventory> elfInventories = parseElfInventoriesFromInput();
-        return sumCaloriesTop3(elfInventories, 3);
+        return sumCaloriesTopX(elfInventories, 3);
     }
 
 
@@ -36,7 +36,8 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver<Integer> {
 
         int inventoryStartIndex = 0;
         for (int i = 0; i < inventoryList.size(); i++) {
-            if (i + 1 >= inventoryList.size() || StringUtils.isBlank(inventoryList.get(i + 1))) {
+            boolean isLastLine = i == inventoryList.size() - 1;
+            if (isLastLine || StringUtils.isBlank(inventoryList.get(i + 1))) {
                 List<String> subInventoryList = inventoryList.subList(inventoryStartIndex, i + 1);
                 ElfInventory elfInventory = ElfInventory.parseElfInventoryList(subInventoryList);
                 elfInventories.add(elfInventory);
@@ -46,9 +47,9 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver<Integer> {
         return elfInventories;
     }
 
-    private static int sumCaloriesTop3(List<ElfInventory> elfInventories, int top) {
+    private static int sumCaloriesTopX(List<ElfInventory> elfInventories, int top) {
         return elfInventories.stream()
-                .sorted(Comparator.reverseOrder())
+                .sorted(Comparator.comparingInt(ElfInventory::totalFoodCalories).reversed())
                 .mapToInt(ElfInventory::totalFoodCalories)
                 .limit(top)
                 .sum();

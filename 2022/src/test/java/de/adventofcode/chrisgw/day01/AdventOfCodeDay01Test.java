@@ -26,7 +26,7 @@ class AdventOfCodeDay01Test {
             "10000");
 
     @Test
-    public void solveAocPuzzle_firstPart_example() {
+    void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay01(inputLinesExample).solveFirstPart();
         int expectedMaxCalories = 7000 + 8000 + 9000;
         assertEquals(expectedMaxCalories, result, "firstPart example");
@@ -38,6 +38,7 @@ class AdventOfCodeDay01Test {
         int result = new AdventOfCodeDay01(inputLines).solveFirstPart();
         assertEquals(66186, result, "firstPart myPuzzleInput");
     }
+
 
     @Test
     void solveAocPuzzle_secondPart_example() {

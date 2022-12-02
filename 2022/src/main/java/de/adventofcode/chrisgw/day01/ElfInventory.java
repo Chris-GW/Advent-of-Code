@@ -6,14 +6,16 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
 
-public class ElfInventory implements Comparable<ElfInventory> {
+
+public class ElfInventory {
 
     private final List<FoodItem> foodItems;
 
 
     private ElfInventory(List<FoodItem> foodItems) {
-        this.foodItems = foodItems;
+        this.foodItems = requireNonNull(foodItems);
     }
 
     public static ElfInventory parseElfInventoryList(List<String> elfInventoryLines) {
@@ -33,11 +35,6 @@ public class ElfInventory implements Comparable<ElfInventory> {
         return foodItems().mapToInt(FoodItem::calories).sum();
     }
 
-
-    @Override
-    public int compareTo(ElfInventory otherInventory) {
-        return Integer.compare(this.totalFoodCalories(), otherInventory.totalFoodCalories());
-    }
 
     @Override
     public boolean equals(Object o) {
