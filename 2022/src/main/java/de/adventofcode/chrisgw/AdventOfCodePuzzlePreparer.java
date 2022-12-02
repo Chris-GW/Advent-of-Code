@@ -10,6 +10,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -30,15 +31,19 @@ public class AdventOfCodePuzzlePreparer {
 
 
     public void prepareAvailableAocPuzzle() throws IOException {
+        LocalDate now = LocalDate.now();
         for (int day = 1; day < ADVENT_OF_CODE_PUZZLE_COUNT; day++) {
-            prepareAocPuzzle(day);
+            AdventOfCodePuzzle aocPuzzle = new AdventOfCodePuzzle(year, day);
+            if (now.isBefore(aocPuzzle.date())) {
+                break;
+            }
+            prepareAocPuzzle(aocPuzzle);
         }
     }
 
-    public void prepareAocPuzzle(int day) throws IOException {
-        AdventOfCodePuzzle aocPuzzle = new AdventOfCodePuzzle(year, day);
-        createJavaAocDayClass(day);
-        createJavaAocDayTestClass(day);
+    public void prepareAocPuzzle(  AdventOfCodePuzzle aocPuzzle) throws IOException {
+        createJavaAocDayClass(aocPuzzle);
+        createJavaAocDayTestClass(aocPuzzle);
         if (ZonedDateTime.now().isAfter(aocPuzzle.puzzleOpening())) {
             createPuzzleInputFiel(aocPuzzle);
         }
@@ -57,27 +62,27 @@ public class AdventOfCodePuzzlePreparer {
     }
 
 
-    private void createJavaAocDayClass(int day) throws IOException {
+    private void createJavaAocDayClass(AdventOfCodePuzzle aocPuzzle) throws IOException {
         Path javaFile = projectDirectory.resolve("src")
                 .resolve("main")
                 .resolve(javaPackageDirs())
-                .resolve("day%02d".formatted(day))
-                .resolve("AdventOfCodeDay%02d.java".formatted(day));
+                .resolve("day%02d".formatted(aocPuzzle.day()))
+                .resolve("AdventOfCodeDay%02d.java".formatted(aocPuzzle.day()));
         if (!Files.exists(javaFile)) {
             Files.createDirectories(javaFile.getParent());
-            Files.writeString(javaFile, javaClassTemplate(day), CREATE_NEW);
+            Files.writeString(javaFile, javaClassTemplate(aocPuzzle.day()), CREATE_NEW);
         }
     }
 
-    private void createJavaAocDayTestClass(int day) throws IOException {
+    private void createJavaAocDayTestClass(AdventOfCodePuzzle aocPuzzle) throws IOException {
         Path javaTestFile = projectDirectory.resolve("src")
                 .resolve("test")
                 .resolve(javaPackageDirs())
-                .resolve("day%02d".formatted(day))
-                .resolve("AdventOfCodeDay%02dTest.java".formatted(day));
+                .resolve("day%02d".formatted(aocPuzzle.day()))
+                .resolve("AdventOfCodeDay%02dTest.java".formatted(aocPuzzle.day()));
         if (!Files.exists(javaTestFile)) {
             Files.createDirectories(javaTestFile.getParent());
-            Files.writeString(javaTestFile, javaTestClassTemplate(day), CREATE_NEW);
+            Files.writeString(javaTestFile, javaTestClassTemplate(aocPuzzle), CREATE_NEW);
         }
     }
 
@@ -95,7 +100,7 @@ public class AdventOfCodePuzzlePreparer {
         sb.append("import java.util.List;\n\n");
         sb.append("/**\n");
         sb.append(" * <a href=\"https://adventofcode.com/").append(year).append("/day/").append(day).append("\">");
-        sb.append("Advent of Code ").append(year).append(" - day ").append(day).append("</a>");
+        sb.append("Advent of Code ").append(year).append(" - day ").append(day).append("</a>\n");
         sb.append(" */\n");
         sb.append("public class AdventOfCodeDay")
                 .append(formattedDay)
@@ -116,8 +121,8 @@ public class AdventOfCodePuzzlePreparer {
     }
 
 
-    private CharSequence javaTestClassTemplate(int day) {
-        String formattedDay = "%02d".formatted(day);
+    private CharSequence javaTestClassTemplate(AdventOfCodePuzzle aocPuzzle) {
+        String formattedDay = "%02d".formatted(aocPuzzle.day());
         StringBuilder sb = new StringBuilder();
         sb.append("package de.adventofcode.chrisgw.day").append(formattedDay).append(";\n\n");
         sb.append("import org.junit.jupiter.api.Test;\n");
