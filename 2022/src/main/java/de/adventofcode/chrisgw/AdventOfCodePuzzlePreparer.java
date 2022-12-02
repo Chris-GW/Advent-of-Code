@@ -3,6 +3,8 @@ package de.adventofcode.chrisgw;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -13,11 +15,13 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static de.adventofcode.chrisgw.AdventOfCodePuzzle.ADVENT_OF_CODE_PUZZLE_COUNT;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 
@@ -41,13 +45,86 @@ public class AdventOfCodePuzzlePreparer {
         }
     }
 
-    public void prepareAocPuzzle(  AdventOfCodePuzzle aocPuzzle) throws IOException {
+    public void prepareAocPuzzle(AdventOfCodePuzzle aocPuzzle) throws IOException {
         createJavaAocDayClass(aocPuzzle);
         createJavaAocDayTestClass(aocPuzzle);
         if (ZonedDateTime.now().isAfter(aocPuzzle.puzzleOpening())) {
             createPuzzleInputFiel(aocPuzzle);
         }
     }
+
+
+    private void createJavaAocDayClass(AdventOfCodePuzzle aocPuzzle) throws IOException {
+        Path javaFile = projectDirectory.resolve("src")
+                .resolve("main")
+                .resolve(javaPackageDirs())
+                .resolve("day%02d".formatted(aocPuzzle.day()))
+                .resolve("AdventOfCodeDay%02d.java".formatted(aocPuzzle.day()));
+        writeTemplateFile(aocPuzzle, javaFile, "/AdventOfCodeTemplate.java");
+    }
+
+    private void createJavaAocDayTestClass(AdventOfCodePuzzle aocPuzzle) throws IOException {
+        Path javaTestFile = projectDirectory.resolve("src")
+                .resolve("test")
+                .resolve(javaPackageDirs())
+                .resolve("day%02d".formatted(aocPuzzle.day()))
+                .resolve("AdventOfCodeDay%02dTest.java".formatted(aocPuzzle.day()));
+        if (Files.exists(javaTestFile)) {
+            return;
+        }
+        Files.createDirectories(javaTestFile.getParent());
+        writeTemplateFile(aocPuzzle, javaTestFile, "/AdventOfCodeTestTemplate.java");
+    }
+
+
+    private static void writeTemplateFile(AdventOfCodePuzzle aocPuzzle, Path javaFile, String templateResource)
+            throws IOException {
+        if (Files.exists(javaFile)) {
+            return;
+        }
+        Files.createDirectories(javaFile.getParent());
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("day", aocPuzzle.day());
+        parameters.put("day0", String.format("%02d", aocPuzzle.day()));
+        parameters.put("year", aocPuzzle.year().getValue());
+
+        InputStream templateInput = AdventOfCodePuzzlePreparer.class.getResourceAsStream(templateResource);
+        if (templateInput == null) {
+            throw new IllegalArgumentException("could not find templateResource: " + templateResource);
+        }
+        try (Scanner sc = new Scanner(templateInput, UTF_8);
+                PrintWriter writer = new PrintWriter(Files.newBufferedWriter(javaFile, UTF_8))) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                String formattedLine = format(line, parameters);
+                writer.println(formattedLine);
+            }
+        }
+    }
+
+    public static String format(String template, Map<String, Object> parameters) {
+        StringBuilder newTemplate = new StringBuilder(template);
+        List<Object> valueList = new ArrayList<>();
+
+        Matcher matcher = Pattern.compile("[$][{](\\w+)}").matcher(template);
+        while (matcher.find()) {
+            String key = matcher.group(1);
+
+            String paramName = "${" + key + "}";
+            int index = newTemplate.indexOf(paramName);
+            if (index != -1) {
+                newTemplate.replace(index, index + paramName.length(), "%s");
+                valueList.add(parameters.get(key));
+            }
+        }
+        return String.format(newTemplate.toString(), valueList.toArray());
+    }
+
+    private Path javaPackageDirs() {
+        return Paths.get("java", "de", "adventofcode", "chrisgw");
+    }
+
 
     private void createPuzzleInputFiel(AdventOfCodePuzzle aocPuzzle) throws IOException {
         Path puzzleInputFile = projectDirectory.resolve("src")
@@ -59,114 +136,6 @@ public class AdventOfCodePuzzlePreparer {
             Files.createDirectories(puzzleInputFile.getParent());
             Files.write(projectDirectory.resolve(puzzleInputFile), inputLines, CREATE_NEW);
         }
-    }
-
-
-    private void createJavaAocDayClass(AdventOfCodePuzzle aocPuzzle) throws IOException {
-        Path javaFile = projectDirectory.resolve("src")
-                .resolve("main")
-                .resolve(javaPackageDirs())
-                .resolve("day%02d".formatted(aocPuzzle.day()))
-                .resolve("AdventOfCodeDay%02d.java".formatted(aocPuzzle.day()));
-        if (!Files.exists(javaFile)) {
-            Files.createDirectories(javaFile.getParent());
-            Files.writeString(javaFile, javaClassTemplate(aocPuzzle.day()), CREATE_NEW);
-        }
-    }
-
-    private void createJavaAocDayTestClass(AdventOfCodePuzzle aocPuzzle) throws IOException {
-        Path javaTestFile = projectDirectory.resolve("src")
-                .resolve("test")
-                .resolve(javaPackageDirs())
-                .resolve("day%02d".formatted(aocPuzzle.day()))
-                .resolve("AdventOfCodeDay%02dTest.java".formatted(aocPuzzle.day()));
-        if (!Files.exists(javaTestFile)) {
-            Files.createDirectories(javaTestFile.getParent());
-            Files.writeString(javaTestFile, javaTestClassTemplate(aocPuzzle), CREATE_NEW);
-        }
-    }
-
-    private Path javaPackageDirs() {
-        return Paths.get("java", "de", "adventofcode", "chrisgw");
-    }
-
-
-    private CharSequence javaClassTemplate(int day) {
-        String formattedDay = "%02d".formatted(day);
-        StringBuilder sb = new StringBuilder();
-        sb.append("package de.adventofcode.chrisgw.day").append(formattedDay).append(";\n\n");
-        sb.append("import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;\n\n");
-        sb.append("import java.time.Year;\n");
-        sb.append("import java.util.List;\n\n");
-        sb.append("/**\n");
-        sb.append(" * <a href=\"https://adventofcode.com/").append(year).append("/day/").append(day).append("\">");
-        sb.append("Advent of Code ").append(year).append(" - day ").append(day).append("</a>\n");
-        sb.append(" */\n");
-        sb.append("public class AdventOfCodeDay")
-                .append(formattedDay)
-                .append(" extends AdventOfCodePuzzleSolver<Integer> {\n\n");
-        sb.append("    public AdventOfCodeDay").append(formattedDay).append("(List<String> inputLines) {\n");
-        sb.append("        super(Year.of(").append(year).append("), ").append(day).append(", inputLines);\n");
-        sb.append("    }\n\n");
-        sb.append("    public Integer solveFirstPart() {\n");
-        sb.append("        //TODO solveFirstPart\n");
-        sb.append("        return 0;\n");
-        sb.append("    }\n\n");
-        sb.append("    public Integer solveSecondPart() {\n");
-        sb.append("        //TODO solveSecondPart\n");
-        sb.append("        return 0;\n");
-        sb.append("    }\n\n");
-        sb.append("}\n");
-        return sb;
-    }
-
-
-    private CharSequence javaTestClassTemplate(AdventOfCodePuzzle aocPuzzle) {
-        String formattedDay = "%02d".formatted(aocPuzzle.day());
-        StringBuilder sb = new StringBuilder();
-        sb.append("package de.adventofcode.chrisgw.day").append(formattedDay).append(";\n\n");
-        sb.append("import org.junit.jupiter.api.Test;\n");
-        sb.append("import java.util.List;\n");
-        sb.append("import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;\n");
-        sb.append("import static org.junit.jupiter.api.Assertions.*;\n\n");
-        sb.append("class AdventOfCodeDay").append(formattedDay).append("Test {\n\n");
-        sb.append("    private static final List<String> inputLinesExample = List.of(\"\");\n\n");
-        sb.append("    @Test\n");
-        sb.append("    void solveAocPuzzle_firstPart_example() {\n");
-        sb.append("        int result = new AdventOfCodeDay")
-                .append(formattedDay)
-                .append("(inputLinesExample).solveFirstPart();\n");
-        sb.append("        assertEquals(1, result, \"firstPart example\");\n");
-        sb.append("    }\n\n");
-        sb.append("    @Test\n");
-        sb.append("    void solveAocPuzzle_firstPart_myPuzzleInput() {\n");
-        sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay")
-                .append(formattedDay)
-                .append(".txt\");\n");
-        sb.append("        int result = new AdventOfCodeDay")
-                .append(formattedDay)
-                .append("(inputLines).solveFirstPart();\n");
-        sb.append("        assertEquals(1, result, \"firstPart myPuzzleInput\");\n");
-        sb.append("    }\n\n");
-        sb.append("    @Test\n");
-        sb.append("    void solveAocPuzzle_secondPart_example() {\n");
-        sb.append("        int result = new AdventOfCodeDay")
-                .append(formattedDay)
-                .append("(inputLinesExample).solveSecondPart();\n");
-        sb.append("        assertEquals(1, result, \"secondPart example\");\n");
-        sb.append("    }\n\n");
-        sb.append("    @Test\n");
-        sb.append("    void solveAocPuzzle_secondPart_myPuzzleInput() {\n");
-        sb.append("        List<String> inputLines = readAllLinesOfClassPathResource(\"/puzzleInputDay")
-                .append(formattedDay)
-                .append(".txt\");\n");
-        sb.append("        int result = new AdventOfCodeDay")
-                .append(formattedDay)
-                .append("(inputLines).solveSecondPart();\n");
-        sb.append("        assertEquals(1, result, \"secondPart myPuzzleInput\");\n");
-        sb.append("    }\n\n");
-        sb.append("}\n");
-        return sb;
     }
 
     private List<String> requestMyPuzzleInput(AdventOfCodePuzzle aocPuzzle) {
@@ -182,7 +151,10 @@ public class AdventOfCodePuzzlePreparer {
                 throw new RuntimeException("requestMyPuzzleInput response status code was: " + response.statusCode());
             }
             return response.body().toList();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }
@@ -216,6 +188,7 @@ public class AdventOfCodePuzzlePreparer {
                 System.out.print("enter AoC year: ");
                 year = Year.of(scIn.nextInt());
             } catch (Exception e) {
+                System.out.println("Could not read year: " + e.getMessage());
             }
         }
         return year;
