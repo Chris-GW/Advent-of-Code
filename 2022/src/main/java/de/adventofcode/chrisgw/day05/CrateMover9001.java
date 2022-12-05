@@ -2,14 +2,9 @@ package de.adventofcode.chrisgw.day05;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 
 
 public class CrateMover9001 extends CrateMover {
-
-    public CrateMover9001(List<CrateStack> crateStacks) {
-        super(crateStacks);
-    }
 
 
     @Override
