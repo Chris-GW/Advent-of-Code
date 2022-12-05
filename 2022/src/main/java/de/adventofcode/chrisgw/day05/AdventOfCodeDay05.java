@@ -26,23 +26,19 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<String> {
     public String solveFirstPart() {
         List<CrateStack> crateStacks = parseCrateStacksFromInput();
         List<RearrangementProcedure> rearrangementProcedures = parseRearrangementProceduresFromInput();
-        for (RearrangementProcedure rearrangementProcedure : rearrangementProcedures) {
-            rearrangementProcedure.runRearrangementProcedure(crateStacks);
-        }
-        return topCrateCodes(crateStacks);
-    }
 
-    private static String topCrateCodes(List<CrateStack> crateStacks) {
-        return crateStacks.stream()
-                .skip(1)
-                .map(CrateStack::peekCrate)
-                .map(StackableCargoCrate::crateCode)
-                .reduce("", (codeString, crateCode) -> codeString + crateCode, String::concat);
+        CrateMover crateMover = new CrateMover9000(crateStacks);
+        rearrangementProcedures.forEach(crateMover::runRearrangementProcedure);
+        return crateMover.topCrateCodes();
     }
 
     public String solveSecondPart() {
-        //TODO solveSecondPart
-        return "";
+        List<CrateStack> crateStacks = parseCrateStacksFromInput();
+        List<RearrangementProcedure> rearrangementProcedures = parseRearrangementProceduresFromInput();
+
+        CrateMover crateMover = new CrateMover9001(crateStacks);
+        rearrangementProcedures.forEach(crateMover::runRearrangementProcedure);
+        return crateMover.topCrateCodes();
     }
 
 
@@ -62,7 +58,7 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<String> {
                     return crateStacks;
                 }
 
-                for (int i = crateStacks.size(); i <= stackIndex ; i++) {
+                for (int i = crateStacks.size(); i <= stackIndex; i++) {
                     crateStacks.add(new CrateStack(i));
                 }
                 StackableCargoCrate crate = new StackableCargoCrate(crateLetter);
@@ -71,6 +67,7 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<String> {
         }
         return crateStacks;
     }
+
 
     public List<RearrangementProcedure> parseRearrangementProceduresFromInput() {
         return inputLines().dropWhile(StringUtils::isNotBlank)

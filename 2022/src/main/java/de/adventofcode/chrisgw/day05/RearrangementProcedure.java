@@ -22,16 +22,6 @@ public record RearrangementProcedure(int quantity, int fromStackIndex, int toSta
     }
 
 
-    public void runRearrangementProcedure(List<CrateStack> crateStacks) {
-        CrateStack fromStack = crateStacks.get(fromStackIndex);
-        CrateStack toStack = crateStacks.get(toStackIndex);
-
-        for (int i = 0; i < quantity; i++) {
-            StackableCargoCrate crate = fromStack.pollCrate();
-            toStack.pushCrate(crate);
-        }
-    }
-
 
     @Override
     public String toString() {
