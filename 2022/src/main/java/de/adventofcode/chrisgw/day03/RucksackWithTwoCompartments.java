@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -31,12 +32,16 @@ public class RucksackWithTwoCompartments {
     }
 
 
+    public List<RucksackItem> items() {
+        return Collections.unmodifiableList(items);
+    }
+
     public List<RucksackItem> itemsFirstCompartment() {
         return items.subList(0, compartmentSize());
     }
 
     public List<RucksackItem> itemsSecondCompartment() {
-        return items.subList(compartmentSize(), items.size());
+        return items.subList(compartmentSize(), size());
     }
 
 
@@ -48,6 +53,10 @@ public class RucksackWithTwoCompartments {
             }
         }
         return null;
+    }
+
+    public boolean containsItem(RucksackItem item) {
+        return items.contains(item);
     }
 
 
