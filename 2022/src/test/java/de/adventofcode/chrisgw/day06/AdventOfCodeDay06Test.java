@@ -23,11 +23,11 @@ class AdventOfCodeDay06Test {
             "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" //
     );
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "[{index}] expect startOfPacketMarker at {1} for: {0}")
     @MethodSource("provideDataStreamForFirstPart")
-    void solveAocPuzzle_firstPart_examples(String dataStream, int expectedStartOfPacketIndex) {
-        int result = new AdventOfCodeDay06(List.of(dataStream)).solveFirstPart();
-        assertEquals(expectedStartOfPacketIndex, result, "firstPart example");
+    void solveAocPuzzle_firstPart_examples(String dataStream, int expectedStartOfPacketMarker) {
+        int startOfPacketMarker = new AdventOfCodeDay06(List.of(dataStream)).solveFirstPart();
+        assertEquals(expectedStartOfPacketMarker, startOfPacketMarker, "firstPart example");
     }
 
     private static Stream<Arguments> provideDataStreamForFirstPart() {
@@ -40,22 +40,30 @@ class AdventOfCodeDay06Test {
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay06.txt");
-        int result = new AdventOfCodeDay06(inputLines).solveFirstPart();
-        assertEquals(1361, result, "firstPart myPuzzleInput");
+        int startOfPacketMarker = new AdventOfCodeDay06(inputLines).solveFirstPart();
+        assertEquals(1361, startOfPacketMarker, "firstPart myPuzzleInput");
     }
 
 
-    @Test
-    void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay06(inputLinesExample).solveSecondPart();
-        assertEquals(2, result, "secondPart example");
+    @ParameterizedTest(name = "[{index}] expect startOfMessageMarker at {1} for: {0}")
+    @MethodSource("provideDataStreamForSecondPart")
+    void solveAocPuzzle_secondPart_example(String dataStream, int expectedStartOfMessageMarker) {
+        int startOfMessageMarker = new AdventOfCodeDay06(List.of(dataStream)).solveSecondPart();
+        assertEquals(expectedStartOfMessageMarker, startOfMessageMarker, "secondPart example");
     }
+
+    private static Stream<Arguments> provideDataStreamForSecondPart() {
+        List<Integer> expectedStartOfPacketIndexes = List.of(19, 23, 23, 29, 26);
+        return IntStream.range(0, expectedStartOfPacketIndexes.size())
+                .mapToObj(i -> Arguments.of(inputLinesExample.get(i), expectedStartOfPacketIndexes.get(i)));
+    }
+
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay06.txt");
-        int result = new AdventOfCodeDay06(inputLines).solveSecondPart();
-        assertEquals(2, result, "secondPart myPuzzleInput");
+        int startOfMessageMarker = new AdventOfCodeDay06(inputLines).solveSecondPart();
+        assertEquals(3263, startOfMessageMarker, "secondPart myPuzzleInput");
     }
 
 }

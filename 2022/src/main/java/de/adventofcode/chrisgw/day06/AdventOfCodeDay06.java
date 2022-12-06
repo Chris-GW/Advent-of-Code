@@ -18,12 +18,12 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver<Integer> {
 
     public Integer solveFirstPart() {
         DataStreamBuffer dataStreamBuffer = new DataStreamBuffer(getInputLines().get(0));
-        return dataStreamBuffer.findFirstStartOfPacketIndex();
+        return dataStreamBuffer.findStartOfPacketMarker();
     }
 
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 1;
+        DataStreamBuffer dataStreamBuffer = new DataStreamBuffer(getInputLines().get(0));
+        return dataStreamBuffer.findStartOfMessageMarker();
     }
 
 }
