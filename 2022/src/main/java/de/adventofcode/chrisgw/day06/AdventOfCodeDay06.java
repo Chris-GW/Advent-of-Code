@@ -17,8 +17,8 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 1;
+        DataStreamBuffer dataStreamBuffer = new DataStreamBuffer(getInputLines().get(0));
+        return dataStreamBuffer.findFirstStartOfPacketIndex();
     }
 
     public Integer solveSecondPart() {
