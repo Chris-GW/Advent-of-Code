@@ -17,8 +17,10 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 1;
+        return inputLines().map(RucksackWithTwoCompartments::parseRucksackContent)
+                .map(RucksackWithTwoCompartments::findMisplacedItem)
+                .mapToInt(RucksackItem::priority)
+                .sum();
     }
 
     public Integer solveSecondPart() {
