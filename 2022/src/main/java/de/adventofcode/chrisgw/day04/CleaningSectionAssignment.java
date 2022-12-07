@@ -19,6 +19,10 @@ public record CleaningSectionAssignment(int fromSectionId, int toSectionId) {
                 && containsSectionId(otherSectionAssignment.toSectionId());
     }
 
+    public boolean hasOverlapWith(CleaningSectionAssignment otherSectionAssignment) {
+        return this.sectionIds().anyMatch(otherSectionAssignment::containsSectionId);
+    }
+
 
     @Override
     public String toString() {

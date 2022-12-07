@@ -6,21 +6,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class CleaningSectionAssignmentPair extends MutablePair<CleaningSectionAssignment, CleaningSectionAssignment> {
+public class SectionAssignmentPair extends MutablePair<CleaningSectionAssignment, CleaningSectionAssignment> {
 
     public static final Pattern SECTION_ASSIGNMENT_PATTERN = Pattern.compile("(\\d+)-(\\d+),(\\d+)-(\\d+)");
 
 
-    public CleaningSectionAssignmentPair(CleaningSectionAssignment left, CleaningSectionAssignment right) {
+    public SectionAssignmentPair(CleaningSectionAssignment left, CleaningSectionAssignment right) {
         super(left, right);
     }
 
-    public static CleaningSectionAssignmentPair of(final CleaningSectionAssignment left,
+    public static SectionAssignmentPair of(final CleaningSectionAssignment left,
             final CleaningSectionAssignment right) {
-        return new CleaningSectionAssignmentPair(left, right);
+        return new SectionAssignmentPair(left, right);
     }
 
-    public static CleaningSectionAssignmentPair parseCleaningSectionAssignmentPair(String sectionAssignmentString) {
+    public static SectionAssignmentPair parseSectionAssignmentPair(String sectionAssignmentString) {
         Matcher matcher = SECTION_ASSIGNMENT_PATTERN.matcher(sectionAssignmentString);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(
@@ -34,12 +34,16 @@ public class CleaningSectionAssignmentPair extends MutablePair<CleaningSectionAs
         int secondFromSectionId = Integer.parseInt(matcher.group(3));
         int secondToSectionId = Integer.parseInt(matcher.group(4));
         var secondSectionAssignment = new CleaningSectionAssignment(secondFromSectionId, secondToSectionId);
-        return CleaningSectionAssignmentPair.of(firstSectionAssignment, secondSectionAssignment);
+        return SectionAssignmentPair.of(firstSectionAssignment, secondSectionAssignment);
     }
 
 
     public boolean hasFullyContainedSectionAssignment() {
         return left.containsFully(right) || right.containsFully(left);
+    }
+
+    public boolean hasAnyOverlap() {
+        return left.hasOverlapWith(right);
     }
 
 
