@@ -32,14 +32,14 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<String> {
     private String runRearrangementProcedures(CrateMover crateMover) {
         crateMover.parseInitStacks(getInputLines());
         List<RearrangementProcedure> rearrangementProcedures = parseRearrangementProceduresFromInput();
-        rearrangementProcedures.forEach(crateMover::runRearrangementProcedure);
+        crateMover.runRearrangementProcedures(rearrangementProcedures);
         return crateMover.topCrateCodes();
     }
 
 
     public List<RearrangementProcedure> parseRearrangementProceduresFromInput() {
-        Predicate<String> isNoRearrangementProcedure = REARRANGEMENT_PROCEDURE_PATTERN.asPredicate().negate();
-        return inputLines().dropWhile(isNoRearrangementProcedure)
+        Predicate<String> isRearrangementProcedure = REARRANGEMENT_PROCEDURE_PATTERN.asPredicate();
+        return inputLines().filter(isRearrangementProcedure)
                 .map(RearrangementProcedure::parseRearrangementProcedure)
                 .toList();
     }

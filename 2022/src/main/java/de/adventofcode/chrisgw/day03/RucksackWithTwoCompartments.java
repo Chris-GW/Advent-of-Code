@@ -47,12 +47,11 @@ public class RucksackWithTwoCompartments {
 
     public RucksackItem findMisplacedItem() {
         List<RucksackItem> itemsSecondCompartment = itemsSecondCompartment();
-        for (RucksackItem item : itemsFirstCompartment()) {
-            if (itemsSecondCompartment.contains(item)) {
-                return item;
-            }
-        }
-        return null;
+        return itemsFirstCompartment().stream()
+                .distinct()
+                .filter(itemsSecondCompartment::contains)
+                .findAny()
+                .orElse(null);
     }
 
     public boolean containsItem(RucksackItem item) {

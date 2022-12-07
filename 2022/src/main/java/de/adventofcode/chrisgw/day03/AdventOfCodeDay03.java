@@ -5,6 +5,8 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 
 /**
@@ -25,27 +27,27 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver<Integer> {
     }
 
     public Integer solveSecondPart() {
-        var rucksackWithTwoCompartments = inputLines().map(RucksackWithTwoCompartments::parseRucksackContent).toList();
-        int groupSize = 3;
+        final int groupSize = 3;
+        final AtomicInteger groupItemCounter = new AtomicInteger();
+        return inputLines().map(RucksackWithTwoCompartments::parseRucksackContent)
+                .collect(Collectors.groupingBy(rucksack -> groupItemCounter.getAndIncrement() / groupSize))
+                .values()
+                .stream()
+                .map(this::findSharedItem)
+                .mapToInt(RucksackItem::priority)
+                .sum();
+    }
 
-        int prioritySum = 0;
-        for (int group = 0; group < rucksackWithTwoCompartments.size() / groupSize; group++) {
-            int groupStartIndex = group * groupSize;
-            var groupRucksacks = rucksackWithTwoCompartments.subList(groupStartIndex, groupStartIndex + groupSize);
-
-            var largestRucksackInGroup = groupRucksacks.stream()
-                    .max(Comparator.comparingInt(RucksackWithTwoCompartments::size))
-                    .orElseThrow();
-
-            int priorityForGroup = largestRucksackInGroup.items()
-                    .stream()
-                    .filter(item -> groupRucksacks.stream().allMatch(rucksack -> rucksack.containsItem(item)))
-                    .findAny()
-                    .map(RucksackItem::priority)
-                    .orElse(0);
-            prioritySum += priorityForGroup;
-        }
-        return prioritySum;
+    private RucksackItem findSharedItem(List<RucksackWithTwoCompartments> rucksacks) {
+        var largestRucksackInGroup = rucksacks.stream()
+                .max(Comparator.comparingInt(RucksackWithTwoCompartments::size))
+                .orElseThrow();
+        return largestRucksackInGroup.items()
+                .stream()
+                .distinct()
+                .filter(item -> rucksacks.stream().allMatch(rucksack -> rucksack.containsItem(item)))
+                .findAny()
+                .orElse(null);
     }
 
 }

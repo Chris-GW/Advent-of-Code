@@ -44,7 +44,12 @@ public abstract class CrateMover {
                 .reduce("", (codeString, crateCode) -> codeString + crateCode, String::concat);
     }
 
+
     public abstract void runRearrangementProcedure(RearrangementProcedure rearrangementProcedure);
+
+    public void runRearrangementProcedures(List<RearrangementProcedure> rearrangementProcedures) {
+        rearrangementProcedures.forEach(this::runRearrangementProcedure);
+    }
 
 
 }
