@@ -17,13 +17,17 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 1;
+        long count = inputLines().map(CleaningSectionAssignmentPair::parseCleaningSectionAssignmentPair)
+                .filter(CleaningSectionAssignmentPair::hasFullyContainedSectionAssignment)
+                .count();
+        return Math.toIntExact(count);
     }
+
 
     public Integer solveSecondPart() {
         // TODO solveSecondPart
         return 1;
     }
+
 
 }
