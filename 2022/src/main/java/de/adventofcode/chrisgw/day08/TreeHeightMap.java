@@ -5,6 +5,7 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 /**
@@ -35,16 +36,17 @@ public class TreeHeightMap extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        List<TreeMapPoint> visibleTrees = Arrays.stream(treeHeightMap)
-                .flatMap(Arrays::stream)
-                .filter(TreeMapPoint::isVisible)
-                .toList();
+        List<TreeMapPoint> visibleTrees = allTrees().filter(TreeMapPoint::isVisible).toList();
         return visibleTrees.size();
     }
 
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        return allTrees().mapToInt(TreeMapPoint::scenicScore).max().orElse(0);
+    }
+
+
+    public Stream<TreeMapPoint> allTrees() {
+        return Arrays.stream(treeHeightMap).flatMap(Arrays::stream);
     }
 
 

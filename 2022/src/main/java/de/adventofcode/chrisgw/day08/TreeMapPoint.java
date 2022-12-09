@@ -1,6 +1,7 @@
 package de.adventofcode.chrisgw.day08;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -32,6 +33,25 @@ public record TreeMapPoint(TreeHeightMap treeMap, int x, int y, int treeHeight) 
         return isEdgeTree() || Arrays.stream(Direction.values())
                 .map(this::treesInDirection)
                 .anyMatch(trees -> trees.noneMatch(this::isBlockingView));
+    }
+
+
+    public int scenicScore() {
+        return Arrays.stream(Direction.values())
+                .mapToInt(this::visibleTreesCount)
+                .reduce(1, (left, right) -> left * right);
+    }
+
+    private int visibleTreesCount(Direction direction) {
+        int visibleTreeCount = 0;
+        Iterator<TreeMapPoint> treeIterator = treesInDirection(direction).iterator();
+        while (treeIterator.hasNext()) {
+            visibleTreeCount++;
+            if (isBlockingView(treeIterator.next())) {
+                break;
+            }
+        }
+        return visibleTreeCount;
     }
 
 

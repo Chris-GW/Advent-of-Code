@@ -35,14 +35,14 @@ class TreeHeightMapTest {
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new TreeHeightMap(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        assertEquals(8, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay08.txt");
         int result = new TreeHeightMap(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(335580, result, "secondPart myPuzzleInput");
     }
 
 }
