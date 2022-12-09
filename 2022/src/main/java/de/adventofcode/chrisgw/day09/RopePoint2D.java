@@ -6,6 +6,11 @@ import java.util.List;
 
 public record RopePoint2D(int x, int y) {
 
+
+    public RopePoint2D() {
+        this(0, 0);
+    }
+
     public RopePoint2D relativeMove(int dx, int dy) {
         int x = this.x() + dx;
         int y = this.y() + dy;
