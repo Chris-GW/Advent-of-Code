@@ -1,19 +1,19 @@
 package de.adventofcode.chrisgw.day08;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 
 public record TreeMapPoint(TreeHeightMap treeMap, int x, int y, int treeHeight) {
 
-    public Stream<TreeMapPoint> treesInDirection(Direction direction) {
-        TreeMapPoint seedTree = neighborTrees(direction);
-        return Stream.iterate(seedTree, Objects::nonNull, treeMapPoint -> treeMapPoint.neighborTrees(direction));
+    public Stream<TreeMapPoint> treeStreamForDirection(Direction direction) {
+        TreeMapPoint seedTree = neighborTree(direction);
+        return Stream.iterate(seedTree, Objects::nonNull, treeMapPoint -> treeMapPoint.neighborTree(direction));
     }
 
-    public TreeMapPoint neighborTrees(Direction direction) {
+    public TreeMapPoint neighborTree(Direction direction) {
         int x = this.x() + direction.getDx();
         int y = this.y() + direction.getDy();
         return treeMap.treeAt(x, y);
@@ -29,29 +29,24 @@ public record TreeMapPoint(TreeHeightMap treeMap, int x, int y, int treeHeight) 
     }
 
 
-    public boolean isVisible() {
+    public boolean isVisibleFromOutside() {
         return isEdgeTree() || Arrays.stream(Direction.values())
-                .map(this::treesInDirection)
+                .map(this::treeStreamForDirection)
                 .anyMatch(trees -> trees.noneMatch(this::isBlockingView));
     }
 
 
     public int scenicScore() {
         return Arrays.stream(Direction.values())
-                .mapToInt(this::visibleTreesCount)
+                .mapToInt(this::viewableTreeCount)
                 .reduce(1, (left, right) -> left * right);
     }
 
-    private int visibleTreesCount(Direction direction) {
-        int visibleTreeCount = 0;
-        Iterator<TreeMapPoint> treeIterator = treesInDirection(direction).iterator();
-        while (treeIterator.hasNext()) {
-            visibleTreeCount++;
-            if (isBlockingView(treeIterator.next())) {
-                break;
-            }
-        }
-        return visibleTreeCount;
+    private int viewableTreeCount(Direction direction) {
+        AtomicBoolean isViewBlocked = new AtomicBoolean(false);
+        return (int) treeStreamForDirection(direction) //
+                .takeWhile(treeMapPoint -> !isViewBlocked.getAndSet(this.isBlockingView(treeMapPoint))) //
+                .count();
     }
 
 

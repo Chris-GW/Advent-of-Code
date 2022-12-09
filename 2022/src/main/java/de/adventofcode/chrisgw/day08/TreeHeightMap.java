@@ -13,11 +13,12 @@ import java.util.stream.Stream;
  */
 public class TreeHeightMap extends AdventOfCodePuzzleSolver<Integer> {
 
-    private final TreeMapPoint[][] treeHeightMap;
+    private final TreeMapPoint[][] map;
+
 
     public TreeHeightMap(List<String> inputLines) {
         super(Year.of(2022), 8, inputLines);
-        this.treeHeightMap = parseTreeHeightMap(inputLines);
+        this.map = parseTreeHeightMap(inputLines);
     }
 
     private TreeMapPoint[][] parseTreeHeightMap(List<String> treeHeightMapLines) {
@@ -36,8 +37,7 @@ public class TreeHeightMap extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        List<TreeMapPoint> visibleTrees = allTrees().filter(TreeMapPoint::isVisible).toList();
-        return visibleTrees.size();
+        return allTrees().filter(TreeMapPoint::isVisibleFromOutside).toList().size();
     }
 
     public Integer solveSecondPart() {
@@ -46,16 +46,7 @@ public class TreeHeightMap extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Stream<TreeMapPoint> allTrees() {
-        return Arrays.stream(treeHeightMap).flatMap(Arrays::stream);
-    }
-
-
-    public int height() {
-        return treeHeightMap.length;
-    }
-
-    public int width() {
-        return treeHeightMap[0].length;
+        return Arrays.stream(map).flatMap(Arrays::stream);
     }
 
 
@@ -63,14 +54,21 @@ public class TreeHeightMap extends AdventOfCodePuzzleSolver<Integer> {
         if (!containsTreeAt(x, y)) {
             return null;
         }
-        return treeHeightMap[y][x];
+        return map[y][x];
     }
-
 
     public boolean containsTreeAt(int x, int y) {
         return 0 <= x && x < width() //
                 && 0 <= y && y < height();
     }
 
+
+    public int height() {
+        return map.length;
+    }
+
+    public int width() {
+        return map[0].length;
+    }
 
 }
