@@ -33,8 +33,20 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver<Long> {
 
 
     public Long solveSecondPart() {
-        // TODO solveSecondPart
-        return 0L;
+        var filesystemTerminal = new FilesystemTerminal(rootPath, getInputLines());
+        while (filesystemTerminal.hasNext()) {
+            filesystemTerminal.runNextCommand();
+        }
+        long totalAvailableSpace = 70_000_000L;
+        long neededFreeSpace = 30_000_000L;
+        long totalUsedSpace = rootPath.getSize();
+        long currentFreeSpace = totalAvailableSpace - totalUsedSpace;
+        return rootPath.allChildren()
+                .filter(FilesystemPath::isDirectory)
+                .mapToLong(FilesystemPath::getSize)
+                .filter(directorySize -> currentFreeSpace + directorySize >= neededFreeSpace)
+                .min()
+                .orElse(0L);
     }
 
 }
