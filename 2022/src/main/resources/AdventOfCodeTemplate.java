@@ -18,12 +18,12 @@ public class AdventOfCodeDay${day0} extends AdventOfCodePuzzleSolver<Integer> {
 
     public Integer solveFirstPart() {
         // TODO solveFirstPart
-        return 1;
+        return 0;
     }
 
     public Integer solveSecondPart() {
         // TODO solveSecondPart
-        return 1;
+        return 0;
     }
 
 }
