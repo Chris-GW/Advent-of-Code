@@ -31,4 +31,9 @@ public abstract class CpuInstruction {
     public abstract void runInstructionOnCpu(CommunicationSystemCpu cpu);
 
 
+    @Override
+    public String toString() {
+        return getInstructionName();
+    }
+
 }

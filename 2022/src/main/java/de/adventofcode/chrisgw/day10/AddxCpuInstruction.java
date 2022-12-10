@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-@ToString
 @EqualsAndHashCode(callSuper = true)
 public class AddxCpuInstruction extends CpuInstruction {
 
@@ -20,6 +19,12 @@ public class AddxCpuInstruction extends CpuInstruction {
     public void runInstructionOnCpu(CommunicationSystemCpu cpu) {
         int newRegisterValue = cpu.getRegisterValue() + this.value;
         cpu.setRegisterValue(newRegisterValue);
+    }
+
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + value;
     }
 
 }
