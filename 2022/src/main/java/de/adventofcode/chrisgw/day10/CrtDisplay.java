@@ -38,6 +38,10 @@ public class CrtDisplay {
         return sb.toString();
     }
 
+    public boolean isCompleteDrawn() {
+        return cycle > pixelWidth * pixelHeight;
+    }
+
 
     @Override
     public String toString() {

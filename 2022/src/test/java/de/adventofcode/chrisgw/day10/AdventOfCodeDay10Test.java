@@ -1,5 +1,6 @@
 package de.adventofcode.chrisgw.day10;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,6 +29,7 @@ class AdventOfCodeDay10Test {
     }
 
     @Test
+    @Disabled
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
         int result = new AdventOfCodeDay10(inputLines).solveFirstPart();
@@ -36,16 +38,32 @@ class AdventOfCodeDay10Test {
 
 
     @Test
+    @Disabled
     void solveAocPuzzle_secondPart_example() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDayExample10.txt");
         int result = new AdventOfCodeDay10(inputLines).solveSecondPart();
+        String expectedOutput = "" + //
+                "##..##..##..##..##..##..##..##..##..##..\n" +
+                "###...###...###...###...###...###...###.\n" +
+                "####....####....####....####....####....\n" +
+                "#####.....#####.....#####.....#####.....\n" +
+                "######......######......######......####\n" +
+                "#######.......#######.......#######.....";
         assertEquals(1, result, "secondPart example");
     }
 
     @Test
+    @Disabled
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
         int result = new AdventOfCodeDay10(inputLines).solveSecondPart();
+        String expectedOutput = "" + //
+                "####..##..####.#..#.####..##..#....###..\n" + //
+                "#....#..#....#.#..#....#.#..#.#....#..#.\n" + //
+                "###..#......#..#..#...#..#..#.#....#..#.\n" + //
+                "#....#.....#...#..#..#...####.#....###..\n" + //
+                "#....#..#.#....#..#.#....#..#.#....#.#..\n" + //
+                "####..##..####..##..####.#..#.####.#..#.";
         assertEquals(1, result, "secondPart myPuzzleInput");
     }
 

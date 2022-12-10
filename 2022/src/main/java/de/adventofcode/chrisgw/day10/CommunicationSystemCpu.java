@@ -80,9 +80,13 @@ public class CommunicationSystemCpu {
         return crtDisplay.toString();
     }
 
+    public boolean isCrtDisplayCompleted() {
+        return crtDisplay.isCompleteDrawn();
+    }
+
+
     @Override
     public String toString() {
         return "%3d | %3d\tsignal = %4d".formatted(cycle, registerValue, getSignalStrength());
     }
-
 }

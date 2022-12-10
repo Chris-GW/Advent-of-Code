@@ -23,29 +23,23 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
         int firstCycleSignalCheck = 20;
         int cycleSignalCheckStep = 40;
         int signalCheckLimit = 6;
-        int result = Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
+        return Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
                 .filter(cpu1 -> cpu1.getCycle() % cycleSignalCheckStep == firstCycleSignalCheck)
                 .limit(signalCheckLimit)
                 .mapToInt(CommunicationSystemCpu::getSignalStrength)
                 .sum();
-        System.out.println(cpu.printCrtDisplay());
-        return result;
     }
 
     public Integer solveSecondPart() {
         List<CpuInstruction> cpuInstructions = inputLines().map(CpuInstruction::parseCpuInstruction).toList();
         var cpu = new CommunicationSystemCpu(cpuInstructions);
-        int firstCycleSignalCheck = 20;
-        int cycleSignalCheckStep = 40;
-        int signalCheckLimit = 8;
-        int result = Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
-                .filter(cpu1 -> cpu1.getCycle() % cycleSignalCheckStep == firstCycleSignalCheck)
-                .limit(signalCheckLimit)
-                .mapToInt(CommunicationSystemCpu::getSignalStrength)
-                .sum();
-        System.out.println(cpu.printCrtDisplay());
-        System.out.println("ECZUZALR");
-        return result;
+        String crtDisplay = Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
+                .filter(CommunicationSystemCpu::isCrtDisplayCompleted)
+                .map(CommunicationSystemCpu::printCrtDisplay)
+                .findFirst()
+                .orElse("");
+        System.out.println(crtDisplay);
+        return 0;
     }
 
 }
