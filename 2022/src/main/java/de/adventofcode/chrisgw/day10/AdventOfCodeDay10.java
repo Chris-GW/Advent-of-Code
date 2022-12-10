@@ -4,6 +4,7 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 /**
@@ -17,8 +18,16 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        List<CpuInstruction> cpuInstructions = inputLines().map(CpuInstruction::parseCpuInstruction).toList();
+        var cpu = new CommunicationSystemCpu(cpuInstructions);
+        int firstCycleSignalCheck = 20;
+        int cycleSignalCheckStep = 40;
+        int signalCheckLimit = 6;
+        return Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
+                .filter(cpu1 -> cpu1.getCycle() % cycleSignalCheckStep == firstCycleSignalCheck)
+                .limit(signalCheckLimit)
+                .mapToInt(CommunicationSystemCpu::getSignalStrength)
+                .sum();
     }
 
     public Integer solveSecondPart() {
