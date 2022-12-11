@@ -20,10 +20,14 @@ public class CommunicationSystemCpu {
     @Setter
     private int registerValue = 1;
 
-    private final CrtDisplay crtDisplay = new CrtDisplay();
+    private final CrtDisplay crtDisplay;
 
 
     public CommunicationSystemCpu(List<CpuInstruction> instructions) {
+        int pixelWidth = 40;
+        int pixelHeight = 6;
+        int spriteWidth = 3;
+        this.crtDisplay = new CrtDisplay(pixelWidth, pixelHeight, spriteWidth);
         this.instructions = new ArrayList<>(instructions);
     }
 
@@ -35,26 +39,35 @@ public class CommunicationSystemCpu {
             System.out.printf("Start cycle %3d: begin executing %s%n", cycle, nextInstruction);
         }
 
-        cycle++;
-        instructionNeededCycles--;
+        int pixelPosition = crtDisplay.currentPixelPosition();
         crtDisplay.drawPixel(getRegisterValue());
+        System.out.printf("During cycle %2d: CRT draws pixel in position %d%n", cycle, pixelPosition);
+        System.out.printf("Current CRT row: %s%n", crtDisplay.printCurrentCrtRow());
+        instructionNeededCycles--;
+        cycle++;
 
         if (instructionNeededCycles <= 0) {
             var currentInstruction = instructions.get(instructionPointer);
             currentInstruction.runInstructionOnCpu(this);
-            incrementInstructionPointer();
+            instructionPointer++;
             System.out.printf("End of cycle %2d: finish executing %s (Register X is now %d)%n", cycle - 1, currentInstruction, registerValue);
+            System.out.printf("Sprite position: %s%n", printSpritPostion());
         }
-        System.out.printf("Sprite position: %s%n", printSpritPostion());
         System.out.println();
         return this;
     }
 
+
+    public int getSignalStrength() {
+        return cycle * registerValue;
+    }
+
+
     private String printSpritPostion() {
         int pixelWidth = 40;
         StringBuilder sb = new StringBuilder(pixelWidth);
-        for (int i = 0; i < pixelWidth; i++) {
-            if (Math.abs(i - registerValue) <= 1) {
+        for (int column = 0; column < pixelWidth; column++) {
+            if (isInsideSpriteRange(column)) {
                 sb.append('#');
             } else {
                 sb.append('.');
@@ -63,16 +76,9 @@ public class CommunicationSystemCpu {
         return sb.toString();
     }
 
-    private void incrementInstructionPointer() {
-        instructionPointer++;
-        if (instructionPointer >= instructions.size()) {
-            instructionPointer = 0;
-        }
-    }
-
-
-    public int getSignalStrength() {
-        return cycle * getRegisterValue();
+    private boolean isInsideSpriteRange(int column) {
+        int positionDifference = Math.abs(column - registerValue);
+        return positionDifference <= (crtDisplay.getSpriteWidth() / 2);
     }
 
 
@@ -81,7 +87,7 @@ public class CommunicationSystemCpu {
     }
 
     public boolean isCrtDisplayCompleted() {
-        return crtDisplay.isCompleteDrawn();
+        return crtDisplay.hasFinishedDrawing();
     }
 
 
@@ -89,4 +95,5 @@ public class CommunicationSystemCpu {
     public String toString() {
         return "%3d | %3d\tsignal = %4d".formatted(cycle, registerValue, getSignalStrength());
     }
+
 }

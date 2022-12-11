@@ -30,16 +30,17 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
                 .sum();
     }
 
+
     public String solveSecondPart() {
         List<CpuInstruction> cpuInstructions = inputLines().map(CpuInstruction::parseCpuInstruction).toList();
         var cpu = new CommunicationSystemCpu(cpuInstructions);
-        String crtDisplay = Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
+        String crtDisplayPrint = Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
                 .filter(CommunicationSystemCpu::isCrtDisplayCompleted)
-                .map(CommunicationSystemCpu::printCrtDisplay)
                 .findFirst()
-                .orElse("");
-        System.out.println(crtDisplay);
-        return crtDisplay;
+                .map(CommunicationSystemCpu::printCrtDisplay)
+                .orElseThrow();
+        System.out.println(crtDisplayPrint.replaceAll("\\.", " "));
+        return crtDisplayPrint;
     }
 
 }

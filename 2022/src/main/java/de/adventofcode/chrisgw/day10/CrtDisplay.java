@@ -1,35 +1,51 @@
 package de.adventofcode.chrisgw.day10;
 
 
+import lombok.Getter;
+
 public class CrtDisplay {
 
-    private final int pixelWidth = 40;
-    private final int pixelHeight = 6;
+    @Getter
+    private final int pixelWidth;
+    @Getter
+    private final int pixelHeight;
+    @Getter
+    private final int spriteWidth;
 
-    private final int spriteWidth = 3;
+    private final boolean[][] pixelScreen;
 
-    private int cycle = 0;
-    private final boolean[][] pixelScreen = new boolean[pixelHeight][pixelWidth];
+    @Getter
+    private int cycle;
+
+
+    public CrtDisplay(int pixelWidth, int pixelHeight, int spriteWidth) {
+        this.pixelWidth = pixelWidth;
+        this.pixelHeight = pixelHeight;
+        this.spriteWidth = spriteWidth;
+        this.pixelScreen = new boolean[pixelHeight][pixelWidth];
+        this.cycle = 0;
+    }
 
 
     public void drawPixel(int spritePosition) {
-        cycle++;
-        int pixelPosition = (cycle - 1) % pixelWidth;
-        int pixelRow = (cycle - 1) / pixelWidth;
-        System.out.printf("During cycle %2d: CRT draws pixel in position %d%n", cycle, pixelPosition);
-        boolean isInsideSprite = Math.abs(pixelPosition - spritePosition) <= (spriteWidth / 2);
-        if (isInsideSprite) {
+        int pixelPosition = currentPixelPosition();
+        int pixelRow = cycle / pixelWidth;
+        if (isInsideSprite(spritePosition)) {
             pixelScreen[pixelRow][pixelPosition] = true;
         }
-        System.out.printf("Current CRT row: %s%n", printCurrentRow());
+        cycle++;
     }
 
-    private String printCurrentRow() {
+    private boolean isInsideSprite(int spritePosition) {
+        int positionDifference = Math.abs(currentPixelPosition() - spritePosition);
+        return positionDifference <= spriteWidth / 2;
+    }
+
+    public String printCurrentCrtRow() {
         StringBuilder sb = new StringBuilder();
-        int pixelPosition = (cycle - 1) % pixelWidth;
         int pixelRow = cycle / pixelWidth;
-        for (int column = 0; column <= pixelPosition && pixelRow < pixelHeight; column++) {
-            if (pixelScreen[pixelRow][column]) {
+        for (int column = 0; column < currentPixelPosition(); column++) {
+            if (hasLitPixelAt(pixelRow, column)) {
                 sb.append('#');
             } else {
                 sb.append('.');
@@ -38,8 +54,18 @@ public class CrtDisplay {
         return sb.toString();
     }
 
-    public boolean isCompleteDrawn() {
-        return cycle > pixelWidth * pixelHeight;
+
+    public boolean hasLitPixelAt(int pixelRow, int column) {
+        return pixelScreen[pixelRow][column];
+    }
+
+
+    public boolean hasFinishedDrawing() {
+        return cycle >= pixelWidth * pixelHeight;
+    }
+
+    public int currentPixelPosition() {
+        return cycle % pixelWidth;
     }
 
 
@@ -48,7 +74,7 @@ public class CrtDisplay {
         StringBuilder sb = new StringBuilder();
         for (int row = 0; row < pixelHeight; row++) {
             for (int column = 0; column < pixelWidth; column++) {
-                if (pixelScreen[row][column]) {
+                if (hasLitPixelAt(row, column)) {
                     sb.append('#');
                 } else {
                     sb.append('.');

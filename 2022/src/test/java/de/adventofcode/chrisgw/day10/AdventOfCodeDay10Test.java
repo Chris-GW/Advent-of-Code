@@ -1,6 +1,5 @@
 package de.adventofcode.chrisgw.day10;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,16 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AdventOfCodeDay10Test {
 
-
-    @Test
-    void solveAocPuzzle_firstPart_simpleExample() {
-        List<String> inputLines = List.of( //
-                "noop", //
-                "addx 3", //
-                "addx -5");
-        int result = new AdventOfCodeDay10(inputLines).solveFirstPart();
-        assertEquals(-41440, result, "firstPart example");
-    }
 
     @Test
     void solveAocPuzzle_firstPart_example() {
