@@ -2,9 +2,9 @@ package de.adventofcode.chrisgw.day11;
 
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
+import java.math.BigInteger;
 import java.time.Year;
 import java.util.*;
-import java.util.function.IntUnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,31 +23,25 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
     }
 
 
-    public Integer solveFirstPart() {
-        List<String> inputLines = getInputLines();
-        for (int lineIndex = 0; lineIndex < inputLines.size(); lineIndex++) {
-            if (inputLines.get(lineIndex).isBlank()) {
-                continue;
-            }
-            int monkeyNumber = parseMonkeyNumber(inputLines.get(lineIndex));
-            Monkey currentMonkey = findOrCreateMonkeyByNumber(monkeyNumber);
-            currentMonkey.setItemWorryLevels(parseStartItems(inputLines.get(++lineIndex)));
-            currentMonkey.setInspectStolenItemOperator(parseOperation(inputLines.get(++lineIndex)));
-            currentMonkey.setItemInspectionDivisor(parseItemInspectionDivisor(inputLines.get(++lineIndex)));
-            int monkeyInCaseTrue = parseTargetMonkeyInCaseTrue(inputLines.get(++lineIndex));
-            int monkeyInCaseFalse = parseTargetMonkeyInCaseFalse(inputLines.get(++lineIndex));
-            currentMonkey.setTargetMonkeyInCaseTrue(findOrCreateMonkeyByNumber(monkeyInCaseTrue));
-            currentMonkey.setTargetMonkeyInCaseFalse(findOrCreateMonkeyByNumber(monkeyInCaseFalse));
-        }
-
+    public BigInteger solveFirstPart() {
+        parseMonkeySituation(true);
         playRounds(20);
+        return messureMonkeyLevelBusiness();
+    }
 
+    public BigInteger solveSecondPart() {
+        parseMonkeySituation(false);
+        playRounds(10_000);
+        return messureMonkeyLevelBusiness();
+    }
+
+    private BigInteger messureMonkeyLevelBusiness() {
         return monkeysByNumber.values()
                 .stream()
-                .sorted(Comparator.comparingInt(Monkey::getItemInspectCount).reversed())
+                .sorted(Comparator.comparing(Monkey::getItemInspectCount).reversed())
                 .limit(2)
-                .mapToInt(Monkey::getItemInspectCount)
-                .reduce((count, otherCount) -> count * otherCount)
+                .map(Monkey::getItemInspectCount)
+                .reduce(BigInteger::multiply)
                 .orElseThrow();
     }
 
@@ -60,6 +54,36 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
                     .forEachOrdered(Monkey::takeTurn);
         }
     }
+
+    private void parseMonkeySituation(boolean parseOperation) {
+        List<String> inputLines = getInputLines();
+        for (int lineIndex = 0; lineIndex < inputLines.size(); lineIndex++) {
+            String line = inputLines.get(lineIndex);
+            if (line.isBlank()) {
+                continue;
+            }
+            int monkeyNumber = parseMonkeyNumber(line);
+            Monkey currentMonkey = findOrCreateMonkeyByNumber(monkeyNumber);
+
+            line = inputLines.get(++lineIndex);
+            currentMonkey.setItemWorryLevels(parseStartItems(line));
+
+            line = inputLines.get(++lineIndex);
+            currentMonkey.setMonkeyItemInspection(parseOperation(line, parseOperation));
+
+            line = inputLines.get(++lineIndex);
+            currentMonkey.setItemInspectionDivisor(parseItemInspectionDivisor(line));
+
+            line = inputLines.get(++lineIndex);
+            int monkeyInCaseTrue = parseTargetMonkeyInCaseTrue(line);
+            currentMonkey.setTargetMonkeyInCaseTrue(findOrCreateMonkeyByNumber(monkeyInCaseTrue));
+
+            line = inputLines.get(++lineIndex);
+            int monkeyInCaseFalse = parseTargetMonkeyInCaseFalse(line);
+            currentMonkey.setTargetMonkeyInCaseFalse(findOrCreateMonkeyByNumber(monkeyInCaseFalse));
+        }
+    }
+
 
     private Monkey findOrCreateMonkeyByNumber(int monkeyNumber) {
         return monkeysByNumber.computeIfAbsent(monkeyNumber, Monkey::new);
@@ -76,50 +100,29 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
     }
 
 
-    private Deque<Integer> parseStartItems(String line) {
+    private Deque<BigInteger> parseStartItems(String line) {
         Pattern startItemsPattern = Pattern.compile("\\s{2}Starting items: (\\d+(?:, \\d+)*)");
         Matcher matcher = startItemsPattern.matcher(line);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Expect line matching '" + startItemsPattern + "', but was: " + line);
         }
         return Arrays.stream(matcher.group(1).split(", "))
-                .map(Integer::parseInt)
+                .mapToLong(Long::parseLong)
+                .mapToObj(BigInteger::valueOf)
                 .collect(Collectors.toCollection(ArrayDeque::new));
     }
 
 
-    private IntUnaryOperator parseOperation(String line) {
+    private MonkeyItemInspection parseOperation(String line, boolean noDamageWorryLevelRelive) {
         Pattern operationPattern = Pattern.compile("\\s{2}Operation: new = (old|\\d+) ([*+]) (old|\\d+)");
         Matcher matcher = operationPattern.matcher(line);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Expect line matching '" + operationPattern + "', but was: " + line);
         }
-        return new IntUnaryOperator() {
-            final String firstArgument = matcher.group(1);
-
-            final String operator = matcher.group(2);
-            final String secondArgument = matcher.group(3);
-
-            @Override
-            public int applyAsInt(int oldWorryLevel) {
-                int firstArgument = resolveWorryLevelArgument(this.firstArgument, oldWorryLevel);
-                int secondArgument = resolveWorryLevelArgument(this.secondArgument, oldWorryLevel);
-                return switch (operator) {
-                    case "*" -> firstArgument * secondArgument;
-                    case "+" -> firstArgument + secondArgument;
-                    default -> throw new IllegalArgumentException("unknown operator: " + operator);
-                };
-            }
-
-            private int resolveWorryLevelArgument(String argument, int oldWorryLevel) {
-                if ("old".equals(argument)) {
-                    return oldWorryLevel;
-                } else {
-                    return Integer.parseInt(argument);
-                }
-            }
-
-        };
+        String firstArgument = matcher.group(1);
+        String operator = matcher.group(2);
+        String secondArgument = matcher.group(3);
+        return new MonkeyItemInspection(firstArgument, operator, secondArgument, noDamageWorryLevelRelive);
     }
 
 
@@ -151,10 +154,5 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
         return Integer.parseInt(matcher.group(1));
     }
 
-
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
-    }
 
 }

@@ -2,6 +2,7 @@ package de.adventofcode.chrisgw.day11;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
@@ -41,31 +42,29 @@ class AdventOfCodeDay11Test {
 
     @Test
     void solveAocPuzzle_firstPart_example() {
-        int result = new AdventOfCodeDay11(inputLinesExample).solveFirstPart();
-        int expected = 101 * 105;
-        assertEquals(10605, expected, "firstPart example expected");
-        assertEquals(expected, result, "firstPart example");
+        BigInteger result = new AdventOfCodeDay11(inputLinesExample).solveFirstPart();
+        assertEquals(BigInteger.valueOf(10605), result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay11.txt");
-        int result = new AdventOfCodeDay11(inputLines).solveFirstPart();
-        assertEquals(57348, result, "firstPart myPuzzleInput");
+        BigInteger result = new AdventOfCodeDay11(inputLines).solveFirstPart();
+        assertEquals(BigInteger.valueOf(57348), result, "firstPart myPuzzleInput");
     }
 
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay11(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        BigInteger result = new AdventOfCodeDay11(inputLinesExample).solveSecondPart();
+        assertEquals(BigInteger.valueOf(2713310158L), result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay11.txt");
-        int result = new AdventOfCodeDay11(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        BigInteger result = new AdventOfCodeDay11(inputLines).solveSecondPart();
+        assertEquals(BigInteger.valueOf(1), result, "secondPart myPuzzleInput");
     }
 
 }

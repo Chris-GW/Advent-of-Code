@@ -2,22 +2,22 @@ package de.adventofcode.chrisgw.day11;
 
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.function.IntUnaryOperator;
 
 @Data
 public class Monkey {
 
     private final int monkeyNumber;
 
-    private IntUnaryOperator inspectStolenItemOperator;
-    private int itemInspectionDivisor;
+    private MonkeyItemInspection monkeyItemInspection;
+    private long itemInspectionDivisor;
     private Monkey targetMonkeyInCaseTrue;
     private Monkey targetMonkeyInCaseFalse;
 
-    private Deque<Integer> itemWorryLevels = new ArrayDeque<>();
-    private int itemInspectCount = 0;
+    private Deque<BigInteger> itemWorryLevels = new ArrayDeque<>();
+    private BigInteger itemInspectCount = BigInteger.ZERO;
 
 
     public Monkey(int monkeyNumber) {
@@ -27,11 +27,10 @@ public class Monkey {
 
     public void takeTurn() {
         while (!itemWorryLevels.isEmpty()) {
-            int worryLevel = itemWorryLevels.pollFirst();
-            worryLevel = inspectStolenItemOperator.applyAsInt(worryLevel);
-            worryLevel = worryLevel / 3;
-            itemInspectCount++;
-            if (worryLevel % itemInspectionDivisor == 0) {
+            BigInteger worryLevel = itemWorryLevels.pollFirst();
+            worryLevel = monkeyItemInspection.apply(worryLevel);
+            itemInspectCount = itemInspectCount.add(BigInteger.ONE);
+            if (worryLevel.remainder(BigInteger.valueOf(itemInspectionDivisor)).equals(BigInteger.ZERO)) {
                 targetMonkeyInCaseTrue.catchItemWithWorryLevel(worryLevel);
             } else {
                 targetMonkeyInCaseFalse.catchItemWithWorryLevel(worryLevel);
@@ -39,7 +38,7 @@ public class Monkey {
         }
     }
 
-    public void catchItemWithWorryLevel(int worryLevel) {
+    public void catchItemWithWorryLevel(BigInteger worryLevel) {
         itemWorryLevels.addLast(worryLevel);
     }
 
