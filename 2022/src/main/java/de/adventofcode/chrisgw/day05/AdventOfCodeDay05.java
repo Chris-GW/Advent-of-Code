@@ -12,7 +12,7 @@ import static de.adventofcode.chrisgw.day05.RearrangementProcedure.REARRANGEMENT
 /**
  * https://adventofcode.com/2022/day/5
  */
-public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver<String> {
+public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver {
 
 
     public AdventOfCodeDay05(List<String> inputLines) {

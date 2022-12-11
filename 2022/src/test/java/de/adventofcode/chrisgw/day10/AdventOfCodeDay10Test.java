@@ -23,13 +23,12 @@ class AdventOfCodeDay10Test {
 
     @Test
     void solveAocPuzzle_firstPart_example() {
-        List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDayExample10.txt");
+        List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10_example.txt");
         int result = new AdventOfCodeDay10(inputLines).solveFirstPart();
         assertEquals(13140, result, "firstPart example");
     }
 
     @Test
-    @Disabled
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
         int result = new AdventOfCodeDay10(inputLines).solveFirstPart();
@@ -38,10 +37,9 @@ class AdventOfCodeDay10Test {
 
 
     @Test
-    @Disabled
     void solveAocPuzzle_secondPart_example() {
-        List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDayExample10.txt");
-        int result = new AdventOfCodeDay10(inputLines).solveSecondPart();
+        List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10_example.txt");
+        String resultOutput = new AdventOfCodeDay10(inputLines).solveSecondPart();
         String expectedOutput = "" + //
                 "##..##..##..##..##..##..##..##..##..##..\n" +
                 "###...###...###...###...###...###...###.\n" +
@@ -49,14 +47,13 @@ class AdventOfCodeDay10Test {
                 "#####.....#####.....#####.....#####.....\n" +
                 "######......######......######......####\n" +
                 "#######.......#######.......#######.....";
-        assertEquals(1, result, "secondPart example");
+        assertEquals(resultOutput, expectedOutput, "secondPart example");
     }
 
     @Test
-    @Disabled
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
-        int result = new AdventOfCodeDay10(inputLines).solveSecondPart();
+        String resultOutput = new AdventOfCodeDay10(inputLines).solveSecondPart();
         String expectedOutput = "" + //
                 "####..##..####.#..#.####..##..#....###..\n" + //
                 "#....#..#....#.#..#....#.#..#.#....#..#.\n" + //
@@ -64,7 +61,7 @@ class AdventOfCodeDay10Test {
                 "#....#.....#...#..#..#...####.#....###..\n" + //
                 "#....#..#.#....#..#.#....#..#.#....#.#..\n" + //
                 "####..##..####..##..####.#..#.####.#..#.";
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(resultOutput, expectedOutput, "secondPart myPuzzleInput");
     }
 
 }

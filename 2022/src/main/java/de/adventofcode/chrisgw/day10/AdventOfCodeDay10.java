@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 /**
  * <a href="https://adventofcode.com/2022/day/10">Advent of Code - day 10</a>
  */
-public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
 
     public AdventOfCodeDay10(List<String> inputLines) {
         super(Year.of(2022), 10, inputLines);
@@ -30,7 +30,7 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
                 .sum();
     }
 
-    public Integer solveSecondPart() {
+    public String solveSecondPart() {
         List<CpuInstruction> cpuInstructions = inputLines().map(CpuInstruction::parseCpuInstruction).toList();
         var cpu = new CommunicationSystemCpu(cpuInstructions);
         String crtDisplay = Stream.iterate(cpu, CommunicationSystemCpu::nextCycle)
@@ -39,7 +39,7 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver<Integer> {
                 .findFirst()
                 .orElse("");
         System.out.println(crtDisplay);
-        return 0;
+        return crtDisplay;
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * <a href="https://adventofcode.com/2022/day/8">Advent of Code - day 8</a>
  */
-public class TreeHeightMap extends AdventOfCodePuzzleSolver<Integer> {
+public class TreeHeightMap extends AdventOfCodePuzzleSolver {
 
     private final TreeMapPoint[][] map;
 

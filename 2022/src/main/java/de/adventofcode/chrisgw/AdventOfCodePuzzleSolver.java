@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 
 
-public abstract class AdventOfCodePuzzleSolver<T> {
+public abstract class AdventOfCodePuzzleSolver {
 
     private final AdventOfCodePuzzle aocPuzzle;
     private final List<String> inputLines;
@@ -23,9 +23,9 @@ public abstract class AdventOfCodePuzzleSolver<T> {
     }
 
 
-    public abstract T solveFirstPart();
+    public abstract Object solveFirstPart();
 
-    public abstract T solveSecondPart();
+    public abstract Object solveSecondPart();
 
 
     public Stream<String> inputLines() {

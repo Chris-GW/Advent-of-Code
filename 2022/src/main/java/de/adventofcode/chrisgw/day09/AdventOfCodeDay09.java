@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * <a href="https://adventofcode.com/2022/day/9">Advent of Code - day 9</a>
  */
-public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver {
 
 
     public AdventOfCodeDay09(List<String> inputLines) {

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * <a href="https://adventofcode.com/2022/day/3">Advent of Code - day 3</a>
  */
-public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver {
 
     public AdventOfCodeDay03(List<String> inputLines) {
         super(Year.of(2022), 3, inputLines);

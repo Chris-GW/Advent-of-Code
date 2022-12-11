@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * <a href="https://adventofcode.com/2022/day/2">Advent of Code 2022 - day 2</a>
  */
-public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
 
     public AdventOfCodeDay02(List<String> inputLines) {
         super(Year.of(2022), 2, inputLines);

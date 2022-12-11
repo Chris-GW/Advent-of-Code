@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * <a href="https://adventofcode.com/${year}/day/${day}">Advent of Code - day ${day}</a>
  */
-public class AdventOfCodeDay${day0} extends AdventOfCodePuzzleSolver<Integer> {
+public class AdventOfCodeDay${day0} extends AdventOfCodePuzzleSolver {
 
     public AdventOfCodeDay${day0}(List<String> inputLines) {
         super(Year.of(${year}), ${day}, inputLines);

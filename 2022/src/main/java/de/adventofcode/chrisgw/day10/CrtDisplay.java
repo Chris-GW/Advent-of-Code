@@ -56,6 +56,7 @@ public class CrtDisplay {
             }
             sb.append("\n");
         }
+        sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
     }
 

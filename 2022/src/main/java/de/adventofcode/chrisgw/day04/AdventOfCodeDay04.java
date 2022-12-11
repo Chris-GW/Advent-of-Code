@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 /**
  * <a href="https://adventofcode.com/2022/day/4">Advent of Code - day 4</a>
  */
-public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver<Long> {
+public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
 
     public AdventOfCodeDay04(List<String> inputLines) {
         super(Year.of(2022), 4, inputLines);

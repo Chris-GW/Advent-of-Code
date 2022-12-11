@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * <a href="https://adventofcode.com/2022/day/7">Advent of Code - day 7</a>
  */
-public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver<Long> {
+public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
 
     private final FilesystemPath rootPath = new FilesystemPath();
 
