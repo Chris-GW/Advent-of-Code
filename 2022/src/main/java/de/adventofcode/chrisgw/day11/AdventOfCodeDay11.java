@@ -4,7 +4,7 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
 import java.util.*;
-import java.util.function.UnaryOperator;
+import java.util.function.IntUnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,7 +31,7 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
             }
             int monkeyNumber = parseMonkeyNumber(inputLines.get(lineIndex));
             Monkey currentMonkey = findOrCreateMonkeyByNumber(monkeyNumber);
-            currentMonkey.setStolenItems(parseStartItems(inputLines.get(++lineIndex)));
+            currentMonkey.setItemWorryLevels(parseStartItems(inputLines.get(++lineIndex)));
             currentMonkey.setInspectStolenItemOperator(parseOperation(inputLines.get(++lineIndex)));
             currentMonkey.setItemInspectionDivisor(parseItemInspectionDivisor(inputLines.get(++lineIndex)));
             int monkeyInCaseTrue = parseTargetMonkeyInCaseTrue(inputLines.get(++lineIndex));
@@ -76,44 +76,44 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
     }
 
 
-    private Deque<StolenItem> parseStartItems(String line) {
+    private Deque<Integer> parseStartItems(String line) {
         Pattern startItemsPattern = Pattern.compile("\\s{2}Starting items: (\\d+(?:, \\d+)*)");
         Matcher matcher = startItemsPattern.matcher(line);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Expect line matching '" + startItemsPattern + "', but was: " + line);
         }
         return Arrays.stream(matcher.group(1).split(", "))
-                .mapToInt(Integer::parseInt)
-                .mapToObj(StolenItem::new)
+                .map(Integer::parseInt)
                 .collect(Collectors.toCollection(ArrayDeque::new));
     }
 
 
-    private UnaryOperator<StolenItem> parseOperation(String line) {
+    private IntUnaryOperator parseOperation(String line) {
         Pattern operationPattern = Pattern.compile("\\s{2}Operation: new = (old|\\d+) ([*+]) (old|\\d+)");
         Matcher matcher = operationPattern.matcher(line);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Expect line matching '" + operationPattern + "', but was: " + line);
         }
-        return new UnaryOperator<>() {
+        return new IntUnaryOperator() {
             final String firstArgument = matcher.group(1);
+
             final String operator = matcher.group(2);
             final String secondArgument = matcher.group(3);
 
             @Override
-            public StolenItem apply(StolenItem old) {
-                int firstArgument = asInteger(this.firstArgument, old);
-                int secondArgument = asInteger(this.secondArgument, old);
+            public int applyAsInt(int oldWorryLevel) {
+                int firstArgument = resolveWorryLevelArgument(this.firstArgument, oldWorryLevel);
+                int secondArgument = resolveWorryLevelArgument(this.secondArgument, oldWorryLevel);
                 return switch (operator) {
-                    case "*" -> new StolenItem(firstArgument * secondArgument);
-                    case "+" -> new StolenItem(firstArgument + secondArgument);
+                    case "*" -> firstArgument * secondArgument;
+                    case "+" -> firstArgument + secondArgument;
                     default -> throw new IllegalArgumentException("unknown operator: " + operator);
                 };
             }
 
-            private int asInteger(String argument, StolenItem old) {
+            private int resolveWorryLevelArgument(String argument, int oldWorryLevel) {
                 if ("old".equals(argument)) {
-                    return old.worryLevel();
+                    return oldWorryLevel;
                 } else {
                     return Integer.parseInt(argument);
                 }

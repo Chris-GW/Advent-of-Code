@@ -4,19 +4,19 @@ import lombok.Data;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.function.UnaryOperator;
+import java.util.function.IntUnaryOperator;
 
 @Data
 public class Monkey {
 
     private final int monkeyNumber;
 
-    private UnaryOperator<StolenItem> inspectStolenItemOperator;
+    private IntUnaryOperator inspectStolenItemOperator;
     private int itemInspectionDivisor;
     private Monkey targetMonkeyInCaseTrue;
     private Monkey targetMonkeyInCaseFalse;
 
-    private Deque<StolenItem> stolenItems = new ArrayDeque<>();
+    private Deque<Integer> itemWorryLevels = new ArrayDeque<>();
     private int itemInspectCount = 0;
 
 
@@ -26,21 +26,21 @@ public class Monkey {
 
 
     public void takeTurn() {
-        while (!stolenItems.isEmpty()) {
-            StolenItem item = stolenItems.pollFirst();
-            StolenItem inspectedItem = inspectStolenItemOperator.apply(item);
+        while (!itemWorryLevels.isEmpty()) {
+            int worryLevel = itemWorryLevels.pollFirst();
+            worryLevel = inspectStolenItemOperator.applyAsInt(worryLevel);
+            worryLevel = worryLevel / 3;
             itemInspectCount++;
-            StolenItem boardItemLevel = new StolenItem(inspectedItem.worryLevel() / 3);
-            if (boardItemLevel.worryLevel() % itemInspectionDivisor == 0) {
-                targetMonkeyInCaseTrue.catchItem(boardItemLevel);
+            if (worryLevel % itemInspectionDivisor == 0) {
+                targetMonkeyInCaseTrue.catchItemWithWorryLevel(worryLevel);
             } else {
-                targetMonkeyInCaseFalse.catchItem(boardItemLevel);
+                targetMonkeyInCaseFalse.catchItemWithWorryLevel(worryLevel);
             }
         }
     }
 
-    public void catchItem(StolenItem item) {
-        stolenItems.addLast(item);
+    public void catchItemWithWorryLevel(int worryLevel) {
+        itemWorryLevels.addLast(worryLevel);
     }
 
     @Override
