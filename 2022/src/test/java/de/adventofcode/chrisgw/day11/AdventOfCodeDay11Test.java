@@ -2,7 +2,6 @@ package de.adventofcode.chrisgw.day11;
 
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
@@ -42,29 +41,29 @@ class AdventOfCodeDay11Test {
 
     @Test
     void solveAocPuzzle_firstPart_example() {
-        BigInteger result = new AdventOfCodeDay11(inputLinesExample).solveFirstPart();
-        assertEquals(BigInteger.valueOf(10605), result, "firstPart example");
+        long result = new AdventOfCodeDay11(inputLinesExample).solveFirstPart();
+        assertEquals(10605L, result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay11.txt");
-        BigInteger result = new AdventOfCodeDay11(inputLines).solveFirstPart();
-        assertEquals(BigInteger.valueOf(57348), result, "firstPart myPuzzleInput");
+        long result = new AdventOfCodeDay11(inputLines).solveFirstPart();
+        assertEquals(57348L, result, "firstPart myPuzzleInput");
     }
 
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        BigInteger result = new AdventOfCodeDay11(inputLinesExample).solveSecondPart();
-        assertEquals(BigInteger.valueOf(2713310158L), result, "secondPart example");
+        long result = new AdventOfCodeDay11(inputLinesExample).solveSecondPart();
+        assertEquals(2713310158L, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay11.txt");
-        BigInteger result = new AdventOfCodeDay11(inputLines).solveSecondPart();
-        assertEquals(BigInteger.valueOf(1), result, "secondPart myPuzzleInput");
+        long result = new AdventOfCodeDay11(inputLines).solveSecondPart();
+        assertEquals(14106266886L, result, "secondPart myPuzzleInput");
     }
 
 }

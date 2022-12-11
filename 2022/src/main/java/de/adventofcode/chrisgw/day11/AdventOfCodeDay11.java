@@ -2,9 +2,10 @@ package de.adventofcode.chrisgw.day11;
 
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
-import java.math.BigInteger;
 import java.time.Year;
 import java.util.*;
+import java.util.function.LongBinaryOperator;
+import java.util.function.LongUnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,25 +24,25 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
     }
 
 
-    public BigInteger solveFirstPart() {
+    public Long solveFirstPart() {
         parseMonkeySituation(true);
         playRounds(20);
         return messureMonkeyLevelBusiness();
     }
 
-    public BigInteger solveSecondPart() {
+    public Long solveSecondPart() {
         parseMonkeySituation(false);
         playRounds(10_000);
         return messureMonkeyLevelBusiness();
     }
 
-    private BigInteger messureMonkeyLevelBusiness() {
+    private long messureMonkeyLevelBusiness() {
         return monkeysByNumber.values()
                 .stream()
                 .sorted(Comparator.comparing(Monkey::getItemInspectCount).reversed())
                 .limit(2)
-                .map(Monkey::getItemInspectCount)
-                .reduce(BigInteger::multiply)
+                .mapToLong(Monkey::getItemInspectCount)
+                .reduce((left, right) -> left * right)
                 .orElseThrow();
     }
 
@@ -69,7 +70,7 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
             currentMonkey.setItemWorryLevels(parseStartItems(line));
 
             line = inputLines.get(++lineIndex);
-            currentMonkey.setMonkeyItemInspection(parseOperation(line, parseOperation));
+            currentMonkey.setItemInspectionOperator(parseOperation(line, parseOperation));
 
             line = inputLines.get(++lineIndex);
             currentMonkey.setItemInspectionDivisor(parseItemInspectionDivisor(line));
@@ -100,7 +101,7 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
     }
 
 
-    private Deque<BigInteger> parseStartItems(String line) {
+    private Deque<Long> parseStartItems(String line) {
         Pattern startItemsPattern = Pattern.compile("\\s{2}Starting items: (\\d+(?:, \\d+)*)");
         Matcher matcher = startItemsPattern.matcher(line);
         if (!matcher.matches()) {
@@ -108,31 +109,64 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
         }
         return Arrays.stream(matcher.group(1).split(", "))
                 .mapToLong(Long::parseLong)
-                .mapToObj(BigInteger::valueOf)
+                .boxed()
                 .collect(Collectors.toCollection(ArrayDeque::new));
     }
 
 
-    private MonkeyItemInspection parseOperation(String line, boolean noDamageWorryLevelRelive) {
-        Pattern operationPattern = Pattern.compile("\\s{2}Operation: new = (old|\\d+) ([*+]) (old|\\d+)");
+    private LongUnaryOperator parseOperation(String line, boolean noDamageWorryLevelRelive) {
+        Pattern operationPattern = Pattern.compile("\\s{2}Operation: new = old ([*+]) (old|\\d+)");
         Matcher matcher = operationPattern.matcher(line);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Expect line matching '" + operationPattern + "', but was: " + line);
         }
-        String firstArgument = matcher.group(1);
-        String operator = matcher.group(2);
-        String secondArgument = matcher.group(3);
-        return new MonkeyItemInspection(firstArgument, operator, secondArgument, noDamageWorryLevelRelive);
+        String operatorString = matcher.group(1);
+        String secondArgumentString = matcher.group(2);
+
+        LongBinaryOperator operator = asBinaryOperator(operatorString);
+        LongUnaryOperator secondOperator = asOperator(secondArgumentString);
+        return oldWorryLevel -> {
+            long secondArgument = secondOperator.applyAsLong(oldWorryLevel);
+            long newWorryLevel = operator.applyAsLong(oldWorryLevel, secondArgument);
+            if (noDamageWorryLevelRelive) {
+                newWorryLevel = newWorryLevel / 3;
+            }
+            newWorryLevel = newWorryLevel % monkeysCommonDivisor();
+            return newWorryLevel;
+        };
+    }
+
+    private long monkeysCommonDivisor() {
+        return monkeysByNumber.values()
+                .stream()
+                .mapToLong(Monkey::getItemInspectionDivisor)
+                .reduce(1, Math::multiplyExact);
+    }
+
+    private LongUnaryOperator asOperator(String argument) {
+        if (argument.equals("old")) {
+            return value -> value;
+        }
+        final long fixedValue = Long.parseLong(argument);
+        return value -> fixedValue;
+    }
+
+    private LongBinaryOperator asBinaryOperator(String operatorString) {
+        return switch (operatorString) {
+            case "*" -> Math::multiplyExact;
+            case "+" -> Math::addExact;
+            default -> throw new IllegalArgumentException("unknown operator: " + operatorString);
+        };
     }
 
 
-    private int parseItemInspectionDivisor(String line) {
+    private long parseItemInspectionDivisor(String line) {
         Pattern testPattern = Pattern.compile("\\s{2}Test: divisible by (\\d+)");
         Matcher matcher = testPattern.matcher(line);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Expect line matching '" + testPattern + "', but was: " + line);
         }
-        return Integer.parseInt(matcher.group(1));
+        return Long.parseLong(matcher.group(1));
     }
 
 
