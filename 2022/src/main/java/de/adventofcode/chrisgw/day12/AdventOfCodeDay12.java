@@ -5,6 +5,8 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.*;
 
+import static java.util.Objects.requireNonNull;
+
 
 /**
  * <a href="https://adventofcode.com/2022/day/12">Advent of Code - day 12</a>
@@ -21,19 +23,30 @@ public class AdventOfCodeDay12 extends AdventOfCodePuzzleSolver {
 
 
     public Integer solveFirstPart() {
-        List<HeightMapLocation> heightMapLocations = findPathToBestSignalLocation();
-        return heightMapLocations.size() - 1;
+        List<HeightMapLocation> heightMapLocations = findPathToBestSignalLocation(heightMap.getStartLocation());
+        return requireNonNull(heightMapLocations).size() - 1;
+    }
+
+    public Integer solveSecondPart() {
+        return heightMap.locations()
+                .filter(HeightMapLocation::isAtLowestLevel)
+                .map(this::findPathToBestSignalLocation)
+                .filter(Objects::nonNull)
+                .mapToInt(List::size)
+                .map(pathLength -> pathLength - 1)
+                .min()
+                .orElseThrow();
     }
 
 
-    private List<HeightMapLocation> findPathToBestSignalLocation() {
-        var start = heightMap.getStartLocation();
+    private List<HeightMapLocation> findPathToBestSignalLocation(HeightMapLocation start) {
         var goal = heightMap.getBestSignalLocation();
 
-        Map<HeightMapLocation, HeightMapLocation> cameFrom = new HashMap<>();
         Map<HeightMapLocation, Integer> gScore = new HashMap<>();
         Map<HeightMapLocation, Integer> fScore = new HashMap<>();
-        PriorityQueue<HeightMapLocation> openSet = new PriorityQueue<>(Comparator.comparingInt(otherLocation -> fScore.getOrDefault(otherLocation, Integer.MAX_VALUE)));
+        Map<HeightMapLocation, HeightMapLocation> cameFrom = new HashMap<>();
+        PriorityQueue<HeightMapLocation> openSet = new PriorityQueue<>(
+                Comparator.comparingInt(otherLocation -> fScore.getOrDefault(otherLocation, Integer.MAX_VALUE)));
 
         openSet.add(start);
         gScore.put(start, 0);
@@ -57,7 +70,7 @@ public class AdventOfCodeDay12 extends AdventOfCodePuzzleSolver {
                 }
             }
         }
-        throw new IllegalArgumentException("could not find path");
+        return null;
     }
 
     private List<HeightMapLocation> reconstructPath(Map<HeightMapLocation, HeightMapLocation> cameFrom, HeightMapLocation current) {
@@ -71,10 +84,5 @@ public class AdventOfCodeDay12 extends AdventOfCodePuzzleSolver {
         return totalPath;
     }
 
-
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
-    }
 
 }
