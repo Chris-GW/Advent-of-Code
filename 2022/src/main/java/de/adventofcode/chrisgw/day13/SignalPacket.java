@@ -2,15 +2,16 @@ package de.adventofcode.chrisgw.day13;
 
 import lombok.Getter;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SignalPacket {
 
-    @Getter
-    private SignalPacket parent;
     @Getter
     private final List<SignalPacket> children = new ArrayList<>();
     @Getter
@@ -26,8 +27,36 @@ public class SignalPacket {
     }
 
 
+    public static SignalPacket parseSignalPacket(String packetDataLine) {
+        Deque<SignalPacket> packetStack = new ArrayDeque<>();
+        Pattern numberPattern = Pattern.compile("\\d+");
+        Matcher numberMatcher = numberPattern.matcher(packetDataLine);
+
+        for (int i = 0; i < packetDataLine.length(); i++) {
+            char nextChar = packetDataLine.charAt(i);
+            if (nextChar == '[') {
+                packetStack.push(new SignalPacket());
+            } else if (nextChar == ']') {
+                SignalPacket packet = packetStack.pop();
+                if (packetStack.isEmpty()) {
+                    return packet;
+                } else {
+                    packetStack.peek().addChild(packet);
+                }
+
+            } else if (nextChar == ',') {
+                continue;
+
+            } else if (numberMatcher.find()) {
+                int data = Integer.parseInt(numberMatcher.group());
+                packetStack.peek().addData(data);
+            }
+        }
+        throw new IllegalArgumentException("could not parse packet: " + packetDataLine);
+    }
+
+
     public void addChild(SignalPacket child) {
-        child.parent = this;
         children.add(child);
     }
 
@@ -36,29 +65,8 @@ public class SignalPacket {
     }
 
 
-    public int getLevel() {
-        if (this.isRoot()) {
-            return 0;
-        } else {
-            return parent.getLevel() + 1;
-        }
-    }
-
-
     public boolean isLeaf() {
         return children.isEmpty() && data != -1;
-    }
-
-    public boolean isRoot() {
-        return parent == null;
-    }
-
-
-    public Stream<Integer> dataStream() {
-        if (isLeaf()) {
-            return Stream.of(data);
-        }
-        return children.stream().flatMap(SignalPacket::dataStream);
     }
 
 

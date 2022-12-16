@@ -1,14 +1,12 @@
 package de.adventofcode.chrisgw.day13;
 
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Year;
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -22,23 +20,40 @@ public class AdventOfCodeDay13 extends AdventOfCodePuzzleSolver {
 
 
     public Integer solveFirstPart() {
+        List<SignalPacket> signalPackets = parseSignalPacketsFromInput();
+
         int sum = 0;
-        int packetIndex = 1;
-        List<String> inputLines = getInputLines();
-        for (int i = 0; i < inputLines.size(); i++) {
-            System.out.printf("== Pair %d ==%n", packetIndex);
-            System.out.println(inputLines.get(i));
-            System.out.println(inputLines.get(i + 1));
-            SignalPacket leftPacket = parseSignalPacket(inputLines.get(i));
-            SignalPacket rightPacket = parseSignalPacket(inputLines.get(++i));
+        for (int i = 0; i < signalPackets.size(); i++) {
+            int packetIndex = i / 2 + 1;
+            SignalPacket leftPacket = signalPackets.get(i);
+            SignalPacket rightPacket = signalPackets.get(++i);
             int compare = packetComparator().compare(leftPacket, rightPacket);
             if (compare < 0) {
                 sum += packetIndex;
             }
-            i++;
-            packetIndex++;
         }
         return sum;
+    }
+
+    public Integer solveSecondPart() {
+        List<SignalPacket> signalPackets = new ArrayList<>(parseSignalPacketsFromInput());
+        SignalPacket firstDividerPacket = SignalPacket.parseSignalPacket("[[2]]");
+        SignalPacket secondDividerPacket = SignalPacket.parseSignalPacket("[[6]]");
+
+        signalPackets.add(firstDividerPacket);
+        signalPackets.add(secondDividerPacket);
+        signalPackets.sort(packetComparator());
+
+        int firstDividerPacketIndex = signalPackets.indexOf(firstDividerPacket) + 1;
+        int secondDividerPacketIndex = signalPackets.indexOf(secondDividerPacket) + 1;
+        return firstDividerPacketIndex * secondDividerPacketIndex;
+    }
+
+    private List<SignalPacket> parseSignalPacketsFromInput() {
+        return inputLines()
+                .filter(StringUtils::isNoneBlank)
+                .map(SignalPacket::parseSignalPacket)
+                .toList();
     }
 
 
@@ -79,37 +94,5 @@ public class AdventOfCodeDay13 extends AdventOfCodePuzzleSolver {
         };
     }
 
-    private SignalPacket parseSignalPacket(String packetDataLine) {
-        Deque<SignalPacket> packetStack = new ArrayDeque<>();
-        Pattern numberPattern = Pattern.compile("\\d+");
-        Matcher numberMatcher = numberPattern.matcher(packetDataLine);
-
-        for (int i = 0; i < packetDataLine.length(); i++) {
-            char nextChar = packetDataLine.charAt(i);
-            if (nextChar == '[') {
-                packetStack.push(new SignalPacket());
-            } else if (nextChar == ']') {
-                SignalPacket packet = packetStack.pop();
-                if (packetStack.isEmpty()) {
-                    return packet;
-                } else {
-                    packetStack.peek().addChild(packet);
-                }
-
-            } else if (nextChar == ',') {
-                continue;
-
-            } else if (numberMatcher.find()) {
-                int data = Integer.parseInt(numberMatcher.group());
-                packetStack.peek().addData(data);
-            }
-        }
-        return new SignalPacket();
-    }
-
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
-    }
 
 }
