@@ -3,9 +3,11 @@ package de.adventofcode.chrisgw.day14;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,41 +37,47 @@ public class AdventOfCodeDay14 extends AdventOfCodePuzzleSolver {
                 .orElse(sandSpawnerCoordinate.y());
     }
 
-
-    @Override
-    public Integer solveFirstPart() {
-        for (int sandCounter = 0; true; sandCounter++) {
-            Coordinate coordinate = spawnSandAndDropIt(this::isNotInEndlessVoid);
-            sandCoordinates.add(coordinate);
-            if (coordinate == null) {
-                return sandCounter;
-            }
-        }
-    }
-
-    @Override
-    public Integer solveSecondPart() {
-        for (int sandCounter = 0; true; sandCounter++) {
-            Coordinate coordinate = spawnSandAndDropIt(coordinate1 -> true);
-            sandCoordinates.add(coordinate);
-            if (sandSpawnerCoordinate.equals(coordinate)) {
-                return sandCounter + 1;
-            }
-        }
-    }
-
-    private boolean isNotAtSandSpawner(Coordinate coordinate) {
-        return !sandSpawnerCoordinate.equals(coordinate);
-    }
-
     private List<SolidRockStructure> parseSolidRockStructuresFromInput() {
         return inputLines().map(SolidRockStructure::parseSolidRockStructure).toList();
     }
 
 
-    private Coordinate spawnSandAndDropIt(Predicate<Coordinate> endSandDropPredicate) {
+    @Override
+    public Integer solveFirstPart() {
+        while (true) {
+            Coordinate coordinate = spawnSandAndDropIt();
+            sandCoordinates.add(coordinate);
+            if (isInEndlessVoid(coordinate)) {
+                sandCoordinates.remove(coordinate);
+                return sandCoordinates.size();
+            }
+        }
+    }
+
+    private boolean isInEndlessVoid(Coordinate sandCoordinates) {
+        return sandCoordinates.y() > lowestRockStructureLevel;
+    }
+
+
+    @Override
+    public Integer solveSecondPart() {
+        while (true) {
+            Coordinate coordinate = spawnSandAndDropIt();
+            sandCoordinates.add(coordinate);
+            if (isAtSandSpawner(coordinate)) {
+                return sandCoordinates.size();
+            }
+        }
+    }
+
+    private boolean isAtSandSpawner(Coordinate coordinate) {
+        return sandSpawnerCoordinate.equals(coordinate);
+    }
+
+
+    private Coordinate spawnSandAndDropIt() {
         AtomicInteger currentLevel = new AtomicInteger(sandSpawnerCoordinate.y() - 1);
-        return Stream.iterate(sandSpawnerCoordinate, endSandDropPredicate, this::dropSand)
+        return Stream.iterate(sandSpawnerCoordinate, this::dropSand)
                 .dropWhile(coordinate -> coordinate.y() > currentLevel.getAndIncrement())
                 .findFirst()
                 .orElse(null);
@@ -81,10 +89,6 @@ public class AdventOfCodeDay14 extends AdventOfCodePuzzleSolver {
                 .filter(this::isAirAt)
                 .findFirst()
                 .orElse(sandCoordinate);
-    }
-
-    private boolean isNotInEndlessVoid(Coordinate sandCoordinates) {
-        return sandCoordinates.y() <= lowestRockStructureLevel;
     }
 
 

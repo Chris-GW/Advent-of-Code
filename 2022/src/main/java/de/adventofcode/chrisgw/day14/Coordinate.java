@@ -9,14 +9,15 @@ public record Coordinate(int x, int y) {
     public static final Coordinate STEP_DOWN_LEFT = new Coordinate(-1, 1);
     public static final Coordinate STEP_DOWN_RIGHT = new Coordinate(1, 1);
 
+
     public List<Coordinate> lineTo(Coordinate otherCoordinate) {
-        int dx = this.x() - otherCoordinate.x();
-        int dy = this.y() - otherCoordinate.y();
+        int dx = otherCoordinate.x() - this.x();
+        int dy = otherCoordinate.y() - this.y();
         int lineLength = Math.max(Math.abs(dx), Math.abs(dy)) + 1;
         if (dx != 0 && dy != 0) {
             throw new IllegalArgumentException("Can not draw straight line from " + this + " to " + otherCoordinate);
         }
-        Coordinate coordinateDiff = new Coordinate(-Integer.signum(dx), -Integer.signum(dy));
+        Coordinate coordinateDiff = new Coordinate(Integer.signum(dx), Integer.signum(dy));
         return Stream.iterate(this, coordinateDiff::add)
                 .limit(lineLength)
                 .toList();
