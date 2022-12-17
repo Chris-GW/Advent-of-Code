@@ -5,6 +5,7 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,6 +18,7 @@ import static de.adventofcode.chrisgw.day14.Coordinate.*;
 public class AdventOfCodeDay14 extends AdventOfCodePuzzleSolver {
 
     private final Coordinate sandSpawnerCoordinate = new Coordinate(500, 0);
+    private final int lowestRockStructureLevel;
     private final Set<Coordinate> rockCoordinates;
     private final Set<Coordinate> sandCoordinates = new HashSet<>();
 
@@ -27,22 +29,47 @@ public class AdventOfCodeDay14 extends AdventOfCodePuzzleSolver {
                 .map(SolidRockStructure::getCoordinates)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
+        this.lowestRockStructureLevel = rockCoordinates.stream()
+                .mapToInt(Coordinate::y)
+                .max()
+                .orElse(sandSpawnerCoordinate.y());
     }
 
 
+    @Override
     public Integer solveFirstPart() {
         for (int sandCounter = 0; true; sandCounter++) {
-            Coordinate coordinate = spawnSandAndDropIt();
+            Coordinate coordinate = spawnSandAndDropIt(this::isNotInEndlessVoid);
+            sandCoordinates.add(coordinate);
             if (coordinate == null) {
                 return sandCounter;
             }
-            sandCoordinates.add(coordinate);
         }
     }
 
-    private Coordinate spawnSandAndDropIt() {
+    @Override
+    public Integer solveSecondPart() {
+        for (int sandCounter = 0; true; sandCounter++) {
+            Coordinate coordinate = spawnSandAndDropIt(coordinate1 -> true);
+            sandCoordinates.add(coordinate);
+            if (sandSpawnerCoordinate.equals(coordinate)) {
+                return sandCounter + 1;
+            }
+        }
+    }
+
+    private boolean isNotAtSandSpawner(Coordinate coordinate) {
+        return !sandSpawnerCoordinate.equals(coordinate);
+    }
+
+    private List<SolidRockStructure> parseSolidRockStructuresFromInput() {
+        return inputLines().map(SolidRockStructure::parseSolidRockStructure).toList();
+    }
+
+
+    private Coordinate spawnSandAndDropIt(Predicate<Coordinate> endSandDropPredicate) {
         AtomicInteger currentLevel = new AtomicInteger(sandSpawnerCoordinate.y() - 1);
-        return Stream.iterate(sandSpawnerCoordinate, this::isNotInEndlessVoid, this::dropSand)
+        return Stream.iterate(sandSpawnerCoordinate, endSandDropPredicate, this::dropSand)
                 .dropWhile(coordinate -> coordinate.y() > currentLevel.getAndIncrement())
                 .findFirst()
                 .orElse(null);
@@ -57,20 +84,7 @@ public class AdventOfCodeDay14 extends AdventOfCodePuzzleSolver {
     }
 
     private boolean isNotInEndlessVoid(Coordinate sandCoordinates) {
-        int voidLevel = rockCoordinates.stream()
-                .mapToInt(Coordinate::x)
-                .max()
-                .orElse(sandSpawnerCoordinate.y());
-        return sandCoordinates.y() <= voidLevel;
-    }
-
-    private List<SolidRockStructure> parseSolidRockStructuresFromInput() {
-        return inputLines().map(SolidRockStructure::parseSolidRockStructure).toList();
-    }
-
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        return sandCoordinates.y() <= lowestRockStructureLevel;
     }
 
 
@@ -82,20 +96,24 @@ public class AdventOfCodeDay14 extends AdventOfCodePuzzleSolver {
         return sandCoordinates.contains(coordinate);
     }
 
+    public boolean isFloor(Coordinate coordinate) {
+        return coordinate.y() == 2 + lowestRockStructureLevel;
+    }
+
     public boolean isAirAt(Coordinate coordinate) {
-        return !isRockAt(coordinate) && !isSandAt(coordinate);
+        return !isRockAt(coordinate) && !isSandAt(coordinate) && !isFloor(coordinate);
     }
 
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int y = 0; y <= 9; y++) {
-            for (int x = 494; x <= 503; x++) {
+        for (int y = 0; y <= lowestRockStructureLevel + 3; y++) {
+            for (int x = 490; x <= 505; x++) {
                 var coordinate = new Coordinate(x, y);
                 if (sandSpawnerCoordinate.equals(coordinate)) {
                     sb.append('+');
-                } else if (isRockAt(coordinate)) {
+                } else if (isRockAt(coordinate) || isFloor(coordinate)) {
                     sb.append('#');
                 } else if (isSandAt(coordinate)) {
                     sb.append('o');
@@ -108,6 +126,5 @@ public class AdventOfCodeDay14 extends AdventOfCodePuzzleSolver {
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
     }
-
 
 }
