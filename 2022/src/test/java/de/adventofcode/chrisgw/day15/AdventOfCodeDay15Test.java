@@ -44,15 +44,17 @@ class AdventOfCodeDay15Test {
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay15(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        int maxRange = 20;
+        long result = new AdventOfCodeDay15(inputLinesExample).withMaxRange(maxRange).solveSecondPart();
+        assertEquals(56_000_011L, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay15.txt");
-        int result = new AdventOfCodeDay15(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        int maxRange = 4_000_000;
+        long result = new AdventOfCodeDay15(inputLines).withMaxRange(maxRange).solveSecondPart();
+        assertEquals(13_134_039_205_729L, result, "secondPart myPuzzleInput");
     }
 
 }

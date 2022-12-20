@@ -21,8 +21,19 @@ public record SensorDetectingBeacon(Coordinate sensorCoordinate, Coordinate beac
     }
 
 
+    public boolean coversCoordinate(int x, int y) {
+        int dx = Math.abs(sensorCoordinate.x() - x);
+        int dy = Math.abs(sensorCoordinate.y() - y);
+        return dx + dy <= beaconDistance();
+    }
+
+    public int rightCoordinate(int row) {
+        int dx = beaconDistance() - Math.abs(sensorCoordinate.y() - row);
+        return sensorCoordinate.x() + dx;
+    }
+
     public boolean coversCoordinate(Coordinate coordinate) {
-        return sensorCoordinate().distance(coordinate) <= beaconDistance();
+        return coversCoordinate(coordinate.x(), coordinate.y());
     }
 
 
