@@ -6,7 +6,6 @@ import java.time.Year;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 
 /**
@@ -15,42 +14,21 @@ import java.util.stream.IntStream;
 public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver {
 
 
+    private final Map<String, VolcanicValve> valvesByLabel;
+
     public AdventOfCodeDay16(List<String> inputLines) {
         super(Year.of(2022), 16, inputLines);
+        this.valvesByLabel = parseValves();
     }
 
 
     public Integer solveFirstPart() {
-        Map<String, VolcanicValve> valvesByLabel = parseValves();
         VolcanicValve startValve = valvesByLabel.get("AA");
-
-        // new VolcanicValveOpeningProcedure(startValve)
-        //         .moveTo(valvesByLabel.get("DD"))
-        //         .openValve()
-        //         .moveTo(valvesByLabel.get("CC"))
-        //         .moveTo(valvesByLabel.get("BB"))
-        //         .openValve()
-        //         .moveTo(valvesByLabel.get("AA"))
-        //         .moveTo(valvesByLabel.get("II"))
-        //         .moveTo(valvesByLabel.get("JJ"))
-        //         .openValve();
-
-        Map<VolcanicValve, Map<VolcanicValve, Integer>> dist = warshall(valvesByLabel);
-        List<VolcanicValve> uselessValves = valvesByLabel.values().stream().filter(valve -> valve.getFlowRate() == 0 && !valve.getLabel().equals("AA")).toList();
-        uselessValves.forEach(dist::remove);
-        dist.values().forEach(volcanicValveIntegerMap -> uselessValves.forEach(volcanicValveIntegerMap::remove));
-
-        List<VolcanicValveOpeningProcedure> valveOpenings = bfs(dist, new VolcanicValveOpeningProcedure(startValve));
-        Optional<VolcanicValveOpeningProcedure> bestPath = valveOpenings.stream()
-                .map(currentPath -> {
-                    while (!currentPath.isFinish()) {
-                        currentPath = currentPath.moveTo(currentPath.currentValve());
-                    }
-                    return currentPath;
-                })
-                .max(VolcanicValveOpeningProcedure::compareTo);
-        return bestPath
-                .map(VolcanicValveOpeningProcedure::getTotalReleasedPressure)
+        shortestPathFloydWarshall(valvesByLabel);
+        List<VolcanicValveRoute> valveOpenings = bfs(new VolcanicValveRoute(startValve, valvesByLabel));
+        return valveOpenings.stream()
+                .mapToInt(route -> route.totalReleasedPressureTill(30))
+                .max()
                 .orElse(0);
     }
 
@@ -84,26 +62,7 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver {
         return valvesByLabel;
     }
 
-    private HashMap<VolcanicValve, Map<VolcanicValve, Integer>> warshall(Map<String, VolcanicValve> valvesByLabel) {
-
-        // let dist be a |V| × |V| array of minimum distances initialized to ∞ (infinity)
-        var dist = new HashMap<VolcanicValve, Map<VolcanicValve, Integer>>();
-
-        // for each edge (u, v) do
-        //     dist[u][v] ← w(u, v)  // The weight of the edge (u, v)
-        for (VolcanicValve valve : valvesByLabel.values()) {
-            valve.connectedValves().forEach(connectedVavle -> {
-                int weight = 1;
-                dist.computeIfAbsent(valve, volcanicValveVolcanicValveMap -> new HashMap<>()).put(connectedVavle, weight);
-            });
-        }
-
-        // for each vertex v do
-        //     dist[v][v] ← 0
-        for (VolcanicValve valve : valvesByLabel.values()) {
-            dist.computeIfAbsent(valve, volcanicValveVolcanicValveMap -> new HashMap<>()).put(valve, 0);
-        }
-
+    private void shortestPathFloydWarshall(Map<String, VolcanicValve> valvesByLabel) {
         /*
         for k from 1 to |V|
             for i from 1 to |V|
@@ -115,43 +74,33 @@ public class AdventOfCodeDay16 extends AdventOfCodePuzzleSolver {
         for (VolcanicValve k : valvesByLabel.values()) {
             for (VolcanicValve i : valvesByLabel.values()) {
                 for (VolcanicValve j : valvesByLabel.values()) {
-                    long ij = dist.get(i).getOrDefault(j, Integer.MAX_VALUE);
-                    long ik = dist.get(i).getOrDefault(k, Integer.MAX_VALUE);
-                    long kj = dist.get(k).getOrDefault(j, Integer.MAX_VALUE);
+                    long ij = i.distanceTo(j);
+                    long ik = i.distanceTo(k);
+                    long kj = k.distanceTo(j);
                     if (ij > ik + kj) {
-                        dist.get(i).put(j, Math.toIntExact(ik + kj));
+                        // dist[i][j] ← dist[i][k] + dist[k][j]
+                        // next[i][j] ← next[i][k]
+                        i.putDistance(j, Math.toIntExact(ik + kj));
+                        i.putNext(j, i.getNext(k));
                     }
                 }
             }
         }
-        return dist;
     }
 
-    private List<VolcanicValveOpeningProcedure> bfs(Map<VolcanicValve, Map<VolcanicValve, Integer>> dist, VolcanicValveOpeningProcedure currentPath) {
-        if (currentPath.isFinish() || currentPath.getPath().containsAll(dist.keySet())) {
-            return List.of(currentPath.copy());
+    private List<VolcanicValveRoute> bfs(VolcanicValveRoute currentRoute) {
+        if (currentRoute.connectsAllValvesWithFlowRate() || currentRoute.length() > 30) {
+            return List.of(new VolcanicValveRoute(currentRoute));
         }
 
-        List<VolcanicValveOpeningProcedure> volcanicValveOpeningProcedures = new ArrayList<>();
-        Map<VolcanicValve, Integer> possibleValves = dist.get(currentPath.currentValve());
-        for (VolcanicValve possibleNextValve : possibleValves.keySet()) {
-            if (currentPath.contains(possibleNextValve)) {
-                continue;
-            }
-            int cost = possibleValves.get(possibleNextValve);
-            IntStream.range(1, cost).forEach(value -> {
-                currentPath.moveTo(currentPath.currentValve());
-            });
-            currentPath.moveTo(possibleNextValve);
-            currentPath.openValve();
-            volcanicValveOpeningProcedures.addAll(bfs(dist, currentPath));
-            currentPath.undoLastStep();
-            currentPath.undoLastStep();
-            IntStream.range(1, cost).forEach(value -> {
-                currentPath.undoLastStep();
-            });
+        List<VolcanicValveRoute> valveRoutes = new ArrayList<>();
+        List<VolcanicValve> possibleNextValve = currentRoute.missingValvesWithFlowRate().toList();
+        for (VolcanicValve nextValve : possibleNextValve) {
+            currentRoute.openNextValve(nextValve);
+            valveRoutes.addAll(bfs(currentRoute));
+            currentRoute.undoOpenValve(nextValve);
         }
-        return volcanicValveOpeningProcedures;
+        return valveRoutes;
     }
 
 

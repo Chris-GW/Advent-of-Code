@@ -5,7 +5,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class VolcanicValve {
@@ -15,22 +17,61 @@ public class VolcanicValve {
     @Getter
     private final int flowRate;
 
-    private final List<VolcanicValve> connectedValves = new ArrayList<>();
+    private List<VolcanicValve> connectedValves = new ArrayList<>();
+    private Map<VolcanicValve, Integer> distance = new HashMap<>();
+    private Map<VolcanicValve, VolcanicValve> next = new HashMap<>();
 
 
     public VolcanicValve(String label, int flowRate) {
         this.label = label;
         this.flowRate = flowRate;
+
+        //    for each vertex u do
+        //        dist[u][u] ← 0
+        //        next[u][u] ← u
+        this.putDistance(this, 0);
+        this.putNext(this, this);
     }
 
-    public void connectWithValve(VolcanicValve volcanicValve) {
-        volcanicValve.connectedValves.add(this);
-        this.connectedValves.add(volcanicValve);
+    public void connectWithValve(VolcanicValve v) {
+        //  for each edge (u, v) do
+        //        dist[u][v] ← w(u, v)  // The weight of the edge (u, v)
+        //        next[u][v] ← v
+        VolcanicValve u = this;
+        u.putDistance(v, 1);
+        u.putNext(v, v);
+        u.connectedValves.add(v);
+
+        v.putDistance(u, 1);
+        v.putNext(u, u);
+        v.connectedValves.add(u);
     }
 
 
     public Stream<VolcanicValve> connectedValves() {
         return connectedValves.stream();
+    }
+
+    public int distanceTo(VolcanicValve otherValve) {
+        return distance.getOrDefault(otherValve, Integer.MAX_VALUE);
+    }
+
+
+    public void putDistance(VolcanicValve j, int newDistance) {
+        this.distance.put(j, newDistance);
+    }
+
+    public void putNext(VolcanicValve j, VolcanicValve k) {
+        this.next.put(j, k);
+    }
+
+    public VolcanicValve getNext(VolcanicValve k) {
+        return this.next.get(k);
+    }
+
+
+    public boolean hasFlowRate() {
+        return this.getFlowRate() > 0;
     }
 
 

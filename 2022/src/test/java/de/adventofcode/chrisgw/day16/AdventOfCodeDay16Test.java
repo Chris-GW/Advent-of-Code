@@ -32,7 +32,7 @@ class AdventOfCodeDay16Test {
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay16.txt");
         int result = new AdventOfCodeDay16(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        assertEquals(1820, result, "firstPart myPuzzleInput");
     }
 
 
