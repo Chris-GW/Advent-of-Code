@@ -11,14 +11,25 @@ import java.util.List;
  */
 public class AdventOfCodeDay17 extends AdventOfCodePuzzleSolver {
 
+
     public AdventOfCodeDay17(List<String> inputLines) {
         super(Year.of(2022), 17, inputLines);
     }
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        List<JetOfHotGas> jetsInChamber = parseJetsInChamber();
+        VerticalChamber chamber = new VerticalChamber(7, jetsInChamber);
+        for (int rockCounter = 1; rockCounter < 2023; rockCounter++) {
+            chamber.nextFallingRock();
+        }
+        return chamber.rockTowerHeight();
+    }
+
+    private List<JetOfHotGas> parseJetsInChamber() {
+        return inputLines().flatMapToInt(String::chars)
+                .mapToObj(r -> JetOfHotGas.parseJetOfHotGasFrom((char) r))
+                .toList();
     }
 
     public Integer solveSecondPart() {
