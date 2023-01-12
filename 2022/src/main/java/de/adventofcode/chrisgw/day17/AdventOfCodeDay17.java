@@ -17,7 +17,7 @@ public class AdventOfCodeDay17 extends AdventOfCodePuzzleSolver {
     }
 
 
-    public Integer solveFirstPart() {
+    public Long solveFirstPart() {
         List<JetOfHotGas> jetsInChamber = parseJetsInChamber();
         VerticalChamber chamber = new VerticalChamber(7, jetsInChamber);
         for (int rockCounter = 1; rockCounter < 2023; rockCounter++) {
@@ -32,9 +32,13 @@ public class AdventOfCodeDay17 extends AdventOfCodePuzzleSolver {
                 .toList();
     }
 
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public Long solveSecondPart() {
+        List<JetOfHotGas> jetsInChamber = parseJetsInChamber();
+        VerticalChamber chamber = new VerticalChamber(7, jetsInChamber);
+        for (long rockCounter = 1L; rockCounter < 1000000000000L; rockCounter++) {
+            chamber.nextFallingRock();
+        }
+        return chamber.rockTowerHeight();
     }
 
 }

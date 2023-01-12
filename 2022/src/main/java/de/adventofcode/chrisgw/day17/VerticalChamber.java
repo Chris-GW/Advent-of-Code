@@ -3,9 +3,7 @@ package de.adventofcode.chrisgw.day17;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,8 +17,17 @@ public class VerticalChamber {
     private int jetIndex = 0;
     private final List<JetOfHotGas> jetsInChamber;
 
-    private final List<FallingRock> fallingRocks = new ArrayList<>();
+    private final TreeSet<RockCoordinate> rocks = new TreeSet<>(newRockCoordinateComparator());
+
+    private static Comparator<RockCoordinate> newRockCoordinateComparator() {
+        return Comparator.comparingLong(RockCoordinate::y).thenComparingLong(RockCoordinate::x);
+    }
+
     private FallingRock currentFallingRock;
+    private int shapeIndex = 0;
+
+    @Getter
+    private long rockCounter = 0;
 
 
     public VerticalChamber(int width, List<JetOfHotGas> jetsInChamber) {
@@ -29,7 +36,7 @@ public class VerticalChamber {
     }
 
 
-    public FallingRock nextFallingRock() {
+    public void nextFallingRock() {
         currentFallingRock = spawnFallingRock();
         while (true) {
             var jetOfHotGas = jetsInChamber.get(jetIndex);
@@ -41,24 +48,24 @@ public class VerticalChamber {
                 break;
             }
         }
-        fallingRocks.add(currentFallingRock);
-        return currentFallingRock;
+        currentFallingRock.rockCoordinates().forEach(rocks::add);
     }
 
 
     private FallingRock spawnFallingRock() {
+        rockCounter++;
         RockShape[] rockShapes = RockShape.values();
-        int shapeIndex = fallingRocks.size() % rockShapes.length;
         RockShape rockShape = rockShapes[shapeIndex];
-        int rockTowerHeight = rockTowerHeight();
-        int y = rockTowerHeight + 4;
+        shapeIndex = (shapeIndex + 1) % rockShapes.length;
+        long rockTowerHeight = rockTowerHeight();
+        long y = rockTowerHeight + 4;
         RockCoordinate spawnCoordinate = new RockCoordinate(2, y);
         return new FallingRock(spawnCoordinate, rockShape);
     }
 
 
     public boolean isRockAt(RockCoordinate coordinate) {
-        return fallingRocks.stream().anyMatch(fallingRock -> fallingRock.isRockAt(coordinate));
+        return rocks.contains(coordinate);
     }
 
     public boolean isInsideChamber(RockCoordinate coordinate) {
@@ -67,17 +74,20 @@ public class VerticalChamber {
     }
 
 
-    public int rockTowerHeight() {
-        return fallingRocks.stream().flatMap(FallingRock::rockCoordinates).mapToInt(RockCoordinate::y).max().orElse(0);
+    public long rockTowerHeight() {
+        if (rocks.isEmpty()) {
+            return 0;
+        }
+        return rocks.last().y();
     }
 
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        int height = Math.max(rockTowerHeight(),
-                currentFallingRock.rockCoordinates().mapToInt(RockCoordinate::y).max().orElse(0));
-        for (int row = height; row > 0; row--) {
+        long height = Math.max(rockTowerHeight(),
+                currentFallingRock.rockCoordinates().mapToLong(RockCoordinate::y).max().orElse(0));
+        for (long row = height; row > Math.max(height - 30, 0); row--) {
             for (int column = 0; column < width; column++) {
                 if (column == 0) {
                     sb.append('|');
@@ -102,6 +112,7 @@ public class VerticalChamber {
         return sb.toString();
     }
 
+
     public class FallingRock {
 
         private Set<RockCoordinate> rockCoordinates;
@@ -113,7 +124,7 @@ public class VerticalChamber {
         }
 
 
-        public boolean moveRockRelative(int dx, int dy) {
+        public boolean moveRockRelative(long dx, long dy) {
             Set<RockCoordinate> previousRockCoordinates = rockCoordinates;
             rockCoordinates = rockCoordinates.stream()
                     .map(coordinate -> coordinate.moveRelative(dx, dy))
@@ -128,12 +139,6 @@ public class VerticalChamber {
         private boolean isValidRockPosition() {
             boolean allInsideChamber = rockCoordinates().allMatch(VerticalChamber.this::isInsideChamber);
             return allInsideChamber && rockCoordinates().noneMatch(VerticalChamber.this::isRockAt);
-        }
-
-
-        public boolean isResting() {
-
-            return false;
         }
 
 

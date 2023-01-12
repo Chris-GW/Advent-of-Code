@@ -1,12 +1,18 @@
 package de.adventofcode.chrisgw.day17;
 
-public record RockCoordinate(int x, int y) {
+public record RockCoordinate(long x, long y) {
 
 
-    public RockCoordinate moveRelative(int dx, int dy) {
-        int x = this.x() + dx;
-        int y = this.y() + dy;
+    public RockCoordinate moveRelative(long dx, long dy) {
+        long x = this.x() + dx;
+        long y = this.y() + dy;
         return new RockCoordinate(x, y);
+    }
+
+
+    @Override
+    public String toString() {
+        return "(%d;%d)".formatted(x(), y());
     }
 
 }
