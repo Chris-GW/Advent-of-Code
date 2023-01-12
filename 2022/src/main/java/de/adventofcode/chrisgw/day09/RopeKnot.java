@@ -17,7 +17,7 @@ public class RopeKnot {
 
 
     private RopeKnot() {
-        position = new RopePoint2D();
+        position = new RopePoint2D(0, 0);
         tailVisitedPositions.add(position);
     }
 

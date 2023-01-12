@@ -13,11 +13,11 @@ public abstract class AdventOfCodePuzzleSolver {
     private final List<String> inputLines;
 
 
-    public AdventOfCodePuzzleSolver(Year year, int day, List<String> inputLines) {
+    protected AdventOfCodePuzzleSolver(Year year, int day, List<String> inputLines) {
         this(new AdventOfCodePuzzle(year, day), inputLines);
     }
 
-    public AdventOfCodePuzzleSolver(AdventOfCodePuzzle aocPuzzle, List<String> inputLines) {
+    protected AdventOfCodePuzzleSolver(AdventOfCodePuzzle aocPuzzle, List<String> inputLines) {
         this.aocPuzzle = requireNonNull(aocPuzzle);
         this.inputLines = requireNonNull(inputLines);
     }
