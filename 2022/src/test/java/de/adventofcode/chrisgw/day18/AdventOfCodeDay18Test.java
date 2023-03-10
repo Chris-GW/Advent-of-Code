@@ -27,13 +27,6 @@ class AdventOfCodeDay18Test {
 
 
     @Test
-    void solveAocPuzzle_firstPart_smallExample() {
-        List<String> inputLines = List.of("1,1,1", "2,1,1");
-        int result = new AdventOfCodeDay18(inputLines).solveFirstPart();
-        assertEquals(10, result, "firstPart example");
-    }
-
-    @Test
     void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay18(inputLinesExample).solveFirstPart();
         assertEquals(64, result, "firstPart example");
@@ -43,20 +36,22 @@ class AdventOfCodeDay18Test {
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay18.txt");
         int result = new AdventOfCodeDay18(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        assertEquals(3390, result, "firstPart myPuzzleInput");
     }
+
+    // part 2
 
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay18(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        assertEquals(58, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay18.txt");
         int result = new AdventOfCodeDay18(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(2058, result, "secondPart myPuzzleInput");
     }
 
 }

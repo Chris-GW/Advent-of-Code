@@ -3,8 +3,8 @@ package de.adventofcode.chrisgw.day18;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
@@ -34,8 +34,60 @@ public class AdventOfCodeDay18 extends AdventOfCodePuzzleSolver {
     }
 
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        Set<LavaDroplet> lavaDroplets = inputAsLavaDroplets();
+        int minX = lavaDroplets.stream().mapToInt(LavaDroplet::x).min().orElse(0) - 1;
+        int minY = lavaDroplets.stream().mapToInt(LavaDroplet::y).min().orElse(0) - 1;
+        int minZ = lavaDroplets.stream().mapToInt(LavaDroplet::z).min().orElse(0) - 1;
+
+        int maxX = lavaDroplets.stream().mapToInt(LavaDroplet::x).max().orElse(0) + 1;
+        int maxY = lavaDroplets.stream().mapToInt(LavaDroplet::y).max().orElse(0) + 1;
+        int maxZ = lavaDroplets.stream().mapToInt(LavaDroplet::z).max().orElse(0) + 1;
+
+        var startPosition = new LavaDroplet(minX, minY, minZ);
+        Queue<LavaDroplet> nextPositions = new ArrayDeque<>();
+        nextPositions.add(startPosition);
+
+        Set<LavaDroplet> visitedPositions = new HashSet<>(lavaDroplets);
+        visitedPositions.add(startPosition);
+
+        reachablePositions(nextPositions, visitedPositions, position -> {
+            boolean xIsInside = minX <= position.x() && position.x() <= maxX;
+            return xIsInside //
+                    && minY <= position.y() && position.y() <= maxY //
+                    && minZ <= position.z() && position.z() <= maxZ;
+        });
+
+        Set<LavaDroplet> trappedAirPockets = new HashSet<>();
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    var position = new LavaDroplet(x, y, z);
+                    if (!visitedPositions.contains(position)) {
+                        trappedAirPockets.add(position);
+                    }
+                }
+            }
+        }
+
+        int exposedSides = lavaDroplets.size() * 6;
+        Predicate<LavaDroplet> isCoveredSide = lavaDroplets::contains;
+        isCoveredSide = isCoveredSide.or(trappedAirPockets::contains);
+        for (LavaDroplet lavaDroplet : lavaDroplets) {
+            long coveredSides = lavaDroplet.neighborLavaDroplets().filter(isCoveredSide).count();
+            exposedSides -= coveredSides;
+        }
+        return exposedSides;
+    }
+
+    private void reachablePositions(Queue<LavaDroplet> nextPositions, Set<LavaDroplet> visitedPositions,
+            Predicate<LavaDroplet> shouldSearchPosition) {
+        while (!nextPositions.isEmpty()) {
+            nextPositions.poll()
+                    .neighborLavaDroplets()
+                    .filter(shouldSearchPosition)
+                    .filter(visitedPositions::add)
+                    .forEach(nextPositions::add);
+        }
     }
 
 
@@ -57,12 +109,11 @@ public class AdventOfCodeDay18 extends AdventOfCodePuzzleSolver {
 
         public Stream<LavaDroplet> neighborLavaDroplets() {
             Builder<LavaDroplet> neighborLavaDroplets = Stream.builder();
-
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
                     for (int dz = -1; dz <= 1; dz++) {
-                        int changeAbsolute = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
-                        if (changeAbsolute != 1) {
+                        int distance = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
+                        if (distance != 1) {
                             continue;
                         }
                         int x = this.x() + dx;
