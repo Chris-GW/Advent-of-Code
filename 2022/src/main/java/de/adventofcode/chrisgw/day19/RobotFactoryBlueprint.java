@@ -10,7 +10,7 @@ import static de.adventofcode.chrisgw.day19.RobotRecipe.RECIPE_PATTERN;
 
 public record RobotFactoryBlueprint(int blueprintId, List<RobotRecipe> robotRecipes) {
 
-    public static final Pattern BLUEPRINT_PATTERN = Pattern.compile("^Blueprint (\\d):(.+)$");
+    public static final Pattern BLUEPRINT_PATTERN = Pattern.compile("^Blueprint (\\d):.+$");
 
     public static RobotFactoryBlueprint parseBlueprint(String blueprintLine) {
         Matcher matcher = BLUEPRINT_PATTERN.matcher(blueprintLine);
@@ -28,5 +28,6 @@ public record RobotFactoryBlueprint(int blueprintId, List<RobotRecipe> robotReci
         int blueprintId = Integer.parseInt(matcher.group(1));
         return new RobotFactoryBlueprint(blueprintId, robotRecipes);
     }
+
 
 }
