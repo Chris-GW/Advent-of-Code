@@ -17,7 +17,8 @@ public class AdventOfCodeDay19 extends AdventOfCodePuzzleSolver {
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
+        List<RobotFactoryBlueprint> blueprints = inputLines().map(RobotFactoryBlueprint::parseBlueprint).toList();
+        System.out.println(blueprints);
         return 0;
     }
 
@@ -25,5 +26,6 @@ public class AdventOfCodeDay19 extends AdventOfCodePuzzleSolver {
         // TODO solveSecondPart
         return 0;
     }
+
 
 }
