@@ -16,11 +16,39 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
     }
 
 
+    @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        return inputLines().mapToInt(AdventOfCodeDay01::findCalibrationValue).sum();
     }
 
+    private static int findCalibrationValue(String line) {
+        int firstDigit = findFirstDigit(line);
+        int lastDigit = findLastDigit(line);
+        return firstDigit * 10 + lastDigit;
+    }
+
+    private static int findFirstDigit(String line) {
+        for (int i = 0; i < line.length(); i++) {
+            char letter = line.charAt(i);
+            if (Character.isDigit(letter)) {
+                return Character.digit(letter, 10);
+            }
+        }
+        throw new IllegalArgumentException("given line contains no number: " + line);
+    }
+
+    private static int findLastDigit(String line) {
+        for (int i = line.length() - 1; i >= 0; i--) {
+            char letter = line.charAt(i);
+            if (Character.isDigit(letter)) {
+                return Character.digit(letter, 10);
+            }
+        }
+        throw new IllegalArgumentException("given line contains no number: " + line);
+    }
+
+
+    @Override
     public Integer solveSecondPart() {
         // TODO solveSecondPart
         return 0;

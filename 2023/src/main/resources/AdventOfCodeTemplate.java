@@ -16,11 +16,14 @@ public class AdventOfCodeDay${day0} extends AdventOfCodePuzzleSolver {
     }
 
 
+    @Override
     public Integer solveFirstPart() {
         // TODO solveFirstPart
         return 0;
     }
 
+
+    @Override
     public Integer solveSecondPart() {
         // TODO solveSecondPart
         return 0;

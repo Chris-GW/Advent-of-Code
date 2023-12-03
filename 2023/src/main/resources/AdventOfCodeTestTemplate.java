@@ -22,6 +22,7 @@ class AdventOfCodeDay${day0}Test {
         assertEquals(1, result, "firstPart myPuzzleInput");
     }
 
+
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay${day0}(inputLinesExample).solveSecondPart();
