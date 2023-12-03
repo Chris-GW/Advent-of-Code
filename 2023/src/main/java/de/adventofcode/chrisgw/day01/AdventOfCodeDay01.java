@@ -29,29 +29,34 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     private static int findFirstDigit(String line) {
         for (int i = 0; i < line.length(); i++) {
-            char letter = line.charAt(i);
-            if (Character.isDigit(letter)) {
-                return Character.digit(letter, 10);
+            for (SpelledDigit spelledDigit : SpelledDigit.values()) {
+                String digitStr = String.valueOf(spelledDigit.getDigit());
+                String digitName = spelledDigit.name().toLowerCase();
+                if (line.startsWith(digitStr, i) || line.startsWith(digitName, i)) {
+                    return spelledDigit.getDigit();
+                }
             }
         }
-        throw new IllegalArgumentException("given line contains no number: " + line);
+        throw new IllegalArgumentException("could not find digit in line: " + line);
     }
 
     private static int findLastDigit(String line) {
         for (int i = line.length() - 1; i >= 0; i--) {
-            char letter = line.charAt(i);
-            if (Character.isDigit(letter)) {
-                return Character.digit(letter, 10);
+            for (SpelledDigit spelledDigit : SpelledDigit.values()) {
+                String digitStr = String.valueOf(spelledDigit.getDigit());
+                String digitName = spelledDigit.name().toLowerCase();
+                if (line.startsWith(digitStr, i) || line.startsWith(digitName, i)) {
+                    return spelledDigit.getDigit();
+                }
             }
         }
-        throw new IllegalArgumentException("given line contains no number: " + line);
+        throw new IllegalArgumentException("could not find digit in line: " + line);
     }
 
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        return inputLines().mapToInt(AdventOfCodeDay01::findCalibrationValue).sum();
     }
 
 }
