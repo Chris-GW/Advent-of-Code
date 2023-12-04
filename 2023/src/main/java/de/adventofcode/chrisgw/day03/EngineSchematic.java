@@ -7,16 +7,17 @@ import java.util.regex.Pattern;
 
 public class EngineSchematic {
 
-    private Map<Integer, Map<Integer, EnginePartNumber>> partNumberMap = new HashMap<>();
-    private Map<Integer, Map<Integer, EnginePartSymbol>> partSymbolMap = new HashMap<>();
+    private final Map<Integer, Map<Integer, EnginePartNumber>> partNumberMap;
+    private final Map<Integer, Map<Integer, EnginePartSymbol>> partSymbolMap;
 
 
     private EngineSchematic() {
-
+        partNumberMap = new HashMap<>();
+        partSymbolMap = new HashMap<>();
     }
 
     public static EngineSchematic parseEngineSchematic(List<String> inputLines) {
-        EngineSchematic engineSchematic = new EngineSchematic();
+        var engineSchematic = new EngineSchematic();
         Pattern engineSchematicPattern = Pattern.compile("(\\d+|[^.])");
         for (int y = 0; y < inputLines.size(); y++) {
             String line = inputLines.get(y);
@@ -55,7 +56,8 @@ public class EngineSchematic {
             for (int dx = -1; dx <= enginePartNumber.partNumberLength(); dx++) {
                 int y = enginePartNumber.y() + dy;
                 int x = enginePartNumber.x() + dx;
-                if (getEnginePartSymbol(x, y) != null) {
+                var enginePartSymbol = getEnginePartSymbol(x, y);
+                if (enginePartSymbol != null) {
                     return true;
                 }
             }
@@ -87,12 +89,12 @@ public class EngineSchematic {
             }
         }
 
-        if (adjacentPartNumbers.size() != 2) {
-            return 0;
+        if (adjacentPartNumbers.size() == 2) {
+            return adjacentPartNumbers.stream()
+                    .mapToInt(EnginePartNumber::partNumber)
+                    .reduce(1, (left, right) -> left * right);
         }
-        return adjacentPartNumbers.stream()
-                .mapToInt(EnginePartNumber::partNumber)
-                .reduce(1, (left, right) -> left * right);
+        return 0;
     }
 
 
@@ -105,15 +107,15 @@ public class EngineSchematic {
     }
 
 
-    public void putEnginePartNumber(EnginePartNumber enginePartNumber) {
-        int x = enginePartNumber.x();
+    private void putEnginePartNumber(EnginePartNumber enginePartNumber) {
         int y = enginePartNumber.y();
         for (int dx = 0; dx < enginePartNumber.partNumberLength(); dx++) {
-            partNumberMap.computeIfAbsent(x + dx, k -> new HashMap<>()).put(y, enginePartNumber);
+            int x = enginePartNumber.x() + dx;
+            partNumberMap.computeIfAbsent(x, k -> new HashMap<>()).put(y, enginePartNumber);
         }
     }
 
-    public void putEnginePartSymbol(EnginePartSymbol enginePartSymbol) {
+    private void putEnginePartSymbol(EnginePartSymbol enginePartSymbol) {
         int x = enginePartSymbol.x();
         int y = enginePartSymbol.y();
         partSymbolMap.computeIfAbsent(x, k -> new HashMap<>()).put(y, enginePartSymbol);
