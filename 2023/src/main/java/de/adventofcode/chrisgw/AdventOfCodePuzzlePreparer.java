@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -112,7 +111,7 @@ public class AdventOfCodePuzzlePreparer {
         StringBuilder newTemplate = new StringBuilder(template);
         List<Object> valueList = new ArrayList<>();
 
-        Matcher matcher = Pattern.compile("[$][{](\\w+)}").matcher(template);
+        var matcher = Pattern.compile("[$][{](\\w+)}").matcher(template);
         while (matcher.find()) {
             String key = matcher.group(1);
 

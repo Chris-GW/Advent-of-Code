@@ -5,7 +5,6 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -39,7 +38,7 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
 
         for (int round = 0; round < inputLines.size(); round++) {
             String line = inputLines.get(round);
-            Matcher matcher = strategyGuideLinePattern.matcher(line);
+            var matcher = strategyGuideLinePattern.matcher(line);
             if (!matcher.matches()) {
                 throw new IllegalArgumentException( //
                         "Expect strategyGuideLine at %6d matching pattern '%s', but was: '%s'" //

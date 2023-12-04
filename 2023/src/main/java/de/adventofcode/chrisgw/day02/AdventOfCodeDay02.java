@@ -4,6 +4,9 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
 import java.util.List;
+import java.util.Map;
+
+import static de.adventofcode.chrisgw.day02.CubeSample.CubeColor.*;
 
 
 /**
@@ -17,8 +20,11 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        var maxColorCount = new CubeSample(Map.of(RED, 12, GREEN, 13, BLUE, 14));
+        return inputLines().map(CubeGameRecord::parseCubeGameRecord)
+                .filter(cubeGameRecord -> cubeGameRecord.isPossibleWith(maxColorCount))
+                .mapToInt(CubeGameRecord::id)
+                .sum();
     }
 
     public Integer solveSecondPart() {

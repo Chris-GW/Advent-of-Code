@@ -1,7 +1,5 @@
 package de.adventofcode.chrisgw.day05;
 
-import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -10,7 +8,7 @@ public record RearrangementProcedure(int quantity, int fromStackIndex, int toSta
     public static final Pattern REARRANGEMENT_PROCEDURE_PATTERN = Pattern.compile("move (\\d+) from (\\d+) to (\\d+)");
 
     public static RearrangementProcedure parseRearrangementProcedure(String line) {
-        Matcher matcher = REARRANGEMENT_PROCEDURE_PATTERN.matcher(line);
+        var matcher = REARRANGEMENT_PROCEDURE_PATTERN.matcher(line);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(
                     "Expect line matching patter '%s', but was: '%s'".formatted(REARRANGEMENT_PROCEDURE_PATTERN, line));

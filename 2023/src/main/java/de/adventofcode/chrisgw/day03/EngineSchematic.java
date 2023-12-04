@@ -1,7 +1,6 @@
 package de.adventofcode.chrisgw.day03;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -21,7 +20,7 @@ public class EngineSchematic {
         Pattern engineSchematicPattern = Pattern.compile("(\\d+|[^.])");
         for (int y = 0; y < inputLines.size(); y++) {
             String line = inputLines.get(y);
-            Matcher matcher = engineSchematicPattern.matcher(line);
+            var matcher = engineSchematicPattern.matcher(line);
 
             while (matcher.find()) {
                 int x = matcher.start();

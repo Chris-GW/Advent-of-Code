@@ -4,7 +4,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -16,7 +15,7 @@ public record ScratchCard(int cardNumber, int[] winningNumbers, int[] ownedNumbe
 
 
     public static ScratchCard parseScratchCard(String cardLine) {
-        Matcher matcher = SCRATCH_CARD_PATTERN.matcher(cardLine);
+        var matcher = SCRATCH_CARD_PATTERN.matcher(cardLine);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(
                     "expect scratch card matching " + SCRATCH_CARD_PATTERN + ", but was: " + cardLine);

@@ -2,7 +2,6 @@ package de.adventofcode.chrisgw.day04;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -21,7 +20,7 @@ public class SectionAssignmentPair extends MutablePair<CleaningSectionAssignment
     }
 
     public static SectionAssignmentPair parseSectionAssignmentPair(String sectionAssignmentString) {
-        Matcher matcher = SECTION_ASSIGNMENT_PATTERN.matcher(sectionAssignmentString);
+        var matcher = SECTION_ASSIGNMENT_PATTERN.matcher(sectionAssignmentString);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(
                     "Expect sectionAssignment matching pattern '%s', but was: %s".formatted(SECTION_ASSIGNMENT_PATTERN,
