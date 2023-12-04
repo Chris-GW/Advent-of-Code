@@ -16,15 +16,17 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver {
     }
 
 
+    @Override
     public Integer solveFirstPart() {
         EngineSchematic engineSchematic = EngineSchematic.parseEngineSchematic(getInputLines());
         return engineSchematic.partNumberSum();
     }
 
 
+    @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        EngineSchematic engineSchematic = EngineSchematic.parseEngineSchematic(getInputLines());
+        return engineSchematic.gearRatioSum();
     }
 
 }

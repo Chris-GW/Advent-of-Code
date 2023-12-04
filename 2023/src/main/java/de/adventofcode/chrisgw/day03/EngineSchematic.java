@@ -44,6 +44,7 @@ public class EngineSchematic {
                 .stream()
                 .map(Map::values)
                 .flatMap(Collection::stream)
+                .distinct()
                 .filter(this::hasAdjacentSymbol)
                 .mapToInt(EnginePartNumber::partNumber)
                 .sum();
@@ -63,6 +64,38 @@ public class EngineSchematic {
     }
 
 
+    public int gearRatioSum() {
+        return partSymbolMap.values()
+                .stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .filter(EnginePartSymbol::isGear)
+                .mapToInt(this::calculateGearRatio)
+                .sum();
+    }
+
+    private int calculateGearRatio(EnginePartSymbol enginePartSymbol) {
+        Set<EnginePartNumber> adjacentPartNumbers = new HashSet<>();
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                int x = enginePartSymbol.x() + dx;
+                int y = enginePartSymbol.y() + dy;
+                EnginePartNumber enginePartNumber = getEnginePartNumber(x, y);
+                if (enginePartNumber != null) {
+                    adjacentPartNumbers.add(enginePartNumber);
+                }
+            }
+        }
+
+        if (adjacentPartNumbers.size() != 2) {
+            return 0;
+        }
+        return adjacentPartNumbers.stream()
+                .mapToInt(EnginePartNumber::partNumber)
+                .reduce(1, (left, right) -> left * right);
+    }
+
+
     public EnginePartNumber getEnginePartNumber(int x, int y) {
         return partNumberMap.getOrDefault(x, Collections.emptyMap()).get(y);
     }
@@ -75,7 +108,9 @@ public class EngineSchematic {
     public void putEnginePartNumber(EnginePartNumber enginePartNumber) {
         int x = enginePartNumber.x();
         int y = enginePartNumber.y();
-        partNumberMap.computeIfAbsent(x, k -> new HashMap<>()).put(y, enginePartNumber);
+        for (int dx = 0; dx < enginePartNumber.partNumberLength(); dx++) {
+            partNumberMap.computeIfAbsent(x + dx, k -> new HashMap<>()).put(y, enginePartNumber);
+        }
     }
 
     public void putEnginePartSymbol(EnginePartSymbol enginePartSymbol) {
