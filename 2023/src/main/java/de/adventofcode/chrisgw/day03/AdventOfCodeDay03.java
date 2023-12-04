@@ -17,9 +17,10 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver {
 
 
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        EngineSchematic engineSchematic = EngineSchematic.parseEngineSchematic(getInputLines());
+        return engineSchematic.partNumberSum();
     }
+
 
     public Integer solveSecondPart() {
         // TODO solveSecondPart
