@@ -27,9 +27,12 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
                 .sum();
     }
 
+
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        return inputLines().map(CubeGameRecord::parseCubeGameRecord)
+                .map(CubeGameRecord::minPossibleCubeCount)
+                .mapToInt(CubeSample::calculatePower)
+                .sum();
     }
 
 }

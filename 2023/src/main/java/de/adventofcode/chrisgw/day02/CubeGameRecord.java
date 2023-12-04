@@ -1,7 +1,11 @@
 package de.adventofcode.chrisgw.day02;
 
+import de.adventofcode.chrisgw.day02.CubeSample.CubeColor;
+
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 
@@ -25,6 +29,17 @@ public record CubeGameRecord(int id, List<CubeSample> cubeSamples) {
 
     public boolean isPossibleWith(CubeSample maxColorCount) {
         return cubeSamples.stream().allMatch(cubeSample -> cubeSample.isSmallerEqualThen(maxColorCount));
+    }
+
+    public CubeSample minPossibleCubeCount() {
+        Map<CubeColor, Integer> minColorCountMap = new EnumMap<>(CubeColor.class);
+        for (CubeSample cubeSample : cubeSamples) {
+            for (CubeColor color : CubeColor.values()) {
+                int count = cubeSample.countFor(color);
+                minColorCountMap.merge(color, count, Math::max);
+            }
+        }
+        return new CubeSample(minColorCountMap);
     }
 
 }

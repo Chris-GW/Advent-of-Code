@@ -38,4 +38,9 @@ public record CubeSample(Map<CubeColor, Integer> cubeSample) {
         return Arrays.stream(CubeColor.values()).allMatch(color -> this.countFor(color) <= otherSample.countFor(color));
     }
 
+
+    public int calculatePower() {
+        return Arrays.stream(CubeColor.values()).mapToInt(this::countFor).reduce(1, (left, right) -> left * right);
+    }
+
 }
