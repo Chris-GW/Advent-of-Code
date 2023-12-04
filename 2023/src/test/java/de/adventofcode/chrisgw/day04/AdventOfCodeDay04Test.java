@@ -35,14 +35,14 @@ class AdventOfCodeDay04Test {
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay04(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        assertEquals(30, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay04.txt");
         int result = new AdventOfCodeDay04(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(11787590, result, "secondPart myPuzzleInput");
     }
 
 }
