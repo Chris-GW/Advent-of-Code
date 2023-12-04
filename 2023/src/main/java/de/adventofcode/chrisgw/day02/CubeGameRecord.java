@@ -3,10 +3,12 @@ package de.adventofcode.chrisgw.day02;
 import de.adventofcode.chrisgw.day02.CubeSample.CubeColor;
 
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+
+import static java.util.stream.Collectors.toMap;
 
 
 public record CubeGameRecord(int id, List<CubeSample> cubeSamples) {
@@ -31,15 +33,15 @@ public record CubeGameRecord(int id, List<CubeSample> cubeSamples) {
         return cubeSamples.stream().allMatch(cubeSample -> cubeSample.isSmallerEqualThen(maxColorCount));
     }
 
+
     public CubeSample minPossibleCubeCount() {
-        Map<CubeColor, Integer> minColorCountMap = new EnumMap<>(CubeColor.class);
-        for (CubeSample cubeSample : cubeSamples) {
-            for (CubeColor color : CubeColor.values()) {
-                int count = cubeSample.countFor(color);
-                minColorCountMap.merge(color, count, Math::max);
-            }
-        }
+        Map<CubeColor, Integer> minColorCountMap = Arrays.stream(CubeColor.values())
+                .collect(toMap(Function.identity(), this::maxCountFor));
         return new CubeSample(minColorCountMap);
+    }
+
+    private int maxCountFor(CubeColor color) {
+        return cubeSamples.stream().mapToInt(cubeSample -> cubeSample.countFor(color)).max().orElse(0);
     }
 
 }
