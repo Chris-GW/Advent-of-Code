@@ -34,17 +34,12 @@ public record CategoryMap(Category sourceCategory, Category destinationCategory,
     }
 
 
-    public CategoryRecord map(CategoryRecord record) {
-        if (!isSourceCategory(record.category())) {
-            throw new IllegalArgumentException("Can not map from " + sourceCategory() + " to " + record.category());
-        }
-
-        long mappedNumber = mappedNumberRanges().stream()
-                .filter(mappedNumberRange -> mappedNumberRange.test(record.number()))
+    public long map(long number) {
+        return mappedNumberRanges().stream()
+                .filter(mappedNumberRange -> mappedNumberRange.test(number))
                 .findAny()
-                .map(mappedNumberRange -> mappedNumberRange.applyAsLong(record.number()))
-                .orElseGet(record::number);
-        return new CategoryRecord(destinationCategory(), mappedNumber);
+                .map(mappedNumberRange -> mappedNumberRange.applyAsLong(number))
+                .orElse(number);
     }
 
     public boolean isSourceCategory(Category category) {

@@ -5,12 +5,10 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static de.adventofcode.chrisgw.day05.Category.LOCATION;
+import java.util.stream.LongStream;
 
 
 /**
@@ -26,49 +24,57 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver {
     @Override
     public Long solveFirstPart() {
         String almanacText = inputLines().collect(Collectors.joining("\n"));
-
         List<CategoryMap> categoryMaps = CategoryMap.parseCategoryMaps(almanacText);
-        List<CategoryRecord> records = findSeedNumbers(almanacText);
-
-        long lowestLocationNumber = Long.MAX_VALUE;
-        for (CategoryRecord record : records) {
-            while (!LOCATION.equals(record.category())) {
-                record = mapRecord(categoryMaps, record);
-            }
-            if (record.number() < lowestLocationNumber) {
-                lowestLocationNumber = record.number();
-            }
-        }
-
-        return lowestLocationNumber;
+        LongStream seedNumbers = findSeedNumbers(almanacText);
+        return findLowestLocation(categoryMaps, seedNumbers);
     }
 
-    private CategoryRecord mapRecord(List<CategoryMap> categoryMaps, CategoryRecord record) {
-        Optional<CategoryMap> fittingCategoryMap = categoryMaps.stream()
-                .filter(categoryMap -> categoryMap.isSourceCategory(record.category()))
-                .findAny();
-        return fittingCategoryMap.map(categoryMap -> categoryMap.map(record)).orElse(record);
-    }
 
-    private static List<CategoryRecord> findSeedNumbers(String almanacText) {
+    private static LongStream findSeedNumbers(String almanacText) {
         Pattern seedsPattern = Pattern.compile("seeds:((\\s+\\d+)*)");
         Matcher matcher = seedsPattern.matcher(almanacText);
-        if (matcher.find()) {
-            return Arrays.stream(matcher.group(1).trim().split("\\s+"))
-                    .mapToLong(Long::parseLong)
-                    .mapToObj(number -> new CategoryRecord(Category.SEED, number))
-                    .toList();
+        if (!matcher.find()) {
+            throw new IllegalArgumentException(
+                    "could not find pattern " + seedsPattern + " in almanac text: " + almanacText);
         }
-        throw new IllegalArgumentException(
-                "could not find pattern " + seedsPattern + " in almanac text: " + almanacText);
+        return Arrays.stream(matcher.group(1).trim().split("\\s+")).mapToLong(Long::parseLong);
     }
 
 
     @Override
     public Long solveSecondPart() {
-        // TODO solveSecondPart
-        return 0L;
+        String almanacText = inputLines().collect(Collectors.joining("\n"));
+        List<CategoryMap> categoryMaps = CategoryMap.parseCategoryMaps(almanacText);
+        LongStream seedNumbers = findSeedRanges(almanacText);
+        return findLowestLocation(categoryMaps, seedNumbers);
     }
 
+    private static LongStream findSeedRanges(String almanacText) {
+        Pattern seedsPattern = Pattern.compile("seeds:((\\s+\\d+)*)");
+        Matcher matcher = seedsPattern.matcher(almanacText);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException(
+                    "could not find pattern " + seedsPattern + " in almanac text: " + almanacText);
+        }
+        LongStream seedStream = LongStream.empty();
+        long[] seedNumbers = Arrays.stream(matcher.group(1).trim().split("\\s+")).mapToLong(Long::parseLong).toArray();
+        for (int i = 0; i < seedNumbers.length - 1; i += 2) {
+            long seedStart = seedNumbers[i];
+            long length = seedNumbers[i + 1];
+            seedStream = LongStream.concat(seedStream, LongStream.range(seedStart, seedStart + length));
+        }
+        return seedStream;
+    }
+
+
+    private long findLowestLocation(List<CategoryMap> categoryMaps, LongStream seedStream) {
+        return seedStream.distinct().parallel().map(value -> {
+            long mappedValue = value;
+            for (CategoryMap categoryMap : categoryMaps) {
+                mappedValue = categoryMap.map(mappedValue);
+            }
+            return mappedValue;
+        }).min().orElseThrow();
+    }
 
 }
