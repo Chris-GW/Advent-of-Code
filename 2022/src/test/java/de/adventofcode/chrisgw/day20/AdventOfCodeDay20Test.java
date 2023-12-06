@@ -21,29 +21,29 @@ class AdventOfCodeDay20Test {
 
     @Test
     void solveAocPuzzle_firstPart_example() {
-        int result = new AdventOfCodeDay20(inputLinesExample).solveFirstPart();
-        assertEquals(3, result, "firstPart example");
+        long result = new AdventOfCodeDay20(inputLinesExample).solveFirstPart();
+        assertEquals(3L, result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay20.txt");
-        int result = new AdventOfCodeDay20(inputLines).solveFirstPart();
+        long result = new AdventOfCodeDay20(inputLines).solveFirstPart();
         assertEquals(23321, result, "firstPart myPuzzleInput");
     }
 
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay20(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        long result = new AdventOfCodeDay20(inputLinesExample).solveSecondPart();
+        assertEquals(1623178306L, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay20.txt");
-        int result = new AdventOfCodeDay20(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        long result = new AdventOfCodeDay20(inputLines).solveSecondPart();
+        assertEquals(1428396909280L, result, "secondPart myPuzzleInput");
     }
 
 }

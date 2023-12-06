@@ -8,12 +8,12 @@ import java.util.stream.Stream;
 @Getter
 class NumberNode {
 
-    private final int value;
+    private final long value;
     private NumberNode nextNode;
     private NumberNode previousNode;
 
 
-    public NumberNode(int value) {
+    public NumberNode(long value) {
         this.value = value;
     }
 

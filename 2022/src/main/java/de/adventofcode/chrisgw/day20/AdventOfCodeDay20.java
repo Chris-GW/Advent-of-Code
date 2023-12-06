@@ -17,8 +17,8 @@ public class AdventOfCodeDay20 extends AdventOfCodePuzzleSolver {
 
 
     @Override
-    public Integer solveFirstPart() {
-        int[] numbers = inputLines().mapToInt(Integer::parseInt).toArray();
+    public Long solveFirstPart() {
+        long[] numbers = inputLines().mapToLong(Long::parseLong).toArray();
         var mixingEncryption = new MixingEncryption(numbers);
         while (mixingEncryption.hasNextMixing()) {
             mixingEncryption.doMixing();
@@ -26,18 +26,27 @@ public class AdventOfCodeDay20 extends AdventOfCodePuzzleSolver {
         return calculateGroveCoordinates(mixingEncryption);
     }
 
-    private static int calculateGroveCoordinates(MixingEncryption mixingEncryption) {
-        int n1000 = mixingEncryption.nthNode(1_000);
-        int n2000 = mixingEncryption.nthNode(2_000);
-        int n3000 = mixingEncryption.nthNode(3_000);
+    private static long calculateGroveCoordinates(MixingEncryption mixingEncryption) {
+        long n1000 = mixingEncryption.nthNode(1_000);
+        long n2000 = mixingEncryption.nthNode(2_000);
+        long n3000 = mixingEncryption.nthNode(3_000);
         return n1000 + n2000 + n3000;
     }
 
 
     @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public Long solveSecondPart() {
+        long decryptionKey = 811589153L;
+        long[] numbers = inputLines().mapToLong(Long::parseLong).map(operand -> operand * decryptionKey).toArray();
+        var mixingEncryption = new MixingEncryption(numbers);
+
+        for (int i = 0; i < 10; i++) {
+            while (mixingEncryption.hasNextMixing()) {
+                mixingEncryption.doMixing();
+            }
+            mixingEncryption.reset();
+        }
+        return calculateGroveCoordinates(mixingEncryption);
     }
 
 }
