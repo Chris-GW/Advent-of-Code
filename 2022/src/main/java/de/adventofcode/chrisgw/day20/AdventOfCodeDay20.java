@@ -18,8 +18,19 @@ public class AdventOfCodeDay20 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        int[] numbers = inputLines().mapToInt(Integer::parseInt).toArray();
+        var mixingEncryption = new MixingEncryption(numbers);
+        while (mixingEncryption.hasNextMixing()) {
+            mixingEncryption.doMixing();
+        }
+        return calculateGroveCoordinates(mixingEncryption);
+    }
+
+    private static int calculateGroveCoordinates(MixingEncryption mixingEncryption) {
+        int n1000 = mixingEncryption.nthNode(1_000);
+        int n2000 = mixingEncryption.nthNode(2_000);
+        int n3000 = mixingEncryption.nthNode(3_000);
+        return n1000 + n2000 + n3000;
     }
 
 
