@@ -29,7 +29,6 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver {
         return findLowestLocation(categoryMaps, seedNumbers);
     }
 
-
     private static LongStream findSeedNumbers(String almanacText) {
         Pattern seedsPattern = Pattern.compile("seeds:((\\s+\\d+)*)");
         Matcher matcher = seedsPattern.matcher(almanacText);
@@ -40,33 +39,6 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver {
         return Arrays.stream(matcher.group(1).trim().split("\\s+")).mapToLong(Long::parseLong);
     }
 
-
-    @Override
-    public Long solveSecondPart() {
-        String almanacText = inputLines().collect(Collectors.joining("\n"));
-        List<CategoryMap> categoryMaps = CategoryMap.parseCategoryMaps(almanacText);
-        LongStream seedNumbers = findSeedRanges(almanacText);
-        return findLowestLocation(categoryMaps, seedNumbers);
-    }
-
-    private static LongStream findSeedRanges(String almanacText) {
-        Pattern seedsPattern = Pattern.compile("seeds:((\\s+\\d+)*)");
-        Matcher matcher = seedsPattern.matcher(almanacText);
-        if (!matcher.find()) {
-            throw new IllegalArgumentException(
-                    "could not find pattern " + seedsPattern + " in almanac text: " + almanacText);
-        }
-        LongStream seedStream = LongStream.empty();
-        long[] seedNumbers = Arrays.stream(matcher.group(1).trim().split("\\s+")).mapToLong(Long::parseLong).toArray();
-        for (int i = 0; i < seedNumbers.length - 1; i += 2) {
-            long seedStart = seedNumbers[i];
-            long length = seedNumbers[i + 1];
-            seedStream = LongStream.concat(seedStream, LongStream.range(seedStart, seedStart + length));
-        }
-        return seedStream;
-    }
-
-
     private long findLowestLocation(List<CategoryMap> categoryMaps, LongStream seedStream) {
         return seedStream.distinct().parallel().map(value -> {
             long mappedValue = value;
@@ -75,6 +47,29 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver {
             }
             return mappedValue;
         }).min().orElseThrow();
+    }
+
+
+    @Override
+    public Long solveSecondPart() {
+        String almanacText = inputLines().collect(Collectors.joining("\n"));
+        List<CategoryMap> categoryMaps = CategoryMap.parseCategoryMaps(almanacText);
+        List<SeedNumberRange> seedNumberRanges = SeedNumberRange.parseSeedNumberRanges(almanacText);
+
+        List<CategoryMap> reversedCategoryMaps = categoryMaps.stream().map(CategoryMap::reverse).toList();
+        for (long location = 0L; true; location++) {
+            long mappedValue = location;
+            for (int i = reversedCategoryMaps.size() - 1; i >= 0; i--) {
+                CategoryMap categoryMap = reversedCategoryMaps.get(i);
+                mappedValue = categoryMap.map(mappedValue);
+            }
+
+            for (SeedNumberRange seedNumberRange : seedNumberRanges) {
+                if (seedNumberRange.test(mappedValue)) {
+                    return location;
+                }
+            }
+        }
     }
 
 }

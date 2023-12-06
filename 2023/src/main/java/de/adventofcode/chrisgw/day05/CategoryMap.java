@@ -46,4 +46,12 @@ public record CategoryMap(Category sourceCategory, Category destinationCategory,
         return sourceCategory.equals(category);
     }
 
+
+    public CategoryMap reverse() {
+        List<MappedNumberRange> reversedNumberRanges = mappedNumberRanges.stream()
+                .map(MappedNumberRange::reverse)
+                .toList();
+        return new CategoryMap(destinationCategory, sourceCategory, reversedNumberRanges);
+    }
+
 }

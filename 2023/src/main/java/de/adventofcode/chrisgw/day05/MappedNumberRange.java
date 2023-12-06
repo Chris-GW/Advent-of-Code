@@ -24,6 +24,12 @@ public record MappedNumberRange(long destinationRangeStart, long sourceRangeStar
         return new MappedNumberRange(destinationRangeStart, sourceRangeStart, rangeLength);
     }
 
+
+    public MappedNumberRange reverse() {
+        return new MappedNumberRange(sourceRangeStart, destinationRangeStart, rangeLength);
+    }
+
+
     @Override
     public boolean test(long number) {
         return sourceRangeStart <= number && number <= sourceRangeStart + rangeLength;
