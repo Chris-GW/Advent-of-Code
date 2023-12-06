@@ -6,7 +6,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 
 /**
@@ -20,19 +20,26 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
 
 
     @Override
-    public Integer solveFirstPart() {
+    public Long solveFirstPart() {
         List<ToyBoatRace> races = parseToyBoatRaces(getInputLines());
         return races.stream()
-                .mapToInt(ToyBoatRace::countPossibleWaysOfWinning)
+                .mapToLong(ToyBoatRace::countPossibleWaysOfWinning)
                 .reduce((left, right) -> left * right)
-                .orElse(0);
+                .orElse(0L);
     }
 
 
     @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public Long solveSecondPart() {
+        List<ToyBoatRace> races = parseToyBoatRaces(getInputLines());
+        ToyBoatRace onlyRace = races.stream().reduce(this::fixKerningProblem).orElseThrow();
+        return onlyRace.countPossibleWaysOfWinning();
+    }
+
+    private ToyBoatRace fixKerningProblem(ToyBoatRace leftRace, ToyBoatRace rightRace) {
+        long raceDuration = Long.parseLong(leftRace.raceDuration() + "" + rightRace.raceDuration());
+        long recordDistance = Long.parseLong(leftRace.recordDistance() + "" + rightRace.recordDistance());
+        return new ToyBoatRace(raceDuration, recordDistance);
     }
 
 
@@ -48,14 +55,7 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
                 recordDistances = Arrays.stream(line.substring("Distance:".length()).trim().split("\\s+"))
                         .mapToInt(Integer::parseInt)
                         .toArray();
-            } else {
-                throw new IllegalArgumentException("could not parse: " + line);
             }
-        }
-        if (raceTimes.length != recordDistances.length) {
-            throw new IllegalArgumentException(
-                    "expect same size for raceTimes and recordDistances, but was: %d and %d".formatted( //
-                            raceTimes.length, recordDistances.length));
         }
 
         List<ToyBoatRace> races = new ArrayList<>(raceTimes.length);
@@ -68,15 +68,15 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
     }
 
 
-    public record ToyBoatRace(int raceDuration, int recordDistance) {
+    public record ToyBoatRace(long raceDuration, long recordDistance) {
 
-        public int countPossibleWaysOfWinning() {
-            return Math.toIntExact(IntStream.range(1, raceDuration).filter(this::isWinningCharge).count());
+        public long countPossibleWaysOfWinning() {
+            return LongStream.range(1, raceDuration).filter(this::isWinningCharge).count();
         }
 
-        private boolean isWinningCharge(int chargeDuration) {
-            int movingDuration = raceDuration - chargeDuration;
-            int distance = movingDuration * chargeDuration;
+        private boolean isWinningCharge(long chargeDuration) {
+            long movingDuration = raceDuration - chargeDuration;
+            long distance = movingDuration * chargeDuration;
             return distance > recordDistance;
         }
 

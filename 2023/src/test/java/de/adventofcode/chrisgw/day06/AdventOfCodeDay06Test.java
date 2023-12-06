@@ -16,31 +16,31 @@ class AdventOfCodeDay06Test {
 
     @Test
     void solveAocPuzzle_firstPart_example() {
-        int result = new AdventOfCodeDay06(inputLinesExample).solveFirstPart();
-        int expected = 4 * 8 * 9;
-        assertEquals(288, expected, "expected result");
+        long result = new AdventOfCodeDay06(inputLinesExample).solveFirstPart();
+        long expected = 4 * 8 * 9;
+        assertEquals(288L, expected, "expected result");
         assertEquals(expected, result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay06.txt");
-        int result = new AdventOfCodeDay06(inputLines).solveFirstPart();
-        assertEquals(3317888, result, "firstPart myPuzzleInput");
+        long result = new AdventOfCodeDay06(inputLines).solveFirstPart();
+        assertEquals(3317888L, result, "firstPart myPuzzleInput");
     }
 
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay06(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        long result = new AdventOfCodeDay06(inputLinesExample).solveSecondPart();
+        assertEquals(71503L, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay06.txt");
-        int result = new AdventOfCodeDay06(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        long result = new AdventOfCodeDay06(inputLines).solveSecondPart();
+        assertEquals(24655068L, result, "secondPart myPuzzleInput");
     }
 
 }
