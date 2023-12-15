@@ -3,6 +3,7 @@ package de.adventofcode.chrisgw.day07;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -18,8 +19,16 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        List<CardBid> rankedCardBids = inputLines()
+                .map(CardBid::parseCardBid)
+                .sorted(Comparator.reverseOrder())
+                .toList();
+        int totalWinningScore = 0;
+        for (int rank = 1; rank <= rankedCardBids.size(); rank++) {
+            var cardBid = rankedCardBids.get(rank - 1);
+            totalWinningScore += cardBid.bid() * rank;
+        }
+        return totalWinningScore;
     }
 
 
