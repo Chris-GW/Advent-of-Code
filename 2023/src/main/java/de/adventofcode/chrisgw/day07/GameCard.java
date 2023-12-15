@@ -1,5 +1,7 @@
 package de.adventofcode.chrisgw.day07;
 
+import java.util.Comparator;
+
 public enum GameCard {
     CARD_ACE('A'), //
     CARD_KING('K'), //
@@ -16,6 +18,7 @@ public enum GameCard {
     CARD_TWO('2'), //
     CARD_ONE('1'); //
 
+
     private final char cardSymbol;
 
     GameCard(char cardSymbol) {
@@ -29,6 +32,18 @@ public enum GameCard {
             }
         }
         throw new IllegalArgumentException("Could not find GameCard with symbol: " + cardSymbol);
+    }
+
+
+    public static Comparator<GameCard> withJokerComparator() {
+        return (gameCard, otherGameCard) -> {
+            if (CARD_JACK.equals(gameCard) && !CARD_JACK.equals(otherGameCard)) {
+                return 1;
+            } else if (!CARD_JACK.equals(gameCard) && CARD_JACK.equals(otherGameCard)) {
+                return -1;
+            }
+            return gameCard.compareTo(otherGameCard);
+        };
     }
 
 

@@ -1,13 +1,14 @@
 package de.adventofcode.chrisgw.day07;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 
 import static de.adventofcode.chrisgw.day07.CardHandType.*;
 import static java.util.stream.Collectors.*;
 
-public record CardBid(GameCard[] cards, int bid) implements Comparable<CardBid> {
+public record CardBid(GameCard[] cards, int bid) {
 
     public static CardBid parseCardBid(String cardBidLine) {
         String[] split = cardBidLine.split("\\s+");
@@ -18,44 +19,55 @@ public record CardBid(GameCard[] cards, int bid) implements Comparable<CardBid> 
         return new CardBid(cards, bid);
     }
 
-    public CardHandType type() {
+
+    public CardHandType type(boolean withJoker) {
         Map<GameCard, Long> cardCount = Arrays.stream(this.cards())
                 .collect(groupingBy(Function.identity(), counting()));
-        long maxKind = cardCount.values().stream().max(Long::compareTo).orElse(0L);
+        long jokerCount = 0L;
+        if (withJoker) {
+            jokerCount = cardCount.getOrDefault(GameCard.CARD_JACK, 0L);
+            cardCount.remove(GameCard.CARD_JACK);
+        }
+        long maxKind = cardCount.entrySet()
+                .stream()
+                .max(Comparator.comparingLong(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .map(cardCount::remove)
+                .orElse(0L);
+        maxKind += jokerCount;
         if (maxKind == 5) {
             return FIVE_OF_A_KIND;
         }
         if (maxKind == 4) {
             return FOUR_OF_A_KIND;
         }
+        boolean hasAnOtherPair = cardCount.values().stream().anyMatch(count -> count == 2);
         if (maxKind == 3) {
-            if (cardCount.values().stream().anyMatch(count -> count == 2)) {
+            if (hasAnOtherPair) {
                 return FULL_HOUSE;
             } else {
                 return THREE_OF_A_KIND;
             }
         }
-
-        long pairCount = cardCount.values().stream().filter(count -> count == 2).count();
-        if (pairCount == 2) {
-            return TWO_PAIR;
-        } else if (pairCount == 1) {
-            return ONE_PAIR;
+        if (maxKind == 2) {
+            if (hasAnOtherPair) {
+                return TWO_PAIR;
+            } else {
+                return ONE_PAIR;
+            }
         }
         return HIGH_CARD;
     }
 
-    @Override
-    public int compareTo(CardBid otherCardHand) {
-        int value = this.type().compareTo(otherCardHand.type());
-        for (int i = 0; i < this.cards.length; i++) {
-            if (value != 0) {
-                return value;
-            }
-            value = this.cards[i].compareTo(otherCardHand.cards[i]);
-        }
-        return value;
+
+    public GameCard cardAt(int index) {
+        return cards[index];
     }
+
+    public int handSize() {
+        return cards.length;
+    }
+
 
     @Override
     public String toString() {

@@ -18,24 +18,51 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
 
 
     @Override
-    public Integer solveFirstPart() {
+    public Long solveFirstPart() {
+        return totalWinningCount(compareCardBidsWithJoker(false));
+    }
+
+    @Override
+    public Long solveSecondPart() {
+        return totalWinningCount(compareCardBidsWithJoker(true));
+    }
+
+
+    private long totalWinningCount(Comparator<CardBid> cardBidComparator) {
         List<CardBid> rankedCardBids = inputLines()
                 .map(CardBid::parseCardBid)
-                .sorted(Comparator.reverseOrder())
+                .sorted(cardBidComparator)
                 .toList();
-        int totalWinningScore = 0;
+
+        for (CardBid rankedCardBid : rankedCardBids) {
+            System.out.println(rankedCardBid + "\t--> " + rankedCardBid.type(true));
+        }
+
+        long totalWinningScore = 0;
         for (int rank = 1; rank <= rankedCardBids.size(); rank++) {
             var cardBid = rankedCardBids.get(rank - 1);
-            totalWinningScore += cardBid.bid() * rank;
+            totalWinningScore += (long) cardBid.bid() * rank;
         }
         return totalWinningScore;
     }
 
-
-    @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public static Comparator<CardBid> compareCardBidsWithJoker(boolean withJoker) {
+        final Comparator<GameCard> gameCardComparator;
+        if (withJoker) {
+            gameCardComparator = GameCard.withJokerComparator();
+        } else {
+            gameCardComparator = Comparator.naturalOrder();
+        }
+        return (cardBid, otherCardBid) -> {
+            int value = otherCardBid.type(withJoker).compareTo(cardBid.type(withJoker));
+            for (int i = 0; i < otherCardBid.handSize(); i++) {
+                if (value != 0) {
+                    return value;
+                }
+                value = gameCardComparator.compare(otherCardBid.cardAt(i), cardBid.cardAt(i));
+            }
+            return value;
+        };
     }
 
 }
