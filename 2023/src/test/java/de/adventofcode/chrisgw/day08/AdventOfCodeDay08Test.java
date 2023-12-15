@@ -9,20 +9,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AdventOfCodeDay08Test {
 
-    private static final List<String> inputLinesExample = List.of( //
-            "RL", //
-            "", //
-            "AAA = (BBB, CCC)", //
-            "BBB = (DDD, EEE)", //
-            "CCC = (ZZZ, GGG)", //
-            "DDD = (DDD, DDD)", //
-            "EEE = (EEE, EEE)", //
-            "GGG = (GGG, GGG)", //
-            "ZZZ = (ZZZ, ZZZ)");
-
     @Test
     void solveAocPuzzle_firstPart_example() {
-        int result = new AdventOfCodeDay08(inputLinesExample).solveFirstPart();
+        List<String> exampleInputLines = List.of( //
+                "RL", //
+                "", //
+                "AAA = (BBB, CCC)", //
+                "BBB = (DDD, EEE)", //
+                "CCC = (ZZZ, GGG)", //
+                "DDD = (DDD, DDD)", //
+                "EEE = (EEE, EEE)", //
+                "GGG = (GGG, GGG)", //
+                "ZZZ = (ZZZ, ZZZ)");
+        int result = new AdventOfCodeDay08(exampleInputLines).solveFirstPart();
         assertEquals(2, result, "firstPart example");
     }
 
@@ -48,8 +47,19 @@ class AdventOfCodeDay08Test {
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay08(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        List<String> exampleInputLines = List.of( //
+                "LR", //
+                "", //
+                "11A = (11B, XXX)", //
+                "11B = (XXX, 11Z)", //
+                "11Z = (11B, XXX)", //
+                "22A = (22B, XXX)", //
+                "22B = (22C, 22C)", //
+                "22C = (22Z, 22Z)", //
+                "22Z = (22B, 22B)", //
+                "XXX = (XXX, XXX)");
+        int result = new AdventOfCodeDay08(exampleInputLines).solveSecondPart();
+        assertEquals(6, result, "secondPart example");
     }
 
     @Test

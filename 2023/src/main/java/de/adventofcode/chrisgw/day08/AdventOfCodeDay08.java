@@ -52,14 +52,39 @@ public class AdventOfCodeDay08 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        List<String> inputLines = getInputLines();
+        String directionLine = inputLines.get(0);
+        List<Direction> directions = directionLine.chars()
+                .mapToObj(Character::toString)
+                .map(Direction::valueOf)
+                .toList();
+
+        Map<String, NetworkRecord> networkMap = inputLines.stream()
+                .skip(2)
+                .map(NetworkRecord::parseNetworkRecord)
+                .collect(Collectors.toMap(NetworkRecord::startNode, Function.identity()));
+
+        List<String> currentNodes = networkMap.keySet()
+                .stream()
+                .filter(nodeLabel -> nodeLabel.endsWith("A"))
+                .toList();
+
+        for (int step = 0; true; step++) {
+            if (currentNodes.stream().allMatch(nodeLabel -> nodeLabel.endsWith("Z"))) {
+                return step;
+            }
+            Direction direction = directions.get(step % directions.size());
+            currentNodes = currentNodes.stream()
+                    .map(networkMap::get)
+                    .map(networkRecord -> networkRecord.nodeInDirection(direction))
+                    .toList();
+        }
     }
 
 
     public record NetworkRecord(String startNode, String leftNode, String rightNode) {
 
-        public static final Pattern NETWORK_RECORD_PATTERN = Pattern.compile("([A-Z]{3}) = \\(([A-Z]{3}), ([A-Z]{3})\\)");
+        public static final Pattern NETWORK_RECORD_PATTERN = Pattern.compile("(\\w{3}) = \\((\\w{3}), (\\w{3})\\)");
 
         public static NetworkRecord parseNetworkRecord(String networkRecordLine) {
             Matcher matcher = NETWORK_RECORD_PATTERN.matcher(networkRecordLine);
