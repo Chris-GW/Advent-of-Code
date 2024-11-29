@@ -10,6 +10,13 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static de.adventofcode.chrisgw.day10.PipeTileSymbol.GROUND;
+import static de.adventofcode.chrisgw.day10.PipeTileSymbol.NORTH_EAST;
+import static de.adventofcode.chrisgw.day10.PipeTileSymbol.NORTH_WEST;
+import static de.adventofcode.chrisgw.day10.PipeTileSymbol.SOUTH_EAST;
+import static de.adventofcode.chrisgw.day10.PipeTileSymbol.SOUTH_WEST;
+import static de.adventofcode.chrisgw.day10.PipeTileSymbol.VERTICAL;
+
 
 /**
  * <a href="https://adventofcode.com/2023/day/10">Advent of Code - day 10</a>
@@ -48,7 +55,7 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
     }
 
     public PipeTile tileAt(int x, int y) {
-        if (0 > y || y > height() || 0 > x || x > width()) {
+        if (0 > y || y >= height() || 0 > x || x >= width()) {
             return new PipeTile(x, y, PipeTileSymbol.GROUND);
         }
         return map[y][x];
@@ -96,17 +103,47 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
                     .filter(Predicate.not(visitedTiles::contains))
                     .findAny()
                     .orElse(tailTile);
-            if (!visitedTiles.add(tailTile)) {
-                return distance + 1;
-            }
+            visitedTiles.add(tailTile);
         }
     }
 
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        solveFirstPart();
+
+        int enclosedTilesCount = 0;
+        for (int y = 0; y < height(); y++) {
+            boolean inside = false;
+            PipeTileSymbol previousCornerSymbol = GROUND;
+
+            for (int x = 0; x < width(); x++) {
+                PipeTile tile = tileAt(x, y);
+                boolean isStartTile = tile.equals(startTile);
+
+                if (isStartTile) {
+                    previousCornerSymbol = GROUND;
+                } else if (isEastCornerTile(tile)) {
+                    previousCornerSymbol = tile.tileSymbol;
+                } else if (shouldToggleInside(tile, previousCornerSymbol)) {
+                    inside = !inside;
+                } else if (!tile.isLoopTile() && inside) {
+                    enclosedTilesCount++;
+                    tile.inside = true;
+                }
+            }
+        }
+        return enclosedTilesCount;
+    }
+
+    private static boolean isEastCornerTile(PipeTile tile) {
+        return tile.isLoopTile() && (tile.isTileSymbol(NORTH_EAST) || tile.isTileSymbol(SOUTH_EAST));
+    }
+
+    private static boolean shouldToggleInside(PipeTile tile, PipeTileSymbol previousCornerSymbol) {
+        return tile.isLoopTile() && (tile.isTileSymbol(VERTICAL)
+                || tile.isTileSymbol(NORTH_WEST) && previousCornerSymbol.equals(SOUTH_EAST)
+                || tile.isTileSymbol(SOUTH_WEST) && previousCornerSymbol.equals(NORTH_EAST));
     }
 
 
@@ -116,12 +153,10 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
         for (int y = 0; y < height(); y++) {
             for (int x = 0; x < width(); x++) {
                 PipeTile pipeTile = tileAt(x, y);
-                if (!pipeTile.isPipe()) {
-                    sb.append('.');
-                } else if (pipeTile.distance == 0) {
-                    sb.append(pipeTile.tileSymbol);
+                if (pipeTile.inside) {
+                    sb.append('I');
                 } else {
-                    sb.append(pipeTile.distance % 10);
+                    sb.append(pipeTile.tileSymbol);
                 }
             }
             sb.append("\n");
@@ -136,6 +171,7 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
         final int y;
         final PipeTileSymbol tileSymbol;
         int distance = 0;
+        boolean inside = false;
 
 
         PipeTile(int x, int y, PipeTileSymbol tileSymbol) {
@@ -151,6 +187,15 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
 
         public boolean isConnectedWithStart() {
             return this.connectedPipes().anyMatch(startTile::equals);
+        }
+
+        public boolean isLoopTile() {
+            return distance > 0 || this.equals(startTile);
+        }
+
+
+        public boolean isTileSymbol(PipeTileSymbol tileSymbol) {
+            return this.tileSymbol.equals(tileSymbol);
         }
 
 
@@ -176,6 +221,12 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
         @Override
         public int hashCode() {
             return Objects.hash(x, y, tileSymbol);
+        }
+
+
+        @Override
+        public String toString() {
+            return String.format("(%d;%d) %s", x, y, tileSymbol);
         }
 
     }
