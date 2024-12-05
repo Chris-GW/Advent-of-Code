@@ -3,6 +3,7 @@ package de.adventofcode.chrisgw.day02;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -21,8 +22,8 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
     @Override
     public Integer solveFirstPart() {
         long safeReportCount = inputLines()
-                .map(Report::parseReport)
-                .filter(Report::isSafe)
+                .map(ReactorLevelReport::parseReport)
+                .filter(ReactorLevelReport::isSafe)
                 .count();
         return Math.toIntExact(safeReportCount);
     }
@@ -30,20 +31,41 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        long safeReportCount = inputLines()
+                .map(ReactorLevelReport::parseReport)
+                .filter(AdventOfCodeDay02::hasAnySafeReportWithProblemDampener)
+                .count();
+        return Math.toIntExact(safeReportCount);
+    }
+
+    private static boolean hasAnySafeReportWithProblemDampener(ReactorLevelReport report) {
+        return IntStream.range(0, report.size())
+                .mapToObj(report::withIgnoredLevelAt)
+                .anyMatch(ReactorLevelReport::isSafe);
     }
 
 
-    private record Report(int[] levels) {
+    private record ReactorLevelReport(List<Integer> levels) {
 
-        public static Report parseReport(String reportLine) {
-            int[] levels = Pattern.compile("\\s+")
+        public static ReactorLevelReport parseReport(String reportLine) {
+            List<Integer> levels = Pattern.compile("\\s+")
                     .splitAsStream(reportLine)
-                    .mapToInt(Integer::parseInt)
-                    .toArray();
-            return new Report(levels);
+                    .map(Integer::parseInt)
+                    .toList();
+            return new ReactorLevelReport(levels);
         }
+
+
+        public int size() {
+            return levels.size();
+        }
+
+
+        public boolean isSafe() {
+            boolean sameDirection = allIncreasing() || allDecreasing();
+            return sameDirection && allInRange(1, 3);
+        }
+
 
         private boolean allIncreasing() {
             return levelDifferences().allMatch(difference -> difference > 0);
@@ -60,12 +82,14 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
         }
 
         private IntStream levelDifferences() {
-            return IntStream.range(1, levels.length).map(i -> levels[i - 1] - levels[i]);
+            return IntStream.range(1, levels.size()).map(i -> levels.get(i - 1) - levels.get(i));
         }
 
-        public boolean isSafe() {
-            boolean sameDirection = allIncreasing() || allDecreasing();
-            return sameDirection && allInRange(1, 3);
+
+        public ReactorLevelReport withIgnoredLevelAt(int ignoredLevelIndex) {
+            List<Integer> newLevels = new LinkedList<>(levels);
+            newLevels.remove(ignoredLevelIndex);
+            return new ReactorLevelReport(newLevels);
         }
 
     }
