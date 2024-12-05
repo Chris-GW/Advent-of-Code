@@ -3,6 +3,7 @@ package de.adventofcode.chrisgw.day01;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -18,8 +19,25 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        int listSize = getInputLines().size();
+        int[] leftIds = new int[listSize];
+        int[] rightIds = new int[listSize];
+
+        for (int i = 0; i < getInputLines().size(); i++) {
+            String inputLine = getInputLines().get(i);
+            String[] split = inputLine.split("\\s+");
+            leftIds[i] = Integer.parseInt(split[0]);
+            rightIds[i] = Integer.parseInt(split[1]);
+        }
+        Arrays.sort(leftIds);
+        Arrays.sort(rightIds);
+
+        int totalDistance = 0;
+        for (int i = 0; i < leftIds.length; i++) {
+            int distance = Math.abs(leftIds[i] - rightIds[i]);
+            totalDistance += distance;
+        }
+        return totalDistance;
     }
 
 
