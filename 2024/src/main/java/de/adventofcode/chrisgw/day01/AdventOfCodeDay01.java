@@ -19,16 +19,9 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        int listSize = getInputLines().size();
-        int[] leftIds = new int[listSize];
-        int[] rightIds = new int[listSize];
-
-        for (int i = 0; i < getInputLines().size(); i++) {
-            String inputLine = getInputLines().get(i);
-            String[] split = inputLine.split("\\s+");
-            leftIds[i] = Integer.parseInt(split[0]);
-            rightIds[i] = Integer.parseInt(split[1]);
-        }
+        LocationLists locationLists = readLocationLists();
+        int[] leftIds = locationLists.leftIds();
+        int[] rightIds = locationLists.rightIds();
         Arrays.sort(leftIds);
         Arrays.sort(rightIds);
 
@@ -40,11 +33,38 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
         return totalDistance;
     }
 
+    private LocationLists readLocationLists() {
+        int listSize = getInputLines().size();
+        int[] leftIds = new int[listSize];
+        int[] rightIds = new int[listSize];
+
+        for (int i = 0; i < getInputLines().size(); i++) {
+            String inputLine = getInputLines().get(i);
+            String[] split = inputLine.split("\\s+");
+            leftIds[i] = Integer.parseInt(split[0]);
+            rightIds[i] = Integer.parseInt(split[1]);
+        }
+        LocationLists result = new LocationLists(leftIds, rightIds);
+        return result;
+    }
+
+    private record LocationLists(int[] leftIds, int[] rightIds) {
+    }
+
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        LocationLists locationLists = readLocationLists();
+        int[] leftIds = locationLists.leftIds();
+        int[] rightIds = locationLists.rightIds();
+
+        int totalSimilarityScore = 0;
+        for (int i = 0; i < leftIds.length; i++) {
+            int id = leftIds[i];
+            long count = Arrays.stream(rightIds).filter(value -> value == id).count();
+            totalSimilarityScore += Math.toIntExact(id * count);
+        }
+        return totalSimilarityScore;
     }
 
 }
