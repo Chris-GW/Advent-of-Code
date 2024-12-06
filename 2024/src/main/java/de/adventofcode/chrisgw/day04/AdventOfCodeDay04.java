@@ -3,9 +3,13 @@ package de.adventofcode.chrisgw.day04;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+
+import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.LEFT_DOWN;
+import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.LEFT_UP;
+import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.RIGHT_DOWN;
+import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.RIGHT_UP;
+import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.values;
 
 
 /**
@@ -20,28 +24,22 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        List<WordMatch> wordMatches = new ArrayList<>();
+        int wordCounter = 0;
         for (int y = 0; y < getInputLines().size(); y++) {
             String line = getInputLines().get(y);
             for (int x = 0; x < line.length(); x++) {
-                wordMatches.addAll(findWordMatches(x, y));
+                for (WordDirection direction : values()) {
+                    if (isWord(x, y, direction, "XMAS")) {
+                        wordCounter++;
+                    }
+                }
             }
         }
-        return wordMatches.size();
+        return wordCounter;
     }
 
-    private Collection<WordMatch> findWordMatches(int x, int y) {
-        List<WordMatch> wordMatches = new ArrayList<>();
-        for (WordDirection direction : WordDirection.values()) {
-            if (isWord(x, y, direction)) {
-                wordMatches.add(new WordMatch(x, y, direction));
-            }
-        }
-        return wordMatches;
-    }
 
-    private boolean isWord(int x, int y, WordDirection direction) {
-        String word = "XMAS";
+    private boolean isWord(int x, int y, WordDirection direction, String word) {
         for (int i = 0; i < word.length(); i++) {
             char searchedLetter = word.charAt(i);
             char letter = charAt(x, y);
@@ -65,13 +63,25 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        int wordCounter = 0;
+        for (int y = 0; y < getInputLines().size(); y++) {
+            String line = getInputLines().get(y);
+            for (int x = 0; x < line.length(); x++) {
+                if (isXWord(x, y)) {
+                    wordCounter++;
+                }
+            }
+        }
+        return wordCounter;
     }
 
-
-    public record WordMatch(int x, int y, WordDirection direction) {
-
+    private boolean isXWord(int x, int y) {
+        int x1 = x + LEFT_UP.dx;
+        int y1 = y + LEFT_UP.dy;
+        int x2 = x + RIGHT_UP.dx;
+        int y2 = y + RIGHT_UP.dy;
+        boolean firstDiagonal = isWord(x1, y1, RIGHT_DOWN, "MAS") || isWord(x1, y1, RIGHT_DOWN, "SAM");
+        return firstDiagonal && (isWord(x2, y2, LEFT_DOWN, "MAS") || isWord(x2, y2, LEFT_DOWN, "SAM"));
     }
 
 
@@ -80,6 +90,7 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
         RIGHT_LEFT(-1, 0),
         UP_DOWN(0, 1),
         DOWN_UP(0, -1),
+        // diagonal
         RIGHT_UP(1, 1),
         RIGHT_DOWN(1, -1),
         LEFT_UP(-1, 1),
