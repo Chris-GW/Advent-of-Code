@@ -4,6 +4,9 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -18,8 +21,17 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        Pattern mulPattern = Pattern.compile("mul\\((\\d{1,3}),(\\d{1,3})\\)");
+        Matcher matcher = mulPattern.matcher(inputLines().collect(Collectors.joining("\n")));
+        int totalResult = 0;
+
+        while (matcher.find()) {
+            int x = Integer.parseInt(matcher.group(1));
+            int y = Integer.parseInt(matcher.group(2));
+            int result = x * y;
+            totalResult += result;
+        }
+        return totalResult;
     }
 
 
