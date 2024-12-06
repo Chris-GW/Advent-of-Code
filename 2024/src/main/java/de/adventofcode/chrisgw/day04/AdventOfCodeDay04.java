@@ -5,10 +5,8 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.List;
 
-import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.LEFT_DOWN;
-import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.LEFT_UP;
-import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.RIGHT_DOWN;
-import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.RIGHT_UP;
+import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.DIAGONAL;
+import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.DIAGONAL_2;
 import static de.adventofcode.chrisgw.day04.AdventOfCodeDay04.WordDirection.values;
 
 
@@ -27,9 +25,11 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
         int wordCounter = 0;
         for (int y = 0; y < getInputLines().size(); y++) {
             String line = getInputLines().get(y);
+
             for (int x = 0; x < line.length(); x++) {
                 for (WordDirection direction : values()) {
-                    if (isWord(x, y, direction, "XMAS")) {
+                    boolean xmas = isWord(x, y, direction, "XMAS");
+                    if (xmas || isWord(x, y, direction, "SAMX")) {
                         wordCounter++;
                     }
                 }
@@ -76,25 +76,18 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
     }
 
     private boolean isXWord(int x, int y) {
-        int x1 = x + LEFT_UP.dx;
-        int y1 = y + LEFT_UP.dy;
-        int x2 = x + RIGHT_UP.dx;
-        int y2 = y + RIGHT_UP.dy;
-        boolean firstDiagonal = isWord(x1, y1, RIGHT_DOWN, "MAS") || isWord(x1, y1, RIGHT_DOWN, "SAM");
-        return firstDiagonal && (isWord(x2, y2, LEFT_DOWN, "MAS") || isWord(x2, y2, LEFT_DOWN, "SAM"));
+        int x1 = x - 1;
+        int x2 = x + 1;
+        boolean firstDiagonal = isWord(x1, y, DIAGONAL, "MAS") || isWord(x1, y, DIAGONAL, "SAM");
+        return firstDiagonal && (isWord(x2, y, DIAGONAL_2, "MAS") || isWord(x2, y, DIAGONAL_2, "SAM"));
     }
 
 
     public enum WordDirection {
-        LEFT_RIGHT(1, 0),
-        RIGHT_LEFT(-1, 0),
-        UP_DOWN(0, 1),
-        DOWN_UP(0, -1),
-        // diagonal
-        RIGHT_UP(1, 1),
-        RIGHT_DOWN(1, -1),
-        LEFT_UP(-1, 1),
-        LEFT_DOWN(-1, -1);
+        HORIZONTAL(1, 0),
+        VERTICAL(0, 1),
+        DIAGONAL(1, -1),
+        DIAGONAL_2(-1, -1);
 
         final int dx;
         final int dy;
