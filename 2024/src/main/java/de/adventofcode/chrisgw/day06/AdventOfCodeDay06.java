@@ -1,10 +1,15 @@
 package de.adventofcode.chrisgw.day06;
 
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.time.Year;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static de.adventofcode.chrisgw.day06.MapTileType.GUARD;
 import static de.adventofcode.chrisgw.day06.MapTileType.GUARD_PATH;
@@ -51,28 +56,39 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
         }
     }
 
+    record GuardDirection(MapTile tile, Direction direction) {
 
-    private void traceGuardPath() {
+    }
+
+    private boolean traceGuardPath() {
+        Set<GuardDirection> visitedObstacles = new HashSet<>();
         Direction guardDirection = Direction.UP;
         MapTile guard = guardStartTile;
+
         while (!guard.isOutside()) {
             setTile(guard.x, guard.y, GUARD_PATH);
             MapTile nextTile = guard.move(guardDirection);
-            if (nextTile.isObstacle()) {
+
+            if (nextTile.isObstacle() && !visitedObstacles.add(new GuardDirection(guard, guardDirection))) {
+                return true;
+            } else if (nextTile.isObstacle()) {
                 guardDirection = guardDirection.turnRight();
             } else {
                 guard = nextTile;
             }
         }
+        return false;
     }
 
 
     private long countGuardPathTiles() {
-        return Arrays.stream(map)
-                .flatMap(Arrays::stream)
-                .map(MapTile::type)
-                .filter(GUARD_PATH::equals)
+        return mapTiles()
+                .filter(MapTile::isGuardPath)
                 .count();
+    }
+
+    private Stream<MapTile> mapTiles() {
+        return Arrays.stream(map).flatMap(Arrays::stream);
     }
 
 
@@ -104,8 +120,16 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        parseGuardMap();
+        traceGuardPath();
+        return Math.toIntExact(mapTiles()
+                .filter(MapTile::isGuardPath)
+                .filter(mapTile -> {
+                    setTile(mapTile.x, mapTile.y, OBSTACLE);
+                    boolean isLoop = traceGuardPath();
+                    setTile(mapTile.x, mapTile.y, GUARD_PATH);
+                    return isLoop;
+                }).count());
     }
 
 
@@ -137,9 +161,26 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
             return OUTSIDE.equals(type);
         }
 
+        public boolean isGuardPath() {
+            return GUARD_PATH.equals(type);
+        }
+
 
         public MapTileType type() {
             return type;
+        }
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof MapTile mapTile)) return false;
+            return new EqualsBuilder().append(x, mapTile.x).append(y, mapTile.y).append(type, mapTile.type).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(x).append(y).append(type).toHashCode();
         }
 
     }
