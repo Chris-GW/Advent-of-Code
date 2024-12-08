@@ -3,12 +3,15 @@ package de.adventofcode.chrisgw.day07;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.LongBinaryOperator;
 import java.util.stream.Collectors;
+
+import static de.adventofcode.chrisgw.day07.AdventOfCodeDay07.Operator.MULTIPLY;
+import static de.adventofcode.chrisgw.day07.AdventOfCodeDay07.Operator.PLUS;
 
 
 /**
@@ -23,18 +26,23 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Long solveFirstPart() {
+        final EnumSet<Operator> allowedOperators = EnumSet.of(PLUS, MULTIPLY);
         return inputLines()
                 .map(Equation::parseEquation)
-                .filter(Equation::isPossible)
+                .filter(equation -> equation.isPossible(allowedOperators))
                 .mapToLong(Equation::testValue)
                 .sum();
     }
 
 
     @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public Long solveSecondPart() {
+        final EnumSet<Operator> allowedOperators = EnumSet.allOf(Operator.class);
+        return inputLines()
+                .map(Equation::parseEquation)
+                .filter(equation -> equation.isPossible(allowedOperators))
+                .mapToLong(Equation::testValue)
+                .sum();
     }
 
 
@@ -49,22 +57,21 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
         }
 
 
-        public boolean isPossible() {
-            List<Operator[]> operatorCombinations = buildOperators(new Operator[neededOperatorCount()], 0);
-            return operatorCombinations.stream().anyMatch(this::test);
+        public boolean isPossible(Set<Operator> allowedOperators) {
+            return isPossible(allowedOperators, new Operator[neededOperatorCount()], 0);
         }
 
-        private List<Operator[]> buildOperators(Operator[] operators, int i) {
+        private boolean isPossible(Set<Operator> allowedOperators, Operator[] operators, int i) {
             if (i == neededOperatorCount()) {
-                return Collections.singletonList(Arrays.copyOf(operators, operators.length));
+                return test(operators);
             }
-            List<Operator[]> foundOperators = new ArrayList<>();
-            for (Operator operator : Operator.values()) {
+            for (Operator operator : allowedOperators) {
                 operators[i] = operator;
-                foundOperators.addAll(buildOperators(operators, i + 1));
-                operators[i] = operator;
+                if (isPossible(allowedOperators, operators, i + 1)) {
+                    return true;
+                }
             }
-            return foundOperators;
+            return false;
         }
 
 
@@ -91,13 +98,14 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
 
 
     enum Operator implements LongBinaryOperator {
-        PLUS('+', (a, b) -> a + b),
-        MULT('*', (a, b) -> a * b);
+        PLUS("+", (a, b) -> a + b),
+        MULTIPLY("*", (a, b) -> a * b),
+        CONCATENATION("|", (a, b) -> Long.parseLong(String.valueOf(a) + b));
 
-        final char sign;
+        final String sign;
         final LongBinaryOperator operator;
 
-        Operator(char sign, LongBinaryOperator operator) {
+        Operator(String sign, LongBinaryOperator operator) {
             this.sign = sign;
             this.operator = operator;
 
@@ -111,7 +119,7 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
 
         @Override
         public String toString() {
-            return String.valueOf(sign);
+            return sign;
         }
     }
 
