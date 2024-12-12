@@ -8,10 +8,9 @@ import java.time.Year;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 
 /**
@@ -19,37 +18,43 @@ import java.util.stream.Stream;
  */
 public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
 
-    private MapPosition[][] map;
+    private final MapPosition[][] map;
 
 
     public AdventOfCodeDay10(List<String> inputLines) {
         super(Year.of(2024), 10, inputLines);
+        map = parseHeightMap();
     }
 
-    private void parseHeightMap() {
+    private MapPosition[][] parseHeightMap() {
         int mapHeight = getInputLines().size();
-        map = new MapPosition[mapHeight][];
+        MapPosition[][] parsedMap = new MapPosition[mapHeight][];
 
         for (int y = 0; y < mapHeight; y++) {
             String line = getInputLines().get(y);
-            map[y] = new MapPosition[line.length()];
+            parsedMap[y] = new MapPosition[line.length()];
 
             for (int x = 0; x < line.length(); x++) {
                 int height = Character.getNumericValue(line.charAt(x));
                 var mapPosition = new MapPosition(x, y, height);
-                map[y][x] = mapPosition;
+                parsedMap[y][x] = mapPosition;
             }
         }
+        return parsedMap;
     }
 
 
     @Override
     public Integer solveFirstPart() {
-        parseHeightMap();
-        List<MapPosition> trailHeads = trailHeads().toList();
-        return trailHeads
-                .stream()
+        return trailHeads()
                 .mapToInt(MapPosition::score)
+                .sum();
+    }
+
+    @Override
+    public Integer solveSecondPart() {
+        return trailHeads()
+                .mapToInt(MapPosition::rating)
                 .sum();
     }
 
@@ -57,21 +62,6 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
         return Arrays.stream(map)
                 .flatMap(Arrays::stream)
                 .filter(MapPosition::isTrailHead);
-    }
-
-
-    @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
-    }
-
-
-    private MapPosition mapPositionAt(int x, int y) {
-        if (0 > y || y >= map.length || 0 > x || x >= map[y].length) {
-            return new MapPosition(x, y, Integer.MAX_VALUE);
-        }
-        return map[y][x];
     }
 
 
@@ -99,35 +89,44 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
 
 
         public int score() {
-            Set<MapPosition> reachableMountainPeaks = new HashSet<>();
+            long distinctMountainPeakCount = traverseMountainTrails().distinct().count();
+            return Math.toIntExact(distinctMountainPeakCount);
+        }
+
+        public int rating() {
+            long mountainTrailCount = traverseMountainTrails().count();
+            return Math.toIntExact(mountainTrailCount);
+        }
+
+        private Stream<MapPosition> traverseMountainTrails() {
             Deque<MapPosition> positions = new ArrayDeque<>();
             positions.offer(this);
 
+            Builder<MapPosition> reachableMountainPeaks = Stream.builder();
             while (!positions.isEmpty()) {
                 MapPosition position = positions.pop();
                 if (position.isMountainPeak()) {
                     reachableMountainPeaks.add(position);
                 } else {
-                    List<MapPosition> trailPositions = position.connectedTrailPositions().toList();
-                    trailPositions.forEach(positions::offer);
+                    position.connectedNeighbours().forEach(positions::offer);
                 }
             }
-            return reachableMountainPeaks.size();
+            return reachableMountainPeaks.build();
         }
 
 
-        public MapPosition positionInDirection(Direction direction) {
-            int x = this.x + direction.dx;
-            int y = this.y + direction.dy;
-            return mapPositionAt(x, y);
+        public MapPosition neighbourInDirection(MapDirection direction) {
+            int neighbourX = this.x + direction.dx;
+            int neighbourY = this.y + direction.dy;
+            if (0 > neighbourY || neighbourY >= map.length || 0 > neighbourX || neighbourX >= map[neighbourY].length) {
+                return new MapPosition(neighbourX, neighbourY, '.');
+            }
+            return map[neighbourY][neighbourX];
         }
 
-        public Stream<MapPosition> connectedTrailPositions() {
-            List<MapPosition> neighbors = Arrays.stream(Direction.values())
-                    .map(this::positionInDirection)
-                    .toList();
-            return neighbors
-                    .stream()
+        public Stream<MapPosition> connectedNeighbours() {
+            return Arrays.stream(MapDirection.values())
+                    .map(this::neighbourInDirection)
                     .filter(mapPosition -> this.height + 1 == mapPosition.height);
         }
 
@@ -153,23 +152,7 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
 
         @Override
         public String toString() {
-            return "(%2d;%2d)=%d".formatted(x, y, height);
-        }
-    }
-
-
-    enum Direction {
-        UP(0, -1),
-        RIGHT(1, 0),
-        DOWN(0, 1),
-        LEFT(-1, 0);
-
-        final int dx;
-        final int dy;
-
-        Direction(int dx, int dy) {
-            this.dx = dx;
-            this.dy = dy;
+            return "(%2d;%2d) = %d".formatted(x, y, height);
         }
 
     }
