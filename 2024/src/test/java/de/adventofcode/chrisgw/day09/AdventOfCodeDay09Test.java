@@ -25,15 +25,15 @@ class AdventOfCodeDay09Test {
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay09(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        long result = new AdventOfCodeDay09(inputLinesExample).solveSecondPart();
+        assertEquals(2858L, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay09.txt");
-        int result = new AdventOfCodeDay09(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        long result = new AdventOfCodeDay09(inputLines).solveSecondPart();
+        assertEquals(6373055193464L, result, "secondPart myPuzzleInput");
     }
 
 }

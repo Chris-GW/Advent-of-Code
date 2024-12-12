@@ -7,6 +7,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 
@@ -65,6 +66,7 @@ public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver {
     private static void compressFileBlocks(int[] fileBlocks) {
         int leftIndex = 0;
         int rightIndex = fileBlocks.length - 1;
+
         while (leftIndex < rightIndex) {
             if (fileBlocks[leftIndex] == -1) {
                 while (fileBlocks[rightIndex] == -1) {
@@ -81,10 +83,9 @@ public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver {
         long checksum = 0L;
         for (int i = 0; i < fileBlocks.length; i++) {
             long id = fileBlocks[i];
-            if (id == -1) {
-                break;
+            if (id != -1) {
+                checksum += i * id;
             }
-            checksum += i * id;
         }
         return checksum;
     }
@@ -98,25 +99,62 @@ public class AdventOfCodeDay09 extends AdventOfCodePuzzleSolver {
 
 
     @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public Long solveSecondPart() {
+        String diskMapString = inputLines().findFirst().orElseThrow();
+        List<DiskMapRecord> diskMapRecords = parseDiskMapRecords(diskMapString);
+        int[] fileBlocks = fillFileBlocks(diskMapRecords);
+        compressFileBlocks2(fileBlocks);
+        System.out.println(printFileBlocks(fileBlocks));
+        return calculateFilesystemChecksum(fileBlocks);
     }
 
+    private static void compressFileBlocks2(int[] fileBlocks) {
+        int fileStartIndex = fileBlocks.length - 1;
+        int previousFileId = Integer.MAX_VALUE;
 
-    record DiskMapRecord(int id, int fileLength, int freeSpace) {
+        while (fileStartIndex >= 0) {
+            // move to next fileBlock
+            int fileId = fileBlocks[fileStartIndex];
+            while (fileId == -1) {
+                fileId = fileBlocks[--fileStartIndex];
+            }
 
-        int blockLength() {
-            return fileLength() + freeSpace();
+            // stop when fileId is not decreasing
+            if (fileId > previousFileId) {
+                fileStartIndex--;
+                continue;
+            }
+            previousFileId = fileId;
+
+            // measure fileSize and move fileStartIndex to beginning of this fileBlock
+            int fileSize = 0;
+            for (int i = fileStartIndex; i >= 0 && fileBlocks[i] == fileId; i--) {
+                fileSize++;
+            }
+            fileStartIndex -= fileSize - 1;
+
+            // find a fitting free space
+            OptionalInt freeSpaceStartIndex = findFittingFreeSpace(fileBlocks, fileSize);
+            if (freeSpaceStartIndex.isPresent() && freeSpaceStartIndex.getAsInt() < fileStartIndex) {
+                ArrayUtils.swap(fileBlocks, freeSpaceStartIndex.getAsInt(), fileStartIndex, fileSize);
+            }
+            fileStartIndex--;
         }
+    }
 
-        public void fillBlocks(int[] fileBlocks, int fileStart) {
-            int fileLengthEnd = fileStart + fileLength;
-            int freeSpaceEnd = fileLengthEnd + freeSpace;
-            Arrays.fill(fileBlocks, fileStart, fileLengthEnd, id);
-            Arrays.fill(fileBlocks, fileLengthEnd, freeSpaceEnd, -1);
+    private static OptionalInt findFittingFreeSpace(int[] fileBlocks, int fileSize) {
+        for (int freeSpaceStartIndex = 0; freeSpaceStartIndex < fileBlocks.length; freeSpaceStartIndex++) {
+            for (int length = 0; freeSpaceStartIndex + length < fileBlocks.length; length++) {
+                if (length >= fileSize) {
+                    // found fitting free space
+                    return OptionalInt.of(freeSpaceStartIndex);
+                } else if (fileBlocks[freeSpaceStartIndex + length] != -1) {
+                    // free space to small
+                    break;
+                }
+            }
         }
-
+        return OptionalInt.empty();
     }
 
 }
