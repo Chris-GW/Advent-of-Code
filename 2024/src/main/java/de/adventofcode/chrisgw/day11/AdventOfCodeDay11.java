@@ -45,6 +45,7 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
                 stoneIterator.set(1L);
                 continue;
             }
+
             String numberDigits = String.valueOf(stoneNumber);
             boolean evenNumberDigits = (numberDigits.length() % 2) == 0;
             if (evenNumberDigits) {
@@ -62,8 +63,12 @@ public class AdventOfCodeDay11 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        List<Long> stones = parseStoneLine();
+        for (int blink = 0; blink < 75; blink++) {
+            nextBlink(stones);
+            System.out.println(blink);
+        }
+        return stones.size();
     }
 
 
