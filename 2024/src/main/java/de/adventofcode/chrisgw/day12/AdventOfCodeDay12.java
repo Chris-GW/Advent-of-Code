@@ -91,8 +91,11 @@ public class AdventOfCodeDay12 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        plotMap = parsePlantPlotMap();
+        List<PlantRegion> plantRegions = findPlantRegions(plotMap);
+        return plantRegions.stream()
+                .mapToInt(PlantRegion::calculateBulkFencePrice)
+                .sum();
     }
 
 
@@ -110,12 +113,18 @@ public class AdventOfCodeDay12 extends AdventOfCodePuzzleSolver {
 
 
         public PlantPlot plotInDirection(GardenDirection direction) {
-            int x = this.x + direction.dx;
-            int y = this.y + direction.dy;
-            if (0 > y || y >= plotMap.length || 0 > x || x >= plotMap[y].length) {
-                return new PlantPlot(x, y, '.');
+            int x2 = this.x + direction.dx;
+            int y2 = this.y + direction.dy;
+            if (0 > y2 || y2 >= plotMap.length || 0 > x2 || x2 >= plotMap[y2].length) {
+                return new PlantPlot(x2, y2, '.');
             }
-            return plotMap[y][x];
+            return plotMap[y2][x2];
+        }
+
+        public boolean isConnected(PlantPlot otherPlot) {
+            return Arrays.stream(GardenDirection.values())
+                    .map(this::plotInDirection)
+                    .anyMatch(otherPlot::equals);
         }
 
 
@@ -127,6 +136,15 @@ public class AdventOfCodeDay12 extends AdventOfCodePuzzleSolver {
 
         public boolean isSamePlantType(PlantPlot otherPlantPlot) {
             return this.plantType == otherPlantPlot.plantType;
+        }
+
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
         }
 
 
