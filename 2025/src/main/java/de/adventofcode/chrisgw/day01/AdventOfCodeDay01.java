@@ -38,8 +38,22 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        List<Rotation> rotations = inputLines().map(Rotation::parse).toList();
+        int pointedAtZero = 0;
+
+        int dial = 50;
+        for (Rotation rotation : rotations) {
+            int sign = rotation.direction().sign();
+            int distance = rotation.distance();
+            for (int i = 0; i < distance; i++) {
+                dial += sign;
+                dial %= 100;
+                if (dial == 0) {
+                    pointedAtZero++;
+                }
+            }
+        }
+        return pointedAtZero;
     }
 
 }
