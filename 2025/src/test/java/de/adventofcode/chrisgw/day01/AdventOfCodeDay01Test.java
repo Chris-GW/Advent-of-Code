@@ -7,19 +7,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AdventOfCodeDay01Test {
 
-    private static final List<String> inputLinesExample = List.of("");
+    private static final List<String> inputLinesExample = List.of(
+            "L68",
+            "L30",
+            "R48",
+            "L5",
+            "R60",
+            "L55",
+            "L1",
+            "L99",
+            "R14",
+            "L82");
+
 
     @Test
     void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay01(inputLinesExample).solveFirstPart();
-        assertEquals(1, result, "firstPart example");
+        assertEquals(3, result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay01.txt");
         int result = new AdventOfCodeDay01(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        assertEquals(1102, result, "firstPart myPuzzleInput");
     }
 
 

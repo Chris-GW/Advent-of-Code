@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
+
     public AdventOfCodeDay01(List<String> inputLines) {
         super(Year.of(2025), 1, inputLines);
     }
@@ -18,8 +19,20 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        List<Rotation> rotations = inputLines().map(Rotation::parse).toList();
+        int pointedAtZero = 0;
+
+        int dial = 50;
+        for (Rotation rotation : rotations) {
+            int sign = rotation.direction().sign();
+            int distance = rotation.distance() % 100;
+            dial += sign * distance;
+            dial %= 100;
+            if (dial == 0) {
+                pointedAtZero++;
+            }
+        }
+        return pointedAtZero;
     }
 
 
