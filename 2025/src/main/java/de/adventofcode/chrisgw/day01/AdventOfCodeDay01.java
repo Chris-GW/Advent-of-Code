@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
+    private int dial = 50;
+
 
     public AdventOfCodeDay01(List<String> inputLines) {
         super(Year.of(2025), 1, inputLines);
@@ -20,40 +22,38 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
     @Override
     public Integer solveFirstPart() {
         List<Rotation> rotations = inputLines().map(Rotation::parse).toList();
-        int pointedAtZero = 0;
+        return rotations.stream().mapToInt(this::applyRotationFirstPart).sum();
+    }
 
-        int dial = 50;
-        for (Rotation rotation : rotations) {
-            int sign = rotation.direction().sign();
-            int distance = rotation.distance() % 100;
-            dial += sign * distance;
-            dial %= 100;
-            if (dial == 0) {
-                pointedAtZero++;
-            }
+    private int applyRotationFirstPart(Rotation rotation) {
+        int pointedAtZeroCount = 0;
+        int sign = rotation.direction().sign();
+        int distance = rotation.distance() % 100;
+        dial += sign * distance;
+        dial %= 100;
+        if (dial == 0) {
+            pointedAtZeroCount++;
         }
-        return pointedAtZero;
+        return pointedAtZeroCount;
     }
 
 
     @Override
     public Integer solveSecondPart() {
         List<Rotation> rotations = inputLines().map(Rotation::parse).toList();
-        int pointedAtZero = 0;
+        return rotations.stream().mapToInt(this::applyRotationSecondPart).sum();
+    }
 
-        int dial = 50;
-        for (Rotation rotation : rotations) {
-            int sign = rotation.direction().sign();
-            int distance = rotation.distance();
-            for (int i = 0; i < distance; i++) {
-                dial += sign;
-                dial %= 100;
-                if (dial == 0) {
-                    pointedAtZero++;
-                }
+    private int applyRotationSecondPart(Rotation rotation) {
+        int pointedAtZeroCount = 0;
+        for (int i = 0; i < rotation.distance(); i++) {
+            dial += rotation.direction().sign();
+            dial %= 100;
+            if (dial == 0) {
+                pointedAtZeroCount++;
             }
         }
-        return pointedAtZero;
+        return pointedAtZeroCount;
     }
 
 }
