@@ -31,4 +31,10 @@ public enum Direction {
         return sign;
     }
 
+
+    @Override
+    public String toString() {
+        return String.valueOf(code);
+    }
+
 }

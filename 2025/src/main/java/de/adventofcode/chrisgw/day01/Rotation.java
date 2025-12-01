@@ -8,4 +8,10 @@ public record Rotation(Direction direction, int distance) {
         return new Rotation(direction, distance);
     }
 
+
+    @Override
+    public String toString() {
+        return "%s%d".formatted(direction.code(), distance);
+    }
+
 }
