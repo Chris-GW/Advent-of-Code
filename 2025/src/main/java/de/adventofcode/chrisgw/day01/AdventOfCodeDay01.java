@@ -12,6 +12,8 @@ import java.util.List;
 public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     private int dial = 50;
+    private int endedAtZeroCount = 0;
+    private int pointedAtZeroCount = 0;
 
 
     public AdventOfCodeDay01(List<String> inputLines) {
@@ -21,31 +23,18 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        List<Rotation> rotations = inputLines().map(Rotation::parse).toList();
-        return rotations.stream().mapToInt(this::applyRotationFirstPart).sum();
+        inputLines().map(Rotation::parse).forEachOrdered(this::applyRotation);
+        return endedAtZeroCount;
     }
 
-    private int applyRotationFirstPart(Rotation rotation) {
-        int pointedAtZeroCount = 0;
-        int sign = rotation.direction().sign();
-        int distance = rotation.distance() % 100;
-        dial += sign * distance;
-        dial %= 100;
-        if (dial == 0) {
-            pointedAtZeroCount++;
-        }
+    @Override
+    public Integer solveSecondPart() {
+        inputLines().map(Rotation::parse).forEachOrdered(this::applyRotation);
         return pointedAtZeroCount;
     }
 
 
-    @Override
-    public Integer solveSecondPart() {
-        List<Rotation> rotations = inputLines().map(Rotation::parse).toList();
-        return rotations.stream().mapToInt(this::applyRotationSecondPart).sum();
-    }
-
-    private int applyRotationSecondPart(Rotation rotation) {
-        int pointedAtZeroCount = 0;
+    private void applyRotation(Rotation rotation) {
         for (int i = 0; i < rotation.distance(); i++) {
             dial += rotation.direction().sign();
             dial %= 100;
@@ -53,7 +42,9 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
                 pointedAtZeroCount++;
             }
         }
-        return pointedAtZeroCount;
+        if (dial == 0) {
+            endedAtZeroCount++;
+        }
     }
 
 }
