@@ -1,9 +1,7 @@
 package de.adventofcode.chrisgw.day02;
 
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 
 public record ProductIdRange(long start, long end) {
@@ -22,13 +20,8 @@ public record ProductIdRange(long start, long end) {
     }
 
 
-    public long invalidProductIdSum() {
-        return productIds().filter(Predicate.not(ProductId::isValid)).mapToLong(ProductId::id).sum();
-    }
-
-
-    public Stream<ProductId> productIds() {
-        return LongStream.rangeClosed(start, end).mapToObj(ProductId::new);
+    public LongStream productIds() {
+        return LongStream.rangeClosed(start, end);
     }
 
 
