@@ -2,6 +2,7 @@ package de.adventofcode.chrisgw.day03;
 
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
+import java.math.BigInteger;
 import java.time.Year;
 import java.util.List;
 
@@ -18,17 +19,20 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        List<BatteryBank> batteryBanks = inputLines().map(BatteryBank::new).toList();
-        return batteryBanks.stream()
-                .mapToInt(BatteryBank::turnOnLargestJoltageBatteries)
+        return inputLines()
+                .map(BatteryBank::new)
+                .map(batteryBank -> batteryBank.findBestBatteryCombination(2))
+                .mapToInt(BigInteger::intValue)
                 .sum();
     }
 
 
     @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public BigInteger solveSecondPart() {
+        return inputLines()
+                .map(BatteryBank::new)
+                .map(batteryBank -> batteryBank.findBestBatteryCombination(12))
+                .reduce(BigInteger.ZERO, BigInteger::add);
     }
 
 }
