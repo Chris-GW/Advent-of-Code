@@ -18,8 +18,10 @@ public class AdventOfCodeDay03 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        List<BatteryBank> batteryBanks = inputLines().map(BatteryBank::new).toList();
+        return batteryBanks.stream()
+                .mapToInt(BatteryBank::turnOnLargestJoltageBatteries)
+                .sum();
     }
 
 
