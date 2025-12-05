@@ -4,6 +4,7 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
 import java.util.List;
+import java.util.stream.IntStream;
 
 
 /**
@@ -18,8 +19,10 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        return inputLines()
+                .map(PresentBox::parse)
+                .mapToInt(PresentBox::calculateNeededPaper)
+                .sum();
     }
 
 
@@ -27,6 +30,36 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
     public Integer solveSecondPart() {
         // TODO solveSecondPart
         return 0;
+    }
+
+
+    public record PresentBox(int l, int w, int h) {
+
+        public static PresentBox parse(String line) {
+            String[] split = line.split("x");
+            int l = Integer.parseInt(split[0]);
+            int w = Integer.parseInt(split[1]);
+            int h = Integer.parseInt(split[2]);
+            return new PresentBox(l, w, h);
+        }
+
+
+        public int calculateSurfaceArea() {
+            return (2 * l * w) + (2 * w * h) + (2 * h * l);
+        }
+
+
+        public int calculateNeededPaper() {
+            int extraPaper = IntStream.builder()
+                    .add(l * w)
+                    .add(w * h)
+                    .add(h * l)
+                    .build()
+                    .min()
+                    .orElse(0);
+            return calculateSurfaceArea() + extraPaper;
+        }
+
     }
 
 }
