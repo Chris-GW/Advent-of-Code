@@ -47,19 +47,26 @@ class AdventOfCodeDay01Test {
     }
 
 
+    private static Stream<Arguments> provideExamples02() {
+        return Stream.of(
+                Arguments.of(")", 1),
+                Arguments.of("()())", 5)
+        );
+    }
+
     @ParameterizedTest
-    @MethodSource("provideExamples")
-    void solveAocPuzzle_secondPart_example() {
-        List<String> inputLines = List.of("");
+    @MethodSource("provideExamples02")
+    void solveAocPuzzle_secondPart_example(String input, int expected) {
+        List<String> inputLines = List.of(input);
         int result = new AdventOfCodeDay01(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        assertEquals(expected, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay01.txt");
         int result = new AdventOfCodeDay01(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(1771, result, "secondPart myPuzzleInput");
     }
 
 }

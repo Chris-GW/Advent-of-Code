@@ -34,7 +34,19 @@ public class AdventOfCodeDay01 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
+        int floor = 0;
+        String inputLine = getInputLines().get(0);
+        for (int i = 0; i < inputLine.length(); i++) {
+            char c = inputLine.charAt(i);
+            if (c == '(') {
+                floor++;
+            } else if (c == ')') {
+                floor--;
+            }
+            if (floor < 0) {
+                return i + 1;
+            }
+        }
         return 0;
     }
 
