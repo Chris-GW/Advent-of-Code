@@ -5,8 +5,12 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
+
+import static java.util.stream.Collectors.joining;
 
 
 /**
@@ -14,10 +18,12 @@ import java.util.stream.Stream.Builder;
  */
 public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
 
-    private GridPosition[][] grid;
+    private final GridPosition[][] grid;
+
 
     public AdventOfCodeDay04(List<String> inputLines) {
         super(Year.of(2025), 4, inputLines);
+        grid = parseGrid();
     }
 
     private GridPosition[][] parseGrid() {
@@ -36,24 +42,34 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
 
 
     @Override
-    public Long solveFirstPart() {
-        grid = parseGrid();
-        return gridPositions().filter(GridPosition::isAccessiblePaperRoll).count();
+    public Integer solveFirstPart() {
+        return Math.toIntExact(gridPositions()
+                .filter(GridPosition::isAccessiblePaperRoll)
+                .count());
     }
 
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        return IntStream.generate(this::removeAccessiblePaperRolls)
+                .takeWhile(removedPaperRollCount -> removedPaperRollCount > 0)
+                .sum();
+    }
+
+    public int removeAccessiblePaperRolls() {
+        List<GridPosition> removablePositions = gridPositions()
+                .filter(GridPosition::isAccessiblePaperRoll)
+                .toList();
+        removablePositions.forEach(GridPosition::removePaperRoll);
+        return removablePositions.size();
     }
 
 
-    private Stream<GridPosition> gridPositions() {
+    public Stream<GridPosition> gridPositions() {
         return Arrays.stream(grid).flatMap(Arrays::stream);
     }
 
-    private boolean containsPosition(int x, int y) {
+    public boolean containsGridPosition(int x, int y) {
         return 0 <= y && y < grid.length &&
                 0 <= x && x < grid[y].length;
     }
@@ -61,34 +77,31 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (GridPosition[] gridPositions : grid) {
-            for (GridPosition gridPoisition : gridPositions) {
-                if (gridPoisition.isAccessiblePaperRoll()) {
-                    sb.append('x');
-                } else if (gridPoisition.isPaperRoll()) {
-                    sb.append('@');
-                } else {
-                    sb.append('.');
-                }
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
+        return Arrays.stream(grid)
+                .map(gridRow -> Arrays.stream(gridRow).map(GridPosition::sign).collect(joining()))
+                .collect(joining("\n"));
     }
 
 
-    private class GridPosition {
+    public class GridPosition {
 
-        final int x;
-        final int y;
-        final boolean isPaperRoll;
+        private final int x;
+        private final int y;
+        private boolean isPaperRoll;
 
 
         private GridPosition(int x, int y, boolean isPaperRoll) {
             this.x = x;
             this.y = y;
             this.isPaperRoll = isPaperRoll;
+        }
+
+
+        public void removePaperRoll() {
+            if (!isAccessiblePaperRoll()) {
+                throw new IllegalStateException("Could not remove paper roll from " + this);
+            }
+            isPaperRoll = false;
         }
 
 
@@ -104,9 +117,9 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
                     int x = this.x + dx;
                     int y = this.y + dy;
 
-                    if ((dy != 0 || dx != 0) && containsPosition(x, y)) {
-                        var gridPoisition = grid[y][x];
-                        adjacentPositions.add(gridPoisition);
+                    if ((dy != 0 || dx != 0) && containsGridPosition(x, y)) {
+                        var gridPosition = grid[y][x];
+                        adjacentPositions.add(gridPosition);
                     }
                 }
             }
@@ -116,6 +129,45 @@ public class AdventOfCodeDay04 extends AdventOfCodePuzzleSolver {
 
         public boolean isPaperRoll() {
             return isPaperRoll;
+        }
+
+
+        public int x() {
+            return x;
+        }
+
+        public int y() {
+            return y;
+        }
+
+
+        public String sign() {
+            if (isAccessiblePaperRoll()) {
+                return "x";
+            } else if (isPaperRoll()) {
+                return "@";
+            } else {
+                return ".";
+            }
+        }
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof GridPosition that)) {
+                return false;
+            }
+            return x == that.x && y == that.y && isPaperRoll == that.isPaperRoll;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y, isPaperRoll);
+        }
+
+        @Override
+        public String toString() {
+            return "(%2d, %2d) %s".formatted(x, y, sign());
         }
 
     }
