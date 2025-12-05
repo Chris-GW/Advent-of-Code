@@ -36,16 +36,24 @@ class AdventOfCodeDay02Test {
 
 
     @Test
-    void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay02(List.of("2x3x4")).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+    void solveAocPuzzle_secondPart_example01() {
+        List<String> inputLines = List.of("2x3x4");
+        int result = new AdventOfCodeDay02(inputLines).solveSecondPart();
+        assertEquals(34, result, "secondPart example");
+    }
+
+    @Test
+    void solveAocPuzzle_secondPart_example02() {
+        List<String> inputLines = List.of("1x1x10");
+        int result = new AdventOfCodeDay02(inputLines).solveSecondPart();
+        assertEquals(14, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay02.txt");
         int result = new AdventOfCodeDay02(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(3812909, result, "secondPart myPuzzleInput");
     }
 
 }

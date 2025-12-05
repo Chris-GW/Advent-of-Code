@@ -28,8 +28,10 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        return inputLines()
+                .map(PresentBox::parse)
+                .mapToInt(PresentBox::calculateRibbonLength)
+                .sum();
     }
 
 
@@ -44,20 +46,41 @@ public class AdventOfCodeDay02 extends AdventOfCodePuzzleSolver {
         }
 
 
-        public int calculateSurfaceArea() {
+        public int calculateNeededPaper() {
+            return calculateSurfaceArea() + calculateExtraPaper();
+        }
+
+        private int calculateSurfaceArea() {
             return (2 * l * w) + (2 * w * h) + (2 * h * l);
         }
 
-
-        public int calculateNeededPaper() {
-            int extraPaper = IntStream.builder()
+        private int calculateExtraPaper() {
+            return IntStream.builder()
                     .add(l * w)
                     .add(w * h)
                     .add(h * l)
                     .build()
                     .min()
                     .orElse(0);
-            return calculateSurfaceArea() + extraPaper;
+        }
+
+
+        public int calculateRibbonLength() {
+            return calculateWrapRibbon() + calculateCubicVolume();
+        }
+
+        private int calculateWrapRibbon() {
+            return IntStream.builder()
+                    .add((2 * l) + (2 * w))
+                    .add((2 * w) + (2 * h))
+                    .add((2 * h) + (2 * l))
+                    .build()
+                    .min()
+                    .orElse(0);
+        }
+
+        private int calculateCubicVolume() {
+            return l * w * h;
         }
 
     }
