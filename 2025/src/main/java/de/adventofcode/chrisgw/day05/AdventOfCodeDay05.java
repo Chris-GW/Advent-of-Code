@@ -4,6 +4,7 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
 import java.util.List;
+import java.util.function.Predicate;
 
 
 /**
@@ -18,8 +19,16 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        List<IdRange> idRanges = inputLines()
+                .takeWhile(Predicate.not(String::isBlank))
+                .map(IdRange::parse)
+                .toList();
+        return Math.toIntExact(inputLines()
+                .skip(idRanges.size())
+                .skip(1)
+                .mapToLong(Long::parseLong)
+                .filter(id -> idRanges.stream().anyMatch(idRange -> idRange.contains(id)))
+                .count());
     }
 
 
@@ -27,6 +36,22 @@ public class AdventOfCodeDay05 extends AdventOfCodePuzzleSolver {
     public Integer solveSecondPart() {
         // TODO solveSecondPart
         return 0;
+    }
+
+
+    public record IdRange(long startId, long endId) {
+
+        public static IdRange parse(String line) {
+            String[] split = line.split("-");
+            long startId = Long.parseLong(split[0]);
+            long endId = Long.parseLong(split[1]);
+            return new IdRange(startId, endId);
+        }
+
+        public boolean contains(long id) {
+            return startId <= id && id <= endId;
+        }
+
     }
 
 }
