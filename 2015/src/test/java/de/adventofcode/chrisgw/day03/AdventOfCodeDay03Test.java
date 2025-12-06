@@ -33,7 +33,7 @@ class AdventOfCodeDay03Test {
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay03.txt");
         int result = new AdventOfCodeDay03(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        assertEquals(2360, result, "secondPart myPuzzleInput");
     }
 
 }
