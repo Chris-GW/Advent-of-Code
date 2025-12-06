@@ -5,14 +5,20 @@ import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 import java.time.Year;
 import java.util.List;
 import java.util.function.LongBinaryOperator;
+import java.util.function.Predicate;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 
 /**
  * <a href="https://adventofcode.com/2025/day/6">Advent of Code - day 6</a>
  */
 public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
+
+    public static final Pattern OPERATOR_COLUMN_PATTERN = Pattern.compile("[+*]\\s+");
 
     public AdventOfCodeDay06(List<String> inputLines) {
         super(Year.of(2025), 6, inputLines);
@@ -21,55 +27,58 @@ public class AdventOfCodeDay06 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Long solveFirstPart() {
-        return IntStream.range(0, columns())
-                .mapToLong(this::solveWorksheetColumn)
-                .sum();
+        String operationRow = getInputLines().getLast();
+        Matcher matcher = OPERATOR_COLUMN_PATTERN.matcher(operationRow);
+        return matcher.results().mapToLong(this::solveColumn).sum();
     }
 
-    private long solveWorksheetColumn(int column) {
-        LongBinaryOperator operator = operationForColumn(column);
-        return worksheetColumn(column)
+    private long solveColumn(MatchResult matchResult) {
+        int beginIndex = matchResult.start();
+        int endIndex = matchResult.end();
+        LongBinaryOperator operator = parseOperator(matchResult.group());
+        return columnValues(beginIndex, endIndex)
+                .map(String::trim)
+                .mapToLong(Long::parseLong)
                 .reduce(operator)
                 .orElse(0);
     }
 
 
     @Override
-    public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+    public Long solveSecondPart() {
+        String operationRow = getInputLines().getLast();
+        Matcher matcher = OPERATOR_COLUMN_PATTERN.matcher(operationRow);
+        return matcher.results().mapToLong(this::solveColumnSecondPart).sum();
     }
 
-
-    private LongStream worksheetColumn(int column) {
-        return inputLines()
-                .limit(rows() - 1L)
+    private long solveColumnSecondPart(MatchResult matchResult) {
+        int beginIndex = matchResult.start();
+        int endIndex = matchResult.end();
+        LongBinaryOperator operator = parseOperator(matchResult.group());
+        return IntStream.range(0, endIndex - beginIndex)
+                .mapToObj(index -> columnValues(beginIndex, endIndex)
+                        .reduce("", (left, right) -> left + right.charAt(index)))
                 .map(String::trim)
-                .map(s -> s.split("\\s+")[column])
-                .mapToLong(Long::parseLong);
-    }
-
-
-    private int columns() {
-        return inputLines()
-                .findFirst()
-                .map(String::trim)
-                .map(s -> s.split("\\s+").length)
+                .filter(Predicate.not(String::isEmpty))
+                .mapToLong(Long::parseLong)
+                .reduce(operator)
                 .orElse(0);
     }
 
-    private int rows() {
-        return getInputLines().size();
+
+    private Stream<String> columnValues(int beginIndex, int endIndex) {
+        return inputLines()
+                .limit(getInputLines().size() - 1L)
+                .map(s -> s.substring(beginIndex, endIndex));
     }
 
 
-    private LongBinaryOperator operationForColumn(int column) {
-        String[] split = getInputLines().getLast().split("\\s+");
-        String operationChar = split[column];
-        return switch (operationChar) {
+    private LongBinaryOperator parseOperator(String operationStr) {
+        operationStr = operationStr.trim();
+        return switch (operationStr) {
             case "+" -> (left, right) -> left + right;
             case "*" -> (left, right) -> left * right;
-            default -> throw new IllegalStateException("Unexpected value: " + operationChar);
+            default -> throw new IllegalStateException("Unexpected value: " + operationStr);
         };
     }
 
