@@ -7,26 +7,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AdventOfCodeDay03Test {
 
-    private static final List<String> inputLinesExample = List.of("");
+    private static final List<String> inputLinesExample = List.of("^>v<");
 
     @Test
     void solveAocPuzzle_firstPart_example() {
         int result = new AdventOfCodeDay03(inputLinesExample).solveFirstPart();
-        assertEquals(1, result, "firstPart example");
+        assertEquals(4, result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay03.txt");
         int result = new AdventOfCodeDay03(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        assertEquals(2592, result, "firstPart myPuzzleInput");
     }
 
 
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay03(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        assertEquals(3, result, "secondPart example");
     }
 
     @Test
