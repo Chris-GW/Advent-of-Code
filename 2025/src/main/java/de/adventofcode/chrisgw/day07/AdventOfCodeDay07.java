@@ -54,8 +54,22 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        parseDiagram();
+        return countParticleTimelines(startLocation);
+    }
+
+
+    private int countParticleTimelines(Location current) {
+        if (!isInside(current)) {
+            return 1;
+        }
+        int sum = 0;
+        if (isSplitterAt(current)) {
+            sum += current.split().mapToInt(this::countParticleTimelines).sum();
+        } else {
+            sum += countParticleTimelines(current.down());
+        }
+        return sum;
     }
 
 

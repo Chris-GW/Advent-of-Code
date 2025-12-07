@@ -5,6 +5,10 @@ import java.util.stream.Stream;
 
 public record Location(int x, int y) {
 
+    public Location up() {
+        return new Location(x, y - 1);
+    }
+
     public Location down() {
         return new Location(x, y + 1);
     }
