@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -55,23 +56,20 @@ public class AdventOfCodeDay08 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        JunctionBoxPair lastPair = IntStream.range(0, junctionBoxes.size())
+                .mapToObj(this::junctionBoxPairs)
+                .flatMap(Function.identity())
+                .sorted(Comparator.comparingDouble(JunctionBoxPair::distance))
+                .peek(JunctionBoxPair::doConnection)
+                .dropWhile(Predicate.not(this::isFullCircuit))
+                .findFirst()
+                .orElseThrow();
+        return lastPair.distanceToWall();
     }
 
-
-    record JunctionBoxPair(JunctionBox left, JunctionBox right, double distance) {
-
-        JunctionBoxPair(JunctionBox left, JunctionBox right) {
-            this(left, right, left.distanceTo(right));
-        }
-
-
-        public void doConnection() {
-            left.connectTo(right);
-        }
-
+    private boolean isFullCircuit(JunctionBoxPair junctionBoxPair) {
+        Set<JunctionBox> connections = junctionBoxPair.left().getConnections();
+        return connections.size() >= junctionBoxes.size();
     }
-
 
 }
