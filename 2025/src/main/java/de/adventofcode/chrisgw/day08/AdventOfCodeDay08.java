@@ -3,9 +3,12 @@ package de.adventofcode.chrisgw.day08;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 
 /**
@@ -13,37 +16,40 @@ import java.util.Set;
  */
 public class AdventOfCodeDay08 extends AdventOfCodePuzzleSolver {
 
+    private final List<JunctionBox> junctionBoxes;
+
     public AdventOfCodeDay08(List<String> inputLines) {
         super(Year.of(2025), 8, inputLines);
+        this.junctionBoxes = inputLines()
+                .map(JunctionBox::parse)
+                .toList();
     }
 
 
     @Override
     public Integer solveFirstPart() {
-        List<Set<JunctionBox>> circutes = inputLines()
-                .map(JunctionBox::parse)
-                .map(junctionBox -> {
-                    Set<JunctionBox> circute = new HashSet<>();
-                    circute.add(junctionBox);
-                    return circute;
-                })
-                .toList();
-
         int connectionCount = getInputLines().size() > 20 ? 1000 : 10;
-        for (int i = 0; i < connectionCount; i++) {
-            makeClosestConnection(circutes);
-        }
-        return 0;
+        IntStream.range(0, junctionBoxes.size())
+                .mapToObj(this::junctionBoxPairs)
+                .flatMap(Function.identity())
+                .sorted(Comparator.comparingDouble(JunctionBoxPair::distance))
+                .limit(connectionCount)
+                .forEach(JunctionBoxPair::doConnection);
+
+        Comparator<Set<JunctionBox>> setSizeComparator = Comparator.comparingInt(Set::size);
+        return junctionBoxes.stream()
+                .map(JunctionBox::getConnections)
+                .distinct()
+                .sorted(setSizeComparator.reversed())
+                .mapToInt(Set::size)
+                .limit(3)
+                .reduce(1, (left, right) -> left * right);
     }
 
-    private void makeClosestConnection(List<Set<JunctionBox>> circutes) {
-        for (int i = 0; i < circutes.size(); i++) {
-            for (int k = i + 1; k < circutes.size(); k++) {
-                Set<JunctionBox> left = circutes.get(i);
-                Set<JunctionBox> right = circutes.get(k);
-
-            }
-        }
+    private Stream<JunctionBoxPair> junctionBoxPairs(int fromIndex) {
+        return IntStream.range(fromIndex + 1, junctionBoxes.size())
+                .mapToObj(junctionBoxes::get)
+                .map(k -> new JunctionBoxPair(junctionBoxes.get(fromIndex), k));
     }
 
 
@@ -51,6 +57,20 @@ public class AdventOfCodeDay08 extends AdventOfCodePuzzleSolver {
     public Integer solveSecondPart() {
         // TODO solveSecondPart
         return 0;
+    }
+
+
+    record JunctionBoxPair(JunctionBox left, JunctionBox right, double distance) {
+
+        JunctionBoxPair(JunctionBox left, JunctionBox right) {
+            this(left, right, left.distanceTo(right));
+        }
+
+
+        public void doConnection() {
+            left.connectTo(right);
+        }
+
     }
 
 

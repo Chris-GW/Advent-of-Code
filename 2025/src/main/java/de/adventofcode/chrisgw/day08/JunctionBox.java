@@ -1,6 +1,30 @@
 package de.adventofcode.chrisgw.day08;
 
-public record JunctionBox(int x, int y, int z) {
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+
+public final class JunctionBox {
+
+    private final int x;
+    private final int y;
+    private final int z;
+    private Set<JunctionBox> connections = new HashSet<>();
+
+
+    public JunctionBox(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        connections.add(this);
+    }
+
+
+    public void connectTo(JunctionBox otherJunctionBox) {
+        this.connections.addAll(otherJunctionBox.connections);
+        this.connections.forEach(junctionBox -> junctionBox.connections = this.connections);
+    }
 
 
     public static JunctionBox parse(String line) {
@@ -13,10 +37,46 @@ public record JunctionBox(int x, int y, int z) {
 
 
     public double distanceTo(JunctionBox other) {
-        double distance = Math.pow(this.x() + other.x(), 2);
-        distance += Math.pow(this.y() + other.y(), 2);
-        distance += Math.pow(this.z() + other.z(), 2);
-        return Math.sqrt(distance);
+        double dx = (double) other.x() - this.x();
+        double dy = (double) other.y() - this.y();
+        double dz = (double) other.z() - this.z();
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
+
+    public Set<JunctionBox> getConnections() {
+        return connections;
+    }
+
+
+    public int x() {return x;}
+
+    public int y() {return y;}
+
+    public int z() {return z;}
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        var that = (JunctionBox) obj;
+        return this.x == that.x &&
+                this.y == that.y &&
+                this.z == that.z;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
+    }
+
+    @Override
+    public String toString() {
+        return "(%d;%d;%d)".formatted(x, y, z);
+    }
 }

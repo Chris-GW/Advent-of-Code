@@ -42,7 +42,8 @@ class AdventOfCodeDay08Test {
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay08.txt");
         int result = new AdventOfCodeDay08(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        assertNotEquals(1000, result, "to low");
+        assertEquals(66640, result, "firstPart myPuzzleInput");
     }
 
 
