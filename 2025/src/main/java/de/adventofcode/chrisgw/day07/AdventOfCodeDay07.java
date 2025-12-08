@@ -3,7 +3,9 @@ package de.adventofcode.chrisgw.day07;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
+import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -55,21 +57,34 @@ public class AdventOfCodeDay07 extends AdventOfCodePuzzleSolver {
     @Override
     public Integer solveSecondPart() {
         parseDiagram();
-        return countParticleTimelines(startLocation);
+        return countParticleTimelines();
     }
 
 
-    private int countParticleTimelines(Location current) {
-        if (!isInside(current)) {
-            return 1;
+    private int countParticleTimelines() {
+        long result = 0;
+        Deque<Location> stack = new ArrayDeque<>();
+        stack.push(startLocation);
+
+        while (!stack.isEmpty()) {
+            Location current = stack.pop();
+
+            if (!isInside(current)) {
+                // Timeline endet → zählt als 1
+                result++;
+            } else if (isSplitterAt(current)) {
+                // Splitter → mehrere neue Pfade pushen
+                current.split().forEach(stack::push);
+            } else {
+                // Weiter nach unten
+                while (canMoveDownward(current)) {
+                    current = current.down();
+                }
+                stack.push(current);
+            }
         }
-        int sum = 0;
-        if (isSplitterAt(current)) {
-            sum += current.split().mapToInt(this::countParticleTimelines).sum();
-        } else {
-            sum += countParticleTimelines(current.down());
-        }
-        return sum;
+        System.out.println(result);
+        return Math.toIntExact(result);
     }
 
 
