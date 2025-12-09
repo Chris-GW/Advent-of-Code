@@ -22,7 +22,7 @@ class AdventOfCodeDay09Test {
 
     @Test
     void solveAocPuzzle_firstPart_example() {
-        long  result = new AdventOfCodeDay09(inputLinesExample).solveFirstPart();
+        long result = new AdventOfCodeDay09(inputLinesExample).solveFirstPart();
         assertEquals(50L, result, "firstPart example");
     }
 
@@ -37,15 +37,18 @@ class AdventOfCodeDay09Test {
 
     @Test
     void solveAocPuzzle_secondPart_example() {
-        int result = new AdventOfCodeDay09(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        long result = new AdventOfCodeDay09(inputLinesExample).solveSecondPart();
+        assertEquals(24L, result, "secondPart example");
     }
 
     @Test
     void solveAocPuzzle_secondPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay09.txt");
-        int result = new AdventOfCodeDay09(inputLines).solveSecondPart();
-        assertEquals(1, result, "secondPart myPuzzleInput");
+        long result = new AdventOfCodeDay09(inputLines).solveSecondPart();
+        System.out.println(result);
+        assertNotEquals(1307611448L, "to low");
+        assertTrue(result > 1307611448L, "to low");
+        assertEquals(1L, result, "secondPart myPuzzleInput");
     }
 
 }
