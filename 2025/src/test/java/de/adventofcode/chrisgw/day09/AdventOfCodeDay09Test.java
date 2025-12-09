@@ -1,25 +1,37 @@
 package de.adventofcode.chrisgw.day09;
 
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class AdventOfCodeDay09Test {
 
-    private static final List<String> inputLinesExample = List.of("");
+    private static final List<String> inputLinesExample = List.of(
+            "7,1",
+            "11,1",
+            "11,7",
+            "9,7",
+            "9,5",
+            "2,5",
+            "2,3",
+            "7,3");
 
     @Test
     void solveAocPuzzle_firstPart_example() {
-        int result = new AdventOfCodeDay09(inputLinesExample).solveFirstPart();
-        assertEquals(1, result, "firstPart example");
+        long  result = new AdventOfCodeDay09(inputLinesExample).solveFirstPart();
+        assertEquals(50L, result, "firstPart example");
     }
 
     @Test
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay09.txt");
-        int result = new AdventOfCodeDay09(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        long result = new AdventOfCodeDay09(inputLines).solveFirstPart();
+        assertNotEquals(2147458080L, result, "toLow");
+        assertEquals(4772103936L, result, "firstPart myPuzzleInput");
     }
 
 
