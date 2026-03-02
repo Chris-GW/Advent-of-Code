@@ -3,7 +3,9 @@ package de.adventofcode.chrisgw.day10;
 import de.adventofcode.chrisgw.AdventOfCodePuzzleSolver;
 
 import java.time.Year;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 /**
@@ -18,8 +20,10 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveFirstPart() {
-        // TODO solveFirstPart
-        return 0;
+        List<Machine> machines = inputLines().map(Machine::parseMachineLine).toList();
+        return machines.stream()
+                .mapToInt(Machine::initializeMachine)
+                .sum();
     }
 
 
@@ -28,5 +32,8 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
         // TODO solveSecondPart
         return 0;
     }
+
+
+
 
 }

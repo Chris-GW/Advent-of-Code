@@ -1,7 +1,9 @@
 package de.adventofcode.chrisgw.day10;
 
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static de.adventofcode.chrisgw.TestUtils.readAllLinesOfClassPathResource;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +24,7 @@ class AdventOfCodeDay10Test {
     void solveAocPuzzle_firstPart_myPuzzleInput() {
         List<String> inputLines = readAllLinesOfClassPathResource("/puzzleInputDay10.txt");
         int result = new AdventOfCodeDay10(inputLines).solveFirstPart();
-        assertEquals(1, result, "firstPart myPuzzleInput");
+        assertEquals(404, result, "firstPart myPuzzleInput");
     }
 
 
