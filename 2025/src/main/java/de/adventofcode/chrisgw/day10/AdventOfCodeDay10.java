@@ -29,8 +29,10 @@ public class AdventOfCodeDay10 extends AdventOfCodePuzzleSolver {
 
     @Override
     public Integer solveSecondPart() {
-        // TODO solveSecondPart
-        return 0;
+        List<Machine> machines = inputLines().map(Machine::parseMachineLine).toList();
+        return machines.stream()
+                .mapToInt(Machine::adjustJoltage)
+                .sum();
     }
 
 

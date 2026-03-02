@@ -1,8 +1,6 @@
 package de.adventofcode.chrisgw.day10;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
+import java.util.*;
 
 public record Machine(BitSet indicatorLights, List<MachineButton> buttons, int[] joltageRequirements) {
 
@@ -46,15 +44,6 @@ public record Machine(BitSet indicatorLights, List<MachineButton> buttons, int[]
         }
     }
 
-    private boolean isInitializing(int[] assignment) {
-        BitSet indicatorLights = new BitSet(indicatorLightCount());
-        for (int buttonIndex : assignment) {
-            MachineButton machineButton = buttons.get(buttonIndex);
-            machineButton.press(indicatorLights);
-        }
-        return this.indicatorLights.equals(indicatorLights);
-    }
-
     private boolean initializeMachine(int[] buttonAssignment, int index) {
         if (index >= buttonAssignment.length) {
             return isInitializing(buttonAssignment);
@@ -67,6 +56,53 @@ public record Machine(BitSet indicatorLights, List<MachineButton> buttons, int[]
             }
         }
         return false;
+    }
+
+    private boolean isInitializing(int[] assignment) {
+        BitSet indicatorLights = new BitSet(indicatorLightCount());
+        for (int buttonIndex : assignment) {
+            MachineButton machineButton = buttons.get(buttonIndex);
+            machineButton.press(indicatorLights);
+        }
+        return this.indicatorLights.equals(indicatorLights);
+    }
+
+
+    // part 02
+    public int adjustJoltage() {
+        for (int buttonPresses = 0; true; buttonPresses++) {
+            int[] assignment = new int[buttonPresses];
+            if (adjustJoltage(assignment, 0)) {
+                return buttonPresses;
+            }
+        }
+    }
+
+    private boolean adjustJoltage(int[] buttonAssignment, int index) {
+        if (index >= buttonAssignment.length) {
+            return isCorrectJoltage(buttonAssignment);
+        }
+
+        for (int i = 0; i < buttonCount(); i++) {
+            buttonAssignment[index] = i;
+            if (adjustJoltage(buttonAssignment, index + 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isCorrectJoltage(int[] assignment) {
+        int[] joltageLevels = new int[joltageRequirements.length];
+        for (int buttonIndex : assignment) {
+            MachineButton machineButton = buttons.get(buttonIndex);
+            for (int counter : machineButton.wiring()) {
+                if (counter < joltageLevels.length) {
+                    joltageLevels[counter]++;
+                }
+            }
+        }
+        return Arrays.equals(joltageRequirements, joltageLevels);
     }
 
 

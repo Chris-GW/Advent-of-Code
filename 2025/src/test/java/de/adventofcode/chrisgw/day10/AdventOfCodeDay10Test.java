@@ -31,7 +31,7 @@ class AdventOfCodeDay10Test {
     @Test
     void solveAocPuzzle_secondPart_example() {
         int result = new AdventOfCodeDay10(inputLinesExample).solveSecondPart();
-        assertEquals(1, result, "secondPart example");
+        assertEquals(33, result, "secondPart example");
     }
 
     @Test
